@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="datasetPagare" targetNamespace="http://tempuri.org/datasetPagare.xsd" xmlns:mstns="http://tempuri.org/datasetPagare.xsd" xmlns="http://tempuri.org/datasetPagare.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="datasetPagare" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="datasetPagare" msprop:Generator_DataSetName="datasetPagare" msprop:EnableTableAdapterManager="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="DataTable1" msprop:Generator_UserTableName="DataTable1" msprop:Generator_RowDeletedName="DataTable1RowDeleted" msprop:Generator_RowChangedName="DataTable1RowChanged" msprop:Generator_RowClassName="DataTable1Row" msprop:Generator_RowChangingName="DataTable1RowChanging" msprop:Generator_RowEvArgName="DataTable1RowChangeEvent" msprop:Generator_RowEvHandlerName="DataTable1RowChangeEventHandler" msprop:Generator_TableClassName="DataTable1DataTable" msprop:Generator_TableVarName="tableDataTable1" msprop:Generator_RowDeletingName="DataTable1RowDeleting" msprop:Generator_TablePropName="DataTable1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="movcon_item" msprop:Generator_UserColumnName="movcon_item" msprop:Generator_ColumnVarNameInTable="columnmovcon_item" msprop:Generator_ColumnPropNameInRow="movcon_item" msprop:Generator_ColumnPropNameInTable="movcon_itemColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_proveedor" msprop:Generator_UserColumnName="movcon_proveedor" msprop:Generator_ColumnVarNameInTable="columnmovcon_proveedor" msprop:Generator_ColumnPropNameInRow="movcon_proveedor" msprop:Generator_ColumnPropNameInTable="movcon_proveedorColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_numdoc" msprop:Generator_UserColumnName="movcon_numdoc" msprop:Generator_ColumnVarNameInTable="columnmovcon_numdoc" msprop:Generator_ColumnPropNameInRow="movcon_numdoc" msprop:Generator_ColumnPropNameInTable="movcon_numdocColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_sufdoc" msprop:Generator_UserColumnName="movcon_sufdoc" msprop:Generator_ColumnVarNameInTable="columnmovcon_sufdoc" msprop:Generator_ColumnPropNameInRow="movcon_sufdoc" msprop:Generator_ColumnPropNameInTable="movcon_sufdocColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_monto" msprop:Generator_UserColumnName="movcon_monto" msprop:Generator_ColumnVarNameInTable="columnmovcon_monto" msprop:Generator_ColumnPropNameInRow="movcon_monto" msprop:Generator_ColumnPropNameInTable="movcon_montoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_tipdoc" msprop:Generator_UserColumnName="movcon_tipdoc" msprop:Generator_ColumnVarNameInTable="columnmovcon_tipdoc" msprop:Generator_ColumnPropNameInRow="movcon_tipdoc" msprop:Generator_ColumnPropNameInTable="movcon_tipdocColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_tipo" msprop:Generator_UserColumnName="movcon_tipo" msprop:Generator_ColumnVarNameInTable="columnmovcon_tipo" msprop:Generator_ColumnPropNameInRow="movcon_tipo" msprop:Generator_ColumnPropNameInTable="movcon_tipoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_fecaha" msprop:Generator_UserColumnName="movcon_fecaha" msprop:Generator_ColumnVarNameInTable="columnmovcon_fecaha" msprop:Generator_ColumnPropNameInRow="movcon_fecaha" msprop:Generator_ColumnPropNameInTable="movcon_fecahaColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_login" msprop:Generator_UserColumnName="movcon_login" msprop:Generator_ColumnVarNameInTable="columnmovcon_login" msprop:Generator_ColumnPropNameInRow="movcon_login" msprop:Generator_ColumnPropNameInTable="movcon_loginColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_cuenta" msprop:Generator_UserColumnName="movcon_cuenta" msprop:Generator_ColumnVarNameInTable="columnmovcon_cuenta" msprop:Generator_ColumnPropNameInRow="movcon_cuenta" msprop:Generator_ColumnPropNameInTable="movcon_cuentaColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_auxiliar" msprop:Generator_UserColumnName="movcon_auxiliar" msprop:Generator_ColumnVarNameInTable="columnmovcon_auxiliar" msprop:Generator_ColumnPropNameInRow="movcon_auxiliar" msprop:Generator_ColumnPropNameInTable="movcon_auxiliarColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_descrip" msprop:Generator_UserColumnName="movcon_descrip" msprop:Generator_ColumnVarNameInTable="columnmovcon_descrip" msprop:Generator_ColumnPropNameInRow="movcon_descrip" msprop:Generator_ColumnPropNameInTable="movcon_descripColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_status" msprop:Generator_UserColumnName="movcon_status" msprop:Generator_ColumnVarNameInTable="columnmovcon_status" msprop:Generator_ColumnPropNameInRow="movcon_status" msprop:Generator_ColumnPropNameInTable="movcon_statusColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_numcomp" msprop:Generator_UserColumnName="movcon_numcomp" msprop:Generator_ColumnVarNameInTable="columnmovcon_numcomp" msprop:Generator_ColumnPropNameInRow="movcon_numcomp" msprop:Generator_ColumnPropNameInTable="movcon_numcompColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_rif" msprop:Generator_UserColumnName="movcon_rif" msprop:Generator_ColumnPropNameInRow="movcon_rif" msprop:Generator_ColumnVarNameInTable="columnmovcon_rif" msprop:Generator_ColumnPropNameInTable="movcon_rifColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movcon_nombre" msprop:Generator_UserColumnName="movcon_nombre" msprop:Generator_ColumnPropNameInRow="movcon_nombre" msprop:Generator_ColumnVarNameInTable="columnmovcon_nombre" msprop:Generator_ColumnPropNameInTable="movcon_nombreColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="pro_nombre" msprop:Generator_UserColumnName="pro_nombre" msprop:Generator_ColumnPropNameInRow="pro_nombre" msprop:Generator_ColumnVarNameInTable="columnpro_nombre" msprop:Generator_ColumnPropNameInTable="pro_nombreColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="pro_rif" msprop:Generator_UserColumnName="pro_rif" msprop:Generator_ColumnPropNameInRow="pro_rif" msprop:Generator_ColumnVarNameInTable="columnpro_rif" msprop:Generator_ColumnPropNameInTable="pro_rifColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="usu_nombre" msprop:Generator_UserColumnName="usu_nombre" msprop:Generator_ColumnPropNameInRow="usu_nombre" msprop:Generator_ColumnVarNameInTable="columnusu_nombre" msprop:Generator_ColumnPropNameInTable="usu_nombreColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="cc_Descripcion" msprop:Generator_UserColumnName="cc_Descripcion" msprop:Generator_ColumnPropNameInRow="cc_Descripcion" msprop:Generator_ColumnVarNameInTable="columncc_Descripcion" msprop:Generator_ColumnPropNameInTable="cc_DescripcionColumn" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

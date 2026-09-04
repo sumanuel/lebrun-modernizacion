@@ -1,0 +1,2163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D4DEF954-DEC6-4D45-A099-1F3586D2B061}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>lebrun</RootNamespace>
+    <AssemblyName>lebrun</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateManifests>false</GenerateManifests>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="CrystalDecisions.ReportSource, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="CrystalDecisions.Shared, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="CrystalDecisions.Windows.Forms, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
+    <Reference Include="Interop.Microsoft.Office.Core, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Interop.Microsoft.Office.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Vbe.Interop, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Microsoft.Vbe.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.3.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\WINDOWS\assembly\GAC_MSIL\System.Web.Services\2.0.0.0__b03f5f7f11d50a3a\System.Web.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="clasesData\Compania.cs" />
+    <Compile Include="clasesData\ConexionBD.cs" />
+    <Compile Include="clasesData\FuncionesTexbox.cs" />
+    <Compile Include="clasesData\Inputbox.cs" />
+    <Compile Include="clasesData\UsuarioSistema.cs" />
+    <Compile Include="clases\bancos\Banco.cs" />
+    <Compile Include="clases\bulto\Bulto.cs" />
+    <Compile Include="clases\clientes\Clientes.cs" />
+    <Compile Include="clases\clientes\CondicionPago.cs" />
+    <Compile Include="clases\clientes\TipoNegocio.cs" />
+    <Compile Include="clases\clientes\Transporte.cs" />
+    <Compile Include="clases\complementos\Caja.cs" />
+    <Compile Include="clases\complementos\cuentasContables.cs" />
+    <Compile Include="clases\complementos\pagare.cs" />
+    <Compile Include="clases\complementos\Producto.cs" />
+    <Compile Include="clases\complementos\proveedor.cs" />
+    <Compile Include="clases\complementos\RetencionISLR.cs" />
+    <Compile Include="clases\complementos\TipoDocumentoProveedor.cs" />
+    <Compile Include="clases\complementos\trabajador.cs" />
+    <Compile Include="clases\compras\compras.cs" />
+    <Compile Include="clases\compras\retencionesIva.cs" />
+    <Compile Include="clases\compras\retencionISLR.cs" />
+    <Compile Include="clases\compras\Servicios.cs" />
+    <Compile Include="clases\contabilidad\AuxiliarContable.cs" />
+    <Compile Include="clases\contabilidad\Balance.cs" />
+    <Compile Include="clases\contabilidad\ComprobanteCierre.cs" />
+    <Compile Include="clases\contabilidad\ComprobanteContable.cs" />
+    <Compile Include="clases\contabilidad\DetalleComprobanteContable.cs" />
+    <Compile Include="clases\contabilidad\EstructuraDeCostosHtml.cs" />
+    <Compile Include="clases\contabilidad\movimientoContable.cs" />
+    <Compile Include="clases\contabilidad\PlanCuentas.cs" />
+    <Compile Include="clases\facturacion\Factura.cs" />
+    <Compile Include="clases\facturacion\FacturaFerle.cs" />
+    <Compile Include="clases\facturacion\ImpresoraFiscal.cs" />
+    <Compile Include="clases\facturacion\ImpresoraFiscalPNPDLL.cs" />
+    <Compile Include="clases\facturacion\SerieFiscal.cs" />
+    <Compile Include="clases\gerencial\ConsultaGeneral.cs" />
+    <Compile Include="clases\gerencial\ConsultaVentaXVendedor.cs" />
+    <Compile Include="clases\importaciones\DetallesOrdenDeCompra.cs" />
+    <Compile Include="clases\importaciones\factores.cs" />
+    <Compile Include="clases\importaciones\Importacion.cs" />
+    <Compile Include="clases\importaciones\OrdenDeCompra.cs" />
+    <Compile Include="clases\pagos\Pagos.cs" />
+    <Compile Include="clases\ParametroContables.cs" />
+    <Compile Include="clases\pedidos\AprobacionGerencial.cs" />
+    <Compile Include="clases\producto\Etiqueta.cs" />
+    <Compile Include="clases\producto\Productos.cs" />
+    <Compile Include="clases\proveedores\Proveedores.cs" />
+    <Compile Include="clases\Reportes\arc.cs" />
+    <Compile Include="clases\Reportes\ReportesProductos.cs" />
+    <Compile Include="clases\retenciones\retenciones.cs" />
+    <Compile Include="clases\tesoreria\reciboDeingreso.cs" />
+    <Compile Include="clases\vendedores\Vendedor.cs" />
+    <Compile Include="ControladorMain.cs" />
+    <Compile Include="formularios\administracion\lbxUsuarios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\administracion\lbxUsuarios.designer.cs">
+      <DependentUpon>lbxUsuarios.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\bancos\frmBancos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\bancos\frmBancos.Designer.cs">
+      <DependentUpon>frmBancos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\bancos\frmCuentasBanc.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\bancos\frmCuentasBanc.Designer.cs">
+      <DependentUpon>frmCuentasBanc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\bancos\lbxBancos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\bancos\lbxBancos.designer.cs">
+      <DependentUpon>lbxBancos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\bancos\lbxCuentasBanc.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\bancos\lbxCuentasBanc.Designer.cs">
+      <DependentUpon>lbxCuentasBanc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\bultos\lbxBulto2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\bultos\lbxBulto2.Designer.cs">
+      <DependentUpon>lbxBulto2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\bultos\lbxBultos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\bultos\lbxBultos.Designer.cs">
+      <DependentUpon>lbxBultos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\clientesMayor\frmClientesMayor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\clientesMayor\frmClientesMayor.Designer.cs">
+      <DependentUpon>frmClientesMayor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\clientesMayor\lbxClientesMayor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\clientesMayor\lbxClientesMayor.designer.cs">
+      <DependentUpon>lbxClientesMayor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\clientes\frmTipoNegocio.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\clientes\frmTipoNegocio.Designer.cs">
+      <DependentUpon>frmTipoNegocio.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\clientes\lbxTipoNegocio.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\clientes\lbxTipoNegocio.Designer.cs">
+      <DependentUpon>lbxTipoNegocio.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\frmCalculoPrecio.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\frmCalculoPrecio.Designer.cs">
+      <DependentUpon>frmCalculoPrecio.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\frmClasificacionEconomica.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\frmClasificacionEconomica.designer.cs">
+      <DependentUpon>frmClasificacionEconomica.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\frmConsultaArticulos2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\frmConsultaArticulos2.Designer.cs">
+      <DependentUpon>frmConsultaArticulos2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\frmEditorMoneda.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\frmEditorMoneda.Designer.cs">
+      <DependentUpon>frmEditorMoneda.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\frmProveedores.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\frmProveedores.Designer.cs">
+      <DependentUpon>frmProveedores.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxClasificacionEconomica.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxClasificacionEconomica.Designer.cs">
+      <DependentUpon>lbxClasificacionEconomica.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxMonedad.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxMonedad.Designer.cs">
+      <DependentUpon>lbxMonedad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxTarifaRetenc.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxTarifaRetenc.Designer.cs">
+      <DependentUpon>lbxTarifaRetenc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxTrabjadores.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxTrabjadores.Designer.cs">
+      <DependentUpon>lbxTrabjadores.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\compras\frmOpcionesServicios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\compras\frmOpcionesServicios.Designer.cs">
+      <DependentUpon>frmOpcionesServicios.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\compras\frmRif.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\compras\frmRif.Designer.cs">
+      <DependentUpon>frmRif.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\compras\frmServicios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\compras\frmServicios.Designer.cs">
+      <DependentUpon>frmServicios.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\compras\lbxServicios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\compras\lbxServicios.Designer.cs">
+      <DependentUpon>lbxServicios.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\contabilidad\frmEstructuraCostos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\contabilidad\frmEstructuraCostos.Designer.cs">
+      <DependentUpon>frmEstructuraCostos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\contabilidad\frmVisorEstructura.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\contabilidad\frmVisorEstructura.Designer.cs">
+      <DependentUpon>frmVisorEstructura.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\cotizacion\frmPreFac.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\cotizacion\frmPreFac.designer.cs">
+      <DependentUpon>frmPreFac.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\cotizacion\IFormPreFac.cs" />
+    <Compile Include="formularios\cotizacion\lbxPrefacturaCtz.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\cotizacion\lbxPrefacturaCtz.designer.cs">
+      <DependentUpon>lbxPrefacturaCtz.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\facturacionMisionVivienda\frmFacturaVivienda.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\facturacionMisionVivienda\frmFacturaVivienda.Designer.cs">
+      <DependentUpon>frmFacturaVivienda.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\facturacion\cierreCaja.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\facturacion\cierreCaja.Designer.cs">
+      <DependentUpon>cierreCaja.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmClaveConfirmacion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmClaveConfirmacion.designer.cs">
+      <DependentUpon>frmClaveConfirmacion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmClaveConfirmacion2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmClaveConfirmacion2.Designer.cs">
+      <DependentUpon>frmClaveConfirmacion2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmDocumentosNoImpresos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmDocumentosNoImpresos.Designer.cs">
+      <DependentUpon>frmDocumentosNoImpresos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmImportarDev.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmImportarDev.Designer.cs">
+      <DependentUpon>frmImportarDev.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmNetoMonedaExt.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmNetoMonedaExt.Designer.cs">
+      <DependentUpon>frmNetoMonedaExt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmSerieFiscal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmSerieFiscal.Designer.cs">
+      <DependentUpon>frmSerieFiscal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\facturacion\IFormFacturacion.cs" />
+    <Compile Include="formularios\facturacion\LbxSerieFiscal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\facturacion\LbxSerieFiscal.Designer.cs">
+      <DependentUpon>LbxSerieFiscal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\facturacion\ReportesZ_X.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\facturacion\ReportesZ_X.Designer.cs">
+      <DependentUpon>ReportesZ_X.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxConsultaGerencial.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxConsultaGerencial.Designer.cs">
+      <DependentUpon>lbxConsultaGerencial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxConsultaGerente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxConsultaGerente.Designer.cs">
+      <DependentUpon>lbxConsultaGerente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxCosultaVentaXVendedor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxCosultaVentaXVendedor.Designer.cs">
+      <DependentUpon>lbxCosultaVentaXVendedor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmFacturaImportacion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmFacturaImportacion.Designer.cs">
+      <DependentUpon>frmFacturaImportacion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmFacturaNacionalImportacion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmFacturaNacionalImportacion.Designer.cs">
+      <DependentUpon>frmFacturaNacionalImportacion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmOtrosDatos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmOtrosDatos.Designer.cs">
+      <DependentUpon>frmOtrosDatos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmOtrosGastos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmOtrosGastos.Designer.cs">
+      <DependentUpon>frmOtrosGastos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmProductosImportacion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmProductosImportacion.Designer.cs">
+      <DependentUpon>frmProductosImportacion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\pagos\frmCruceDeSaldo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\pagos\frmCruceDeSaldo.Designer.cs">
+      <DependentUpon>frmCruceDeSaldo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\pagos\frmPagosLebrun.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\pagos\frmPagosLebrun.Designer.cs">
+      <DependentUpon>frmPagosLebrun.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\pagos\frmProcesoPago.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\pagos\frmProcesoPago.Designer.cs">
+      <DependentUpon>frmProcesoPago.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\pagos\frmProcesoPagoManual.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\pagos\frmProcesoPagoManual.Designer.cs">
+      <DependentUpon>frmProcesoPagoManual.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\pagos\lbxProveedoresPago.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\pagos\lbxProveedoresPago.Designer.cs">
+      <DependentUpon>lbxProveedoresPago.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\pedidos\frmAprobacionGerencial.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\pedidos\frmAprobacionGerencial.designer.cs">
+      <DependentUpon>frmAprobacionGerencial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\pedidos\frmPedido.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\pedidos\frmPedido.Designer.cs">
+      <DependentUpon>frmPedido.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\pedidos\lbxAprobacionGerencial.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\pedidos\lbxAprobacionGerencial.designer.cs">
+      <DependentUpon>lbxAprobacionGerencial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\pedidos\lbxPedido.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\pedidos\lbxPedido.designer.cs">
+      <DependentUpon>lbxPedido.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\pedidos\lbxPedidoS5.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\pedidos\lbxPedidoS5.Designer.cs">
+      <DependentUpon>lbxPedidoS5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\prefactura\frmPrefactura.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\prefactura\frmPrefactura.Designer.cs">
+      <DependentUpon>frmPrefactura.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\prefactura\lbxPrefactura.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\prefactura\lbxPrefactura.Designer.cs">
+      <DependentUpon>lbxPrefactura.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\prefactura\lbxprefacturaS12.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\prefactura\lbxprefacturaS12.Designer.cs">
+      <DependentUpon>lbxprefacturaS12.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmAsignarProveedor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmAsignarProveedor.Designer.cs">
+      <DependentUpon>frmAsignarProveedor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmCambioPrecio.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmCambioPrecio.Designer.cs">
+      <DependentUpon>frmCambioPrecio.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmConsultaArticulos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmConsultaArticulos.designer.cs">
+      <DependentUpon>frmConsultaArticulos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmEdicionALICU_IVA.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmEdicionALICU_IVA.Designer.cs">
+      <DependentUpon>frmEdicionALICU_IVA.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmEdicionArancel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmEdicionArancel.Designer.cs">
+      <DependentUpon>frmEdicionArancel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmEditorCategoria.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmEditorCategoria.Designer.cs">
+      <DependentUpon>frmEditorCategoria.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmEditorSubCategoria.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmEditorSubCategoria.Designer.cs">
+      <DependentUpon>frmEditorSubCategoria.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmEtiqGran.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmEtiqGran.Designer.cs">
+      <DependentUpon>frmEtiqGran.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmEtiqMed.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmEtiqMed.Designer.cs">
+      <DependentUpon>frmEtiqMed.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmEtiqPeqCodg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmEtiqPeqCodg.Designer.cs">
+      <DependentUpon>frmEtiqPeqCodg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmEtiqPeqDesg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmEtiqPeqDesg.Designer.cs">
+      <DependentUpon>frmEtiqPeqDesg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmMantProductos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmMantProductos.Designer.cs">
+      <DependentUpon>frmMantProductos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmOff.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmOff.Designer.cs">
+      <DependentUpon>frmOff.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmPromociones.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmPromociones.Designer.cs">
+      <DependentUpon>frmPromociones.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmUnidaXProducto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmUnidaXProducto.Designer.cs">
+      <DependentUpon>frmUnidaXProducto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmValidacionUserTimer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmValidacionUserTimer.Designer.cs">
+      <DependentUpon>frmValidacionUserTimer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\frmVisor2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\frmVisor2.Designer.cs">
+      <DependentUpon>frmVisor2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\lbxALICU_IVA.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\lbxALICU_IVA.Designer.cs">
+      <DependentUpon>lbxALICU_IVA.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\lbxArancel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\lbxArancel.Designer.cs">
+      <DependentUpon>lbxArancel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\lbxCategoria.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\lbxCategoria.Designer.cs">
+      <DependentUpon>lbxCategoria.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\lbxElimiPrecios.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\lbxElimiPrecios.Designer.cs">
+      <DependentUpon>lbxElimiPrecios.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\lbxElimiPromo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\lbxElimiPromo.Designer.cs">
+      <DependentUpon>lbxElimiPromo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\lbxMantProductos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\lbxMantProductos.Designer.cs">
+      <DependentUpon>lbxMantProductos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\lbxOpcionesAdicionales.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\lbxOpcionesAdicionales.Designer.cs">
+      <DependentUpon>lbxOpcionesAdicionales.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\lbxSeleccionEtiqPeq.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\lbxSeleccionEtiqPeq.Designer.cs">
+      <DependentUpon>lbxSeleccionEtiqPeq.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\lbxSubCategoria.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\lbxSubCategoria.Designer.cs">
+      <DependentUpon>lbxSubCategoria.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\productos\lbxVisor3.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\productos\lbxVisor3.designer.cs">
+      <DependentUpon>lbxVisor3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\reportes\frmEmisionARC.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\reportes\frmEmisionARC.Designer.cs">
+      <DependentUpon>frmEmisionARC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\reportes\frmReporteProductos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\reportes\frmReporteProductos.Designer.cs">
+      <DependentUpon>frmReporteProductos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\tesoreria\frmRecibodeIngreso.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\tesoreria\frmRecibodeIngreso.Designer.cs">
+      <DependentUpon>frmRecibodeIngreso.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\tesoreria\frmRetIvaCli.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\tesoreria\frmRetIvaCli.Designer.cs">
+      <DependentUpon>frmRetIvaCli.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\tesoreria\lbxReciboIngreso.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\tesoreria\lbxReciboIngreso.Designer.cs">
+      <DependentUpon>lbxReciboIngreso.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmLogin.designer.cs">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\clientes\frmClientes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\clientes\frmClientes.Designer.cs">
+      <DependentUpon>frmClientes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\clientes\lbxClientes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\clientes\lbxClientes.Designer.cs">
+      <DependentUpon>lbxClientes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\clientes\lbxClientes1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>lbxClientes.resx</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\frmPagare.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\frmPagare.designer.cs">
+      <DependentUpon>frmPagare.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\frmproductos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\frmproductos.designer.cs">
+      <DependentUpon>frmproductos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxProductos2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxProductos2.designer.cs">
+      <DependentUpon>lbxProductos2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxProveedores.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxProveedores.designer.cs">
+      <DependentUpon>lbxProveedores.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxtipoDocPro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\lbxtipoDocPro.designer.cs">
+      <DependentUpon>lbxtipoDocPro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\contabilidad\frmComprobanteCierre.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\contabilidad\frmComprobanteCierre.Designer.cs">
+      <DependentUpon>frmComprobanteCierre.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\contabilidad\frmComprobanteContable.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\contabilidad\frmComprobanteContable.Designer.cs">
+      <DependentUpon>frmComprobanteContable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\contabilidad\frmAuxiliarContable.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\contabilidad\frmAuxiliarContable.Designer.cs">
+      <DependentUpon>frmAuxiliarContable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\contabilidad\frmPlanCuentas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\contabilidad\frmPlanCuentas.Designer.cs">
+      <DependentUpon>frmPlanCuentas.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\contabilidad\lbxAuxiliarContable.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\contabilidad\lbxAuxiliarContable.Designer.cs">
+      <DependentUpon>lbxAuxiliarContable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\contabilidad\lbxAuxiliaresOnly.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\contabilidad\lbxAuxiliaresOnly.Designer.cs">
+      <DependentUpon>lbxAuxiliaresOnly.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\contabilidad\lbxComprobanteContable.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\contabilidad\lbxComprobanteContable.Designer.cs">
+      <DependentUpon>lbxComprobanteContable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\contabilidad\lbxPlanCuentas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\contabilidad\lbxPlanCuentas.Designer.cs">
+      <DependentUpon>lbxPlanCuentas.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\contabilidad\parametrosContables.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\contabilidad\parametrosContables.Designer.cs">
+      <DependentUpon>parametrosContables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmFactura.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\facturacion\frmFactura.Designer.cs">
+      <DependentUpon>frmFactura.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\facturacion\lbxFacturas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\facturacion\lbxFacturas.Designer.cs">
+      <DependentUpon>lbxFacturas.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmImportaciones.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmImportaciones.Designer.cs">
+      <DependentUpon>frmImportaciones.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmOrdenCompra.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\importaciones\frmOrdenCompra.designer.cs">
+      <DependentUpon>frmOrdenCompra.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\importaciones\gastosImportaciones.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\importaciones\gastosImportaciones.Designer.cs">
+      <DependentUpon>gastosImportaciones.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\importaciones\lbxImportaciones.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\importaciones\lbxImportaciones.Designer.cs">
+      <DependentUpon>lbxImportaciones.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\importaciones\lbxOrdenDeCompra.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\importaciones\lbxOrdenDeCompra.designer.cs">
+      <DependentUpon>lbxOrdenDeCompra.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\importaciones\ProductosImportaciones.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\importaciones\ProductosImportaciones.Designer.cs">
+      <DependentUpon>ProductosImportaciones.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\transporte\lbxTransporte.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\transporte\lbxTransporte.Designer.cs">
+      <DependentUpon>lbxTransporte.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\vendedores\lbxVendedores.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\vendedores\lbxVendedores.Designer.cs">
+      <DependentUpon>lbxVendedores.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Principal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Principal.Designer.cs">
+      <DependentUpon>Principal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="formularios\administracion\lbxUsuarios.resx">
+      <DependentUpon>lbxUsuarios.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\bancos\frmBancos.resx">
+      <DependentUpon>frmBancos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\bancos\frmCuentasBanc.resx">
+      <DependentUpon>frmCuentasBanc.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\bancos\lbxBancos.resx">
+      <DependentUpon>lbxBancos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\bancos\lbxCuentasBanc.resx">
+      <DependentUpon>lbxCuentasBanc.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\bultos\lbxBulto2.resx">
+      <DependentUpon>lbxBulto2.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\bultos\lbxBultos.resx">
+      <DependentUpon>lbxBultos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\clientesMayor\frmClientesMayor.resx">
+      <DependentUpon>frmClientesMayor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\clientesMayor\lbxClientesMayor.resx">
+      <DependentUpon>lbxClientesMayor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\clientes\frmTipoNegocio.resx">
+      <DependentUpon>frmTipoNegocio.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\clientes\lbxTipoNegocio.resx">
+      <DependentUpon>lbxTipoNegocio.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\frmCalculoPrecio.resx">
+      <DependentUpon>frmCalculoPrecio.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\frmClasificacionEconomica.resx">
+      <DependentUpon>frmClasificacionEconomica.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\frmConsultaArticulos2.resx">
+      <DependentUpon>frmConsultaArticulos2.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\frmEditorMoneda.resx">
+      <DependentUpon>frmEditorMoneda.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\frmProveedores.resx">
+      <DependentUpon>frmProveedores.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\lbxClasificacionEconomica.resx">
+      <DependentUpon>lbxClasificacionEconomica.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\lbxMonedad.resx">
+      <DependentUpon>lbxMonedad.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\lbxTarifaRetenc.resx">
+      <DependentUpon>lbxTarifaRetenc.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\lbxTrabjadores.resx">
+      <DependentUpon>lbxTrabjadores.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\compras\frmOpcionesServicios.resx">
+      <DependentUpon>frmOpcionesServicios.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\compras\frmRif.resx">
+      <DependentUpon>frmRif.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\compras\frmServicios.resx">
+      <DependentUpon>frmServicios.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\compras\lbxServicios.resx">
+      <DependentUpon>lbxServicios.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\contabilidad\frmEstructuraCostos.resx">
+      <DependentUpon>frmEstructuraCostos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\contabilidad\frmVisorEstructura.resx">
+      <DependentUpon>frmVisorEstructura.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\cotizacion\frmPreFac.resx">
+      <DependentUpon>frmPreFac.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\cotizacion\lbxPrefacturaCtz.resx">
+      <DependentUpon>lbxPrefacturaCtz.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\facturacionMisionVivienda\frmFacturaVivienda.resx">
+      <DependentUpon>frmFacturaVivienda.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\facturacion\cierreCaja.resx">
+      <DependentUpon>cierreCaja.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\facturacion\frmClaveConfirmacion.resx">
+      <DependentUpon>frmClaveConfirmacion.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\facturacion\frmClaveConfirmacion2.resx">
+      <DependentUpon>frmClaveConfirmacion2.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\facturacion\frmDocumentosNoImpresos.resx">
+      <DependentUpon>frmDocumentosNoImpresos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\facturacion\frmImportarDev.resx">
+      <DependentUpon>frmImportarDev.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\facturacion\frmNetoMonedaExt.resx">
+      <DependentUpon>frmNetoMonedaExt.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\facturacion\frmSerieFiscal.resx">
+      <DependentUpon>frmSerieFiscal.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\facturacion\LbxSerieFiscal.resx">
+      <DependentUpon>LbxSerieFiscal.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\facturacion\ReportesZ_X.resx">
+      <DependentUpon>ReportesZ_X.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\gerencial\lbxConsultaGerencial.resx">
+      <DependentUpon>lbxConsultaGerencial.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\gerencial\lbxConsultaGerente.resx">
+      <DependentUpon>lbxConsultaGerente.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\gerencial\lbxCosultaVentaXVendedor.resx">
+      <DependentUpon>lbxCosultaVentaXVendedor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\importaciones\frmFacturaImportacion.resx">
+      <DependentUpon>frmFacturaImportacion.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\importaciones\frmFacturaNacionalImportacion.resx">
+      <DependentUpon>frmFacturaNacionalImportacion.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\importaciones\frmOtrosDatos.resx">
+      <DependentUpon>frmOtrosDatos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\importaciones\frmOtrosGastos.resx">
+      <DependentUpon>frmOtrosGastos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\importaciones\frmProductosImportacion.resx">
+      <DependentUpon>frmProductosImportacion.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\pagos\frmCruceDeSaldo.resx">
+      <DependentUpon>frmCruceDeSaldo.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\pagos\frmPagosLebrun.resx">
+      <DependentUpon>frmPagosLebrun.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\pagos\frmProcesoPago.resx">
+      <DependentUpon>frmProcesoPago.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\pagos\frmProcesoPagoManual.resx">
+      <DependentUpon>frmProcesoPagoManual.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\pagos\lbxProveedoresPago.resx">
+      <DependentUpon>lbxProveedoresPago.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\pedidos\frmAprobacionGerencial.resx">
+      <DependentUpon>frmAprobacionGerencial.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\pedidos\frmPedido.resx">
+      <DependentUpon>frmPedido.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\pedidos\lbxAprobacionGerencial.resx">
+      <DependentUpon>lbxAprobacionGerencial.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\pedidos\lbxPedido.resx">
+      <DependentUpon>lbxPedido.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\pedidos\lbxPedidoS5.resx">
+      <DependentUpon>lbxPedidoS5.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\prefactura\frmPrefactura.resx">
+      <DependentUpon>frmPrefactura.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\prefactura\lbxPrefactura.resx">
+      <DependentUpon>lbxPrefactura.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\prefactura\lbxprefacturaS12.resx">
+      <DependentUpon>lbxprefacturaS12.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmAsignarProveedor.resx">
+      <DependentUpon>frmAsignarProveedor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmCambioPrecio.resx">
+      <DependentUpon>frmCambioPrecio.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmConsultaArticulos.resx">
+      <DependentUpon>frmConsultaArticulos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmEdicionALICU_IVA.resx">
+      <DependentUpon>frmEdicionALICU_IVA.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmEdicionArancel.resx">
+      <DependentUpon>frmEdicionArancel.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmEditorCategoria.resx">
+      <DependentUpon>frmEditorCategoria.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmEditorSubCategoria.resx">
+      <DependentUpon>frmEditorSubCategoria.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmEtiqGran.resx">
+      <DependentUpon>frmEtiqGran.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmEtiqMed.resx">
+      <DependentUpon>frmEtiqMed.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmEtiqPeqCodg.resx">
+      <DependentUpon>frmEtiqPeqCodg.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmEtiqPeqDesg.resx">
+      <DependentUpon>frmEtiqPeqDesg.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmMantProductos.resx">
+      <DependentUpon>frmMantProductos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmOff.resx">
+      <DependentUpon>frmOff.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmPromociones.resx">
+      <DependentUpon>frmPromociones.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmUnidaXProducto.resx">
+      <DependentUpon>frmUnidaXProducto.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmValidacionUserTimer.resx">
+      <DependentUpon>frmValidacionUserTimer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\frmVisor2.resx">
+      <DependentUpon>frmVisor2.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\lbxALICU_IVA.resx">
+      <DependentUpon>lbxALICU_IVA.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\lbxArancel.resx">
+      <DependentUpon>lbxArancel.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\lbxCategoria.resx">
+      <DependentUpon>lbxCategoria.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\lbxElimiPrecios.resx">
+      <DependentUpon>lbxElimiPrecios.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\lbxElimiPromo.resx">
+      <DependentUpon>lbxElimiPromo.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\lbxMantProductos.resx">
+      <DependentUpon>lbxMantProductos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\lbxOpcionesAdicionales.resx">
+      <DependentUpon>lbxOpcionesAdicionales.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\lbxSeleccionEtiqPeq.resx">
+      <DependentUpon>lbxSeleccionEtiqPeq.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\lbxSubCategoria.resx">
+      <DependentUpon>lbxSubCategoria.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\productos\lbxVisor3.resx">
+      <DependentUpon>lbxVisor3.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\reportes\frmEmisionARC.resx">
+      <DependentUpon>frmEmisionARC.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\reportes\frmReporteProductos.resx">
+      <DependentUpon>frmReporteProductos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\tesoreria\frmRecibodeIngreso.resx">
+      <DependentUpon>frmRecibodeIngreso.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\tesoreria\frmRetIvaCli.resx">
+      <DependentUpon>frmRetIvaCli.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\tesoreria\lbxReciboIngreso.resx">
+      <DependentUpon>lbxReciboIngreso.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmLogin.resx">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\clientes\frmClientes.resx">
+      <DependentUpon>frmClientes.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\clientes\lbxClientes.resx">
+      <DependentUpon>lbxClientes.cs</DependentUpon>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>lbxClientes1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\frmPagare.resx">
+      <DependentUpon>frmPagare.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\frmproductos.resx">
+      <DependentUpon>frmproductos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\lbxProductos2.resx">
+      <DependentUpon>lbxProductos2.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\lbxProveedores.resx">
+      <DependentUpon>lbxProveedores.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\complementos\lbxtipoDocPro.resx">
+      <DependentUpon>lbxtipoDocPro.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\contabilidad\frmComprobanteCierre.resx">
+      <DependentUpon>frmComprobanteCierre.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\contabilidad\frmComprobanteContable.resx">
+      <DependentUpon>frmComprobanteContable.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\contabilidad\frmAuxiliarContable.resx">
+      <DependentUpon>frmAuxiliarContable.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\contabilidad\frmPlanCuentas.resx">
+      <DependentUpon>frmPlanCuentas.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\contabilidad\lbxAuxiliarContable.resx">
+      <DependentUpon>lbxAuxiliarContable.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\contabilidad\lbxAuxiliaresOnly.resx">
+      <DependentUpon>lbxAuxiliaresOnly.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\contabilidad\lbxComprobanteContable.resx">
+      <DependentUpon>lbxComprobanteContable.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\contabilidad\lbxPlanCuentas.resx">
+      <DependentUpon>lbxPlanCuentas.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\contabilidad\parametrosContables.resx">
+      <DependentUpon>parametrosContables.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\facturacion\frmFactura.resx">
+      <DependentUpon>frmFactura.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\facturacion\lbxFacturas.resx">
+      <DependentUpon>lbxFacturas.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\importaciones\frmImportaciones.resx">
+      <DependentUpon>frmImportaciones.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\importaciones\frmOrdenCompra.resx">
+      <DependentUpon>frmOrdenCompra.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\importaciones\gastosImportaciones.resx">
+      <DependentUpon>gastosImportaciones.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\importaciones\lbxImportaciones.resx">
+      <DependentUpon>lbxImportaciones.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\importaciones\lbxOrdenDeCompra.resx">
+      <DependentUpon>lbxOrdenDeCompra.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\importaciones\ProductosImportaciones.resx">
+      <DependentUpon>ProductosImportaciones.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\transporte\lbxTransporte.resx">
+      <DependentUpon>lbxTransporte.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formularios\vendedores\lbxVendedores.resx">
+      <DependentUpon>lbxVendedores.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Principal.resx">
+      <DependentUpon>Principal.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\bulto\frmContenedorBulto.resx">
+      <DependentUpon>frmContenedorBulto.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\bulto\rpt\rptBultos.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptBultos.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\compras\frmContenedorCompras.resx">
+      <DependentUpon>frmContenedorCompras.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\compras\frmContenedorOrden.resx">
+      <DependentUpon>frmContenedorOrden.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\compras\rpt\rptCompras.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptCompras.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\compras\rpt\rptOrden.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptOrden.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\CrystalReport1.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CrystalReport1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\facturacion\frmReporteCierreCaja.resx">
+      <DependentUpon>frmReporteCierreCaja.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\facturacion\rpt\rptCierreCaja.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptCierreCaja.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\frmContenedorARC.resx">
+      <DependentUpon>frmContenedorARC.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\frmContenedorProductos.resx">
+      <DependentUpon>frmContenedorProductos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\frmReporte.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\MovContab\frmConteMovContab.resx">
+      <DependentUpon>frmConteMovContab.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\MovContab\rpt\rptMovContab.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptMovContab.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\MovContab\rpt\rptMovContaCompra.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptMovContaCompra.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\pagos\frmContendorRptCompras.resx">
+      <DependentUpon>frmContendorRptCompras.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\pagos\rpt\rptVoucher.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptVoucher.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\cotizacion\frmContePedido.resx">
+      <DependentUpon>frmContePedido.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\cotizacion\rpt\RPTCTZ.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>RPTCTZ.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\pedido\frmReportePedido.resx">
+      <DependentUpon>frmReportePedido.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\pedido\rpt\pedido.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>pedido.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\prefactura\frmReportePrefactura.resx">
+      <DependentUpon>frmReportePrefactura.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\prefactura\rpt\prefactura.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>prefactura1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\producto\frmConteProductos.resx">
+      <DependentUpon>frmConteProductos.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\producto\rpt\rptListadoPrecio.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptListadoPrecio.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\reporteARC.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>reporteARC.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\retenciones\frmContenedorRetISLR.resx">
+      <DependentUpon>frmContenedorRetISLR.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\retenciones\frmContenedorRetIva.resx">
+      <DependentUpon>frmContenedorRetIva.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\retenciones\rpt\rptRetencionISLR.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptRetencionISLR.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\retenciones\rpt\rptRetencionIva.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptRetencionIva.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\rptPagare.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptPagare1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\rptProductoLista.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptProductoLista.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reportes\tesoreria\rpt\rptReciboIngreso.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptReciboIngreso.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Reportes\bulto\dataset\DataSetBultos.cs">
+      <DependentUpon>DataSetBultos.xsd</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\bulto\dataset\DataSetBultos.Designer.cs">
+      <DependentUpon>DataSetBultos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\bulto\frmContenedorBulto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\bulto\frmContenedorBulto.Designer.cs">
+      <DependentUpon>frmContenedorBulto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\bulto\rpt\rptBultos.cs">
+      <SubType>Component</SubType>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptBultos.rpt</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\compras\dataset\DataSetOrden.cs">
+      <DependentUpon>DataSetOrden.xsd</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\compras\dataset\DataSetOrden.Designer.cs">
+      <DependentUpon>DataSetOrden.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\compras\frmContenedorCompras.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\compras\frmContenedorCompras.Designer.cs">
+      <DependentUpon>frmContenedorCompras.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\compras\frmContenedorOrden.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\compras\frmContenedorOrden.Designer.cs">
+      <DependentUpon>frmContenedorOrden.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\compras\rpt\rptCompras.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptCompras.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\compras\rpt\rptOrden.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptOrden.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\CrystalReport1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CrystalReport1.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\DataSet1.cs">
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\DataSet11.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\datasetARC.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>datasetARC.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\datasetPagare1.Designer.cs">
+      <DependentUpon>datasetPagare.xsd</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Reportes\dtProductoLista.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dtProductoLista.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\facturacion\dataSet\DataSetCierreCaja.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataSetCierreCaja.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\facturacion\frmReporteCierreCaja.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\facturacion\frmReporteCierreCaja.Designer.cs">
+      <DependentUpon>frmReporteCierreCaja.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\facturacion\rpt\rptCierreCaja.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptCierreCaja.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\frmContenedorARC.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\frmContenedorARC.Designer.cs">
+      <DependentUpon>frmContenedorARC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\frmContenedorProductos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\frmContenedorProductos.Designer.cs">
+      <DependentUpon>frmContenedorProductos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\frmReporte.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\frmReporte.Designer.cs">
+      <DependentUpon>frmReporte.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\MovContab\dataset\datasetMovContab1.Designer.cs">
+      <DependentUpon>datasetMovContab.xsd</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Reportes\MovContab\frmConteMovContab.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\MovContab\frmConteMovContab.Designer.cs">
+      <DependentUpon>frmConteMovContab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\MovContab\rpt\rptMovContab.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptMovContab.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\MovContab\rpt\rptMovContaCompra.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptMovContaCompra.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\pagos\dataset\dataSetVoucher.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dataSetVoucher.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\pagos\frmContendorRptCompras.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\pagos\frmContendorRptCompras.Designer.cs">
+      <DependentUpon>frmContendorRptCompras.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\pagos\rpt\rptVoucher.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptVoucher.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\cotizacion\dataset\dsPedido.cs">
+      <DependentUpon>dsPedido.xsd</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\cotizacion\dataset\dsPedido1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsPedido.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\cotizacion\frmContePedido.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\cotizacion\frmContePedido.designer.cs">
+      <DependentUpon>frmContePedido.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\cotizacion\rpt\RPTCTZ.cs">
+      <SubType>Component</SubType>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RPTCTZ.rpt</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\pedido\dataset\dsPedido.cs">
+      <DependentUpon>dsPedido.xsd</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\pedido\dataset\dsPedido1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsPedido.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\pedido\frmReportePedido.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\pedido\frmReportePedido.designer.cs">
+      <DependentUpon>frmReportePedido.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\pedido\rpt\pedido.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>pedido.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\prefactura\dataset\dsPrefactura.cs">
+      <DependentUpon>dsPrefactura.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\prefactura\dataset\dsPrefactura1.Designer.cs" />
+    <Compile Include="Reportes\prefactura\frmReportePrefactura.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\prefactura\frmReportePrefactura.designer.cs">
+      <DependentUpon>frmReportePrefactura.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\prefactura\rpt\prefactura1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>prefactura.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\producto\dataset\dsCambioPrecio.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>dsCambioPrecio.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\producto\frmConteProductos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\producto\frmConteProductos.Designer.cs">
+      <DependentUpon>frmConteProductos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\producto\rpt\rptListadoPrecio.cs">
+      <SubType>Component</SubType>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptListadoPrecio.rpt</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\reporteARC.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>reporteARC.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\retenciones\dataset\DataSetRetencionISLR.cs">
+      <DependentUpon>DataSetRetencionISLR.xsd</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\retenciones\dataset\DataSetRetencionISLR.Designer.cs">
+      <DependentUpon>DataSetRetencionISLR.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\retenciones\dataset\dataSetRetencionIva.cs">
+      <DependentUpon>dataSetRetencionIva.xsd</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\retenciones\dataset\dataSetRetencionIva.Designer.cs">
+      <DependentUpon>dataSetRetencionIva.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\retenciones\frmContenedorRetISLR.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\retenciones\frmContenedorRetISLR.Designer.cs">
+      <DependentUpon>frmContenedorRetISLR.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\retenciones\frmContenedorRetIva.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reportes\retenciones\frmContenedorRetIva.Designer.cs">
+      <DependentUpon>frmContenedorRetIva.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\retenciones\rpt\rptRetencionISLR.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptRetencionISLR.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\retenciones\rpt\rptRetencionIva.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptRetencionIva.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\rptPagare1.cs">
+      <DependentUpon>rptPagare.rpt</DependentUpon>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Reportes\rptProductoLista.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptProductoLista.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reportes\tesoreria\dataset\datasetRecibo.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>datasetRecibo.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Reportes\tesoreria\rpt\rptReciboIngreso.cs">
+      <SubType>Component</SubType>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptReciboIngreso.rpt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\medida.png" />
+    <None Include="Resources\precios1.png" />
+    <None Include="Resources\precios.png" />
+    <None Include="Resources\Promociones.jpg" />
+    <None Include="Resources\Ubicacion.png" />
+    <None Include="Resources\medida grande.png" />
+    <None Include="Resources\check-128.png" />
+    <None Include="Resources\cerra o error.png" />
+    <None Include="Resources\icono-limpieza.gif" />
+    <None Include="Resources\64x641436389672_package.png" />
+    <None Include="Resources\48x481436389653_package.png" />
+    <None Include="Resources\32x321436389566_package.png" />
+    <None Include="Resources\22x221436389554_package.png" />
+    <None Include="Resources\16x161436389536_package.png" />
+    <None Include="Resources\128x1281436389692_package.png" />
+    <None Include="Resources\16x16_1372886224_go-back.png" />
+    <None Include="Resources\excel24x24.png" />
+    <None Include="Resources\Print_32x32.png" />
+    <None Include="Resources\Print_256x256.png" />
+    <None Include="Resources\document_pdf24x24.png" />
+    <None Include="Resources\Copy_24x24.png" />
+    <None Include="Resources\1378324506_cash_register.png" />
+    <None Include="Resources\LogOut_16x16.png" />
+    <None Include="Resources\loading_bar.gif" />
+    <None Include="Resources\Undo_24x24.png" />
+    <None Include="Resources\Undo_16x16.png" />
+    <None Include="Resources\Preview_24x24.png" />
+    <None Include="Resources\Loading.gif" />
+    <None Include="Resources\image.gif" />
+    <None Include="Resources\Find_24x24.png" />
+    <None Include="Resources\Find_16x16.png" />
+    <None Include="Resources\cargando.gif" />
+    <None Include="Resources\24x24_1372886216_go-back.png" />
+    <None Include="Resources\Check_24x24.png" />
+    <None Include="Resources\Delete_24x241.png" />
+    <None Include="Resources\Check_16x16.png" />
+    <None Include="Resources\Cancel_16x16.png" />
+    <None Include="Resources\FondoFLebrun.jpg" />
+    <None Include="Resources\Fondolatienda_ws.bmp" />
+    <None Include="Resources\FondoFLebrun.bmp" />
+    <None Include="Resources\FondoFerreteria.bmp" />
+    <None Include="Resources\Fondoferresama.bmp" />
+    <None Include="Resources\Fondoferrecarpi_ws.bmp" />
+    <None Include="Resources\Fondoeltimon_ws.bmp" />
+    <None Include="Resources\Fondobrunle_ws.bmp" />
+    <None Include="Resources\Delete_16x16.png" />
+    <None Include="Resources\Edit_16x16.png" />
+    <None Include="Resources\Add_16x16.png" />
+    <None Include="Resources\Cancel_24x24.png" />
+    <None Include="Resources\money(1).png" />
+    <None Include="Resources\money_no_shadow 24.png" />
+    <None Include="Resources\Settings_24x24.png" />
+    <None Include="Resources\Refresh_24x24.png" />
+    <None Include="Resources\LogOut_24x24.png" />
+    <None Include="Resources\Search_16x16.png" />
+    <None Include="Resources\Print_24x24.png" />
+    <None Include="Resources\Delete_24x24.png" />
+    <None Include="Resources\Edit_24x24.png" />
+    <None Include="Resources\Add_24x24.png" />
+    <None Include="Resources\Search_24x24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Diagramas\DiagramaClasesFacturacion.cd" />
+    <None Include="Diagramas\DiagramaClasesContabilidad.cd" />
+    <None Include="Reportes\bulto\dataset\DataSetBultos.xsc">
+      <DependentUpon>DataSetBultos.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\bulto\dataset\DataSetBultos.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\bulto\dataset\DataSetBultos.xss">
+      <DependentUpon>DataSetBultos.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\compras\dataset\DataSetCompras.xsc">
+      <DependentUpon>DataSetCompras.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\compras\dataset\DataSetCompras.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\compras\dataset\DataSetCompras.xss">
+      <DependentUpon>DataSetCompras.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\compras\dataset\DataSetOrden.xsc">
+      <DependentUpon>DataSetOrden.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\compras\dataset\DataSetOrden.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSetOrden1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\compras\dataset\DataSetOrden.xss">
+      <DependentUpon>DataSetOrden.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\DataSet1.xsc">
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\DataSet1.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSet11.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\DataSet1.xss">
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\datasetARC.xsc">
+      <DependentUpon>datasetARC.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\datasetARC.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>datasetARC.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\datasetARC.xss">
+      <DependentUpon>datasetARC.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\datasetPagare.xsc">
+      <DependentUpon>datasetPagare.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\datasetPagare.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>datasetPagare1.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Reportes\datasetPagare.xss">
+      <DependentUpon>datasetPagare.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\dtProductoLista.xsc">
+      <DependentUpon>dtProductoLista.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\dtProductoLista.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dtProductoLista.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Reportes\dtProductoLista.xss">
+      <DependentUpon>dtProductoLista.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\facturacion\dataSet\DataSetCierreCaja.xsc">
+      <DependentUpon>DataSetCierreCaja.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\facturacion\dataSet\DataSetCierreCaja.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSetCierreCaja.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\facturacion\dataSet\DataSetCierreCaja.xss">
+      <DependentUpon>DataSetCierreCaja.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\MovContab\dataset\datasetMovContab.xsc">
+      <DependentUpon>datasetMovContab.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\MovContab\dataset\datasetMovContab.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>datasetMovContab1.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Reportes\MovContab\dataset\datasetMovContab.xss">
+      <DependentUpon>datasetMovContab.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\pagos\dataset\dataSetVoucher.xsc">
+      <DependentUpon>dataSetVoucher.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\pagos\dataset\dataSetVoucher.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dataSetVoucher.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\pagos\dataset\dataSetVoucher.xss">
+      <DependentUpon>dataSetVoucher.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\cotizacion\dataset\dsPedido.xsc">
+      <DependentUpon>dsPedido.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\cotizacion\dataset\dsPedido.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dsPedido1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\cotizacion\dataset\dsPedido.xss">
+      <DependentUpon>dsPedido.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\pedido\dataset\dsPedido.xsc">
+      <DependentUpon>dsPedido.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\pedido\dataset\dsPedido.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dsPedido1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\pedido\dataset\dsPedido.xss">
+      <DependentUpon>dsPedido.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\prefactura\dataset\dsPrefactura.xsc">
+      <DependentUpon>dsPrefactura.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\prefactura\dataset\dsPrefactura.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\prefactura\dataset\dsPrefactura.xss">
+      <DependentUpon>dsPrefactura.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\producto\dataset\dsCambioPrecio.xsc">
+      <DependentUpon>dsCambioPrecio.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\producto\dataset\dsCambioPrecio.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dsCambioPrecio.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\producto\dataset\dsCambioPrecio.xss">
+      <DependentUpon>dsCambioPrecio.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\retenciones\dataset\DataSetRetencionISLR.xsc">
+      <DependentUpon>DataSetRetencionISLR.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\retenciones\dataset\DataSetRetencionISLR.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSetRetencionISLR1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\retenciones\dataset\DataSetRetencionISLR.xss">
+      <DependentUpon>DataSetRetencionISLR.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\retenciones\dataset\dataSetRetencionIva.xsc">
+      <DependentUpon>dataSetRetencionIva.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\retenciones\dataset\dataSetRetencionIva.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>dataSetRetencionIva1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\retenciones\dataset\dataSetRetencionIva.xss">
+      <DependentUpon>dataSetRetencionIva.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\tesoreria\dataset\datasetRecibo.xsc">
+      <DependentUpon>datasetRecibo.xsd</DependentUpon>
+    </None>
+    <None Include="Reportes\tesoreria\dataset\datasetRecibo.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>datasetRecibo.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Reportes\tesoreria\dataset\datasetRecibo.xss">
+      <DependentUpon>datasetRecibo.xsd</DependentUpon>
+    </None>
+    <None Include="Resources\error.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{967B4E0D-AD0C-4609-AB67-0FA40C0206D8}" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AxMSComDlg">
+      <Guid>{F9043C88-F6F2-101A-A3C9-08002B2F49FB}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>2</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>True</Isolated>
+    </COMReference>
+    <COMReference Include="AxMSCommLib">
+      <Guid>{648A5603-2C6E-101B-82B6-000000000014}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>True</Isolated>
+    </COMReference>
+    <COMReference Include="AxTM_FISCAL">
+      <Guid>{603F56B7-4798-4F9E-9DF9-02FD0EE61745}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>True</Isolated>
+    </COMReference>
+    <COMReference Include="MSComDlg">
+      <Guid>{F9043C88-F6F2-101A-A3C9-08002B2F49FB}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>2</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>True</Isolated>
+    </COMReference>
+    <COMReference Include="MSCommLib">
+      <Guid>{648A5603-2C6E-101B-82B6-000000000014}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>True</Isolated>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="TM_FISCAL">
+      <Guid>{603F56B7-4798-4F9E-9DF9-02FD0EE61745}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>True</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

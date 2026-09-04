@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="datasetRecibo" targetNamespace="http://tempuri.org/datasetRecibo.xsd" xmlns:mstns="http://tempuri.org/datasetRecibo.xsd" xmlns="http://tempuri.org/datasetRecibo.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="datasetRecibo" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="datasetRecibo" msprop:Generator_DataSetName="datasetRecibo" msprop:EnableTableAdapterManager="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="DataTable1" msprop:Generator_UserTableName="DataTable1" msprop:Generator_RowDeletedName="DataTable1RowDeleted" msprop:Generator_RowChangedName="DataTable1RowChanged" msprop:Generator_RowClassName="DataTable1Row" msprop:Generator_RowChangingName="DataTable1RowChanging" msprop:Generator_RowEvArgName="DataTable1RowChangeEvent" msprop:Generator_RowEvHandlerName="DataTable1RowChangeEventHandler" msprop:Generator_TableClassName="DataTable1DataTable" msprop:Generator_TableVarName="tableDataTable1" msprop:Generator_RowDeletingName="DataTable1RowDeleting" msprop:Generator_TablePropName="DataTable1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="origen" msprop:Generator_UserColumnName="origen" msprop:Generator_ColumnPropNameInRow="origen" msprop:Generator_ColumnVarNameInTable="columnorigen" msprop:Generator_ColumnPropNameInTable="origenColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="rec_tippago" msprop:Generator_UserColumnName="rec_tippago" msprop:Generator_ColumnPropNameInRow="rec_tippago" msprop:Generator_ColumnVarNameInTable="columnrec_tippago" msprop:Generator_ColumnPropNameInTable="rec_tippagoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="rec_cliente" msprop:Generator_UserColumnName="rec_cliente" msprop:Generator_ColumnPropNameInRow="rec_cliente" msprop:Generator_ColumnVarNameInTable="columnrec_cliente" msprop:Generator_ColumnPropNameInTable="rec_clienteColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="rec_fecha" msprop:Generator_UserColumnName="rec_fecha" msprop:Generator_ColumnPropNameInRow="rec_fecha" msprop:Generator_ColumnVarNameInTable="columnrec_fecha" msprop:Generator_ColumnPropNameInTable="rec_fechaColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="rec_estado" msprop:Generator_UserColumnName="rec_estado" msprop:Generator_ColumnPropNameInRow="rec_estado" msprop:Generator_ColumnVarNameInTable="columnrec_estado" msprop:Generator_ColumnPropNameInTable="rec_estadoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="rec_numcomprob" msprop:Generator_UserColumnName="rec_numcomprob" msprop:Generator_ColumnPropNameInRow="rec_numcomprob" msprop:Generator_ColumnVarNameInTable="columnrec_numcomprob" msprop:Generator_ColumnPropNameInTable="rec_numcomprobColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="rec_usuario" msprop:Generator_UserColumnName="rec_usuario" msprop:Generator_ColumnPropNameInRow="rec_usuario" msprop:Generator_ColumnVarNameInTable="columnrec_usuario" msprop:Generator_ColumnPropNameInTable="rec_usuarioColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="rec_cobrador" msprop:Generator_UserColumnName="rec_cobrador" msprop:Generator_ColumnPropNameInRow="rec_cobrador" msprop:Generator_ColumnVarNameInTable="columnrec_cobrador" msprop:Generator_ColumnPropNameInTable="rec_cobradorColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="rec_monto" msprop:Generator_UserColumnName="rec_monto" msprop:Generator_ColumnPropNameInRow="rec_monto" msprop:Generator_ColumnVarNameInTable="columnrec_monto" msprop:Generator_ColumnPropNameInTable="rec_montoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movrec_forpag" msprop:Generator_UserColumnName="movrec_forpag" msprop:Generator_ColumnPropNameInRow="movrec_forpag" msprop:Generator_ColumnVarNameInTable="columnmovrec_forpag" msprop:Generator_ColumnPropNameInTable="movrec_forpagColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movrec_codban" msprop:Generator_UserColumnName="movrec_codban" msprop:Generator_ColumnPropNameInRow="movrec_codban" msprop:Generator_ColumnVarNameInTable="columnmovrec_codban" msprop:Generator_ColumnPropNameInTable="movrec_codbanColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movrec_xbanco" msprop:Generator_UserColumnName="movrec_xbanco" msprop:Generator_ColumnPropNameInRow="movrec_xbanco" msprop:Generator_ColumnVarNameInTable="columnmovrec_xbanco" msprop:Generator_ColumnPropNameInTable="movrec_xbancoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movrec_cuentaban" msprop:Generator_UserColumnName="movrec_cuentaban" msprop:Generator_ColumnPropNameInRow="movrec_cuentaban" msprop:Generator_ColumnVarNameInTable="columnmovrec_cuentaban" msprop:Generator_ColumnPropNameInTable="movrec_cuentabanColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movrec_nuncheque" msprop:Generator_UserColumnName="movrec_nuncheque" msprop:Generator_ColumnPropNameInRow="movrec_nuncheque" msprop:Generator_ColumnVarNameInTable="columnmovrec_nuncheque" msprop:Generator_ColumnPropNameInTable="movrec_nunchequeColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="movrec_monto" msprop:Generator_UserColumnName="movrec_monto" msprop:Generator_ColumnPropNameInRow="movrec_monto" msprop:Generator_ColumnVarNameInTable="columnmovrec_monto" msprop:Generator_ColumnPropNameInTable="movrec_montoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="ingreDoc_tipo" msprop:Generator_UserColumnName="ingreDoc_tipo" msprop:Generator_ColumnPropNameInRow="ingreDoc_tipo" msprop:Generator_ColumnVarNameInTable="columningreDoc_tipo" msprop:Generator_ColumnPropNameInTable="ingreDoc_tipoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="ingreDoc_NumDoc" msprop:Generator_UserColumnName="ingreDoc_NumDoc" msprop:Generator_ColumnPropNameInRow="ingreDoc_NumDoc" msprop:Generator_ColumnVarNameInTable="columningreDoc_NumDoc" msprop:Generator_ColumnPropNameInTable="ingreDoc_NumDocColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="ingreDoc_facafe" msprop:Generator_UserColumnName="ingreDoc_facafe" msprop:Generator_ColumnPropNameInRow="ingreDoc_facafe" msprop:Generator_ColumnVarNameInTable="columningreDoc_facafe" msprop:Generator_ColumnPropNameInTable="ingreDoc_facafeColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="ingreDoc_fechaFact" msprop:Generator_UserColumnName="ingreDoc_fechaFact" msprop:Generator_ColumnPropNameInRow="ingreDoc_fechaFact" msprop:Generator_ColumnVarNameInTable="columningreDoc_fechaFact" msprop:Generator_ColumnPropNameInTable="ingreDoc_fechaFactColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="ingreDoc_MontoCancelado" msprop:Generator_UserColumnName="ingreDoc_MontoCancelado" msprop:nullValue="_empty" msprop:Generator_ColumnPropNameInRow="ingreDoc_MontoCancelado" msprop:Generator_ColumnPropNameInTable="ingreDoc_MontoCanceladoColumn" msprop:Generator_ColumnVarNameInTable="columningreDoc_MontoCancelado" type="xs:string" minOccurs="0" />
+              <xs:element name="cli_nombre" msprop:Generator_UserColumnName="cli_nombre" msprop:Generator_ColumnVarNameInTable="columncli_nombre" msprop:Generator_ColumnPropNameInRow="cli_nombre" msprop:Generator_ColumnPropNameInTable="cli_nombreColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="cli_direc1" msprop:Generator_UserColumnName="cli_direc1" msprop:Generator_ColumnVarNameInTable="columncli_direc1" msprop:Generator_ColumnPropNameInRow="cli_direc1" msprop:Generator_ColumnPropNameInTable="cli_direc1Column" type="xs:string" minOccurs="0" />
+              <xs:element name="cli_telefono" msprop:Generator_UserColumnName="cli_telefono" msprop:Generator_ColumnVarNameInTable="columncli_telefono" msprop:Generator_ColumnPropNameInRow="cli_telefono" msprop:Generator_ColumnPropNameInTable="cli_telefonoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="usu_nombre" msprop:Generator_UserColumnName="usu_nombre" msprop:Generator_ColumnVarNameInTable="columnusu_nombre" msprop:Generator_ColumnPropNameInRow="usu_nombre" msprop:Generator_ColumnPropNameInTable="usu_nombreColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="ingreDoc_Nrecibo" msprop:Generator_UserColumnName="ingreDoc_Nrecibo" msprop:Generator_ColumnPropNameInRow="ingreDoc_Nrecibo" msprop:Generator_ColumnVarNameInTable="columningreDoc_Nrecibo" msprop:Generator_ColumnPropNameInTable="ingreDoc_NreciboColumn" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

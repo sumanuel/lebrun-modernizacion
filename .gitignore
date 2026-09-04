@@ -1,0 +1,19 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio user-specific files
+*.user
+*.suo
+.vs/
+
+# ReSharper / other tooling caches
+_ReSharper*/
+*.DotSettings.user
+
+# Crash logs / runtime-generated files
+log.txt
+
+# OS files
+Thumbs.db
+Desktop.ini

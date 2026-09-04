@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="dataSetRetencionIva" targetNamespace="http://tempuri.org/dataSetRetencionIva.xsd" xmlns:mstns="http://tempuri.org/dataSetRetencionIva.xsd" xmlns="http://tempuri.org/dataSetRetencionIva.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="dataSetRetencionIva" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="dataSetRetencionIva" msprop:Generator_DataSetName="dataSetRetencionIva" msprop:EnableTableAdapterManager="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="DataTable1" msprop:Generator_UserTableName="DataTable1" msprop:Generator_RowDeletedName="DataTable1RowDeleted" msprop:Generator_RowChangedName="DataTable1RowChanged" msprop:Generator_RowClassName="DataTable1Row" msprop:Generator_RowChangingName="DataTable1RowChanging" msprop:Generator_RowEvArgName="DataTable1RowChangeEvent" msprop:Generator_RowEvHandlerName="DataTable1RowChangeEventHandler" msprop:Generator_TableClassName="DataTable1DataTable" msprop:Generator_TableVarName="tableDataTable1" msprop:Generator_RowDeletingName="DataTable1RowDeleting" msprop:Generator_TablePropName="DataTable1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="NroFiscal" msprop:Generator_UserColumnName="NroFiscal" msprop:Generator_ColumnPropNameInRow="NroFiscal" msprop:Generator_ColumnVarNameInTable="columnNroFiscal" msprop:Generator_ColumnPropNameInTable="NroFiscalColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="FechaRetenc" msprop:Generator_UserColumnName="FechaRetenc" msprop:Generator_ColumnPropNameInRow="FechaRetenc" msprop:Generator_ColumnVarNameInTable="columnFechaRetenc" msprop:Generator_ColumnPropNameInTable="FechaRetencColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="PorcIva" msprop:Generator_UserColumnName="PorcIva" msprop:Generator_ColumnPropNameInRow="PorcIva" msprop:Generator_ColumnVarNameInTable="columnPorcIva" msprop:Generator_ColumnPropNameInTable="PorcIvaColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="doc_base" msprop:Generator_UserColumnName="doc_base" msprop:Generator_ColumnPropNameInRow="doc_base" msprop:Generator_ColumnVarNameInTable="columndoc_base" msprop:Generator_ColumnPropNameInTable="doc_baseColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="doc_base_ex" msprop:Generator_UserColumnName="doc_base_ex" msprop:Generator_ColumnPropNameInRow="doc_base_ex" msprop:Generator_ColumnVarNameInTable="columndoc_base_ex" msprop:Generator_ColumnPropNameInTable="doc_base_exColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="NroDocumAfec" msprop:Generator_UserColumnName="NroDocumAfec" msprop:Generator_ColumnPropNameInRow="NroDocumAfec" msprop:Generator_ColumnVarNameInTable="columnNroDocumAfec" msprop:Generator_ColumnPropNameInTable="NroDocumAfecColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="FechaEmision" msprop:Generator_UserColumnName="FechaEmision" msprop:Generator_ColumnPropNameInRow="FechaEmision" msprop:Generator_ColumnVarNameInTable="columnFechaEmision" msprop:Generator_ColumnPropNameInTable="FechaEmisionColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="NroControlSeniat" msprop:Generator_UserColumnName="NroControlSeniat" msprop:Generator_ColumnPropNameInRow="NroControlSeniat" msprop:Generator_ColumnVarNameInTable="columnNroControlSeniat" msprop:Generator_ColumnPropNameInTable="NroControlSeniatColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="factura" msprop:Generator_UserColumnName="factura" msprop:Generator_ColumnPropNameInRow="factura" msprop:Generator_ColumnVarNameInTable="columnfactura" msprop:Generator_ColumnPropNameInTable="facturaColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="controlFactura" msprop:Generator_UserColumnName="controlFactura" msprop:Generator_ColumnPropNameInRow="controlFactura" msprop:Generator_ColumnVarNameInTable="columncontrolFactura" msprop:Generator_ColumnPropNameInTable="controlFacturaColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="notadebito" msprop:Generator_UserColumnName="notadebito" msprop:Generator_ColumnPropNameInRow="notadebito" msprop:Generator_ColumnVarNameInTable="columnnotadebito" msprop:Generator_ColumnPropNameInTable="notadebitoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="controlNotadebito" msprop:Generator_UserColumnName="controlNotadebito" msprop:Generator_ColumnPropNameInRow="controlNotadebito" msprop:Generator_ColumnVarNameInTable="columncontrolNotadebito" msprop:Generator_ColumnPropNameInTable="controlNotadebitoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="ndebito" msprop:Generator_UserColumnName="ndebito" msprop:Generator_ColumnPropNameInRow="ndebito" msprop:Generator_ColumnVarNameInTable="columnndebito" msprop:Generator_ColumnPropNameInTable="ndebitoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="MontoDocum" msprop:Generator_UserColumnName="MontoDocum" msprop:Generator_ColumnPropNameInRow="MontoDocum" msprop:Generator_ColumnVarNameInTable="columnMontoDocum" msprop:Generator_ColumnPropNameInTable="MontoDocumColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="MontoBase" msprop:Generator_UserColumnName="MontoBase" msprop:Generator_ColumnPropNameInRow="MontoBase" msprop:Generator_ColumnVarNameInTable="columnMontoBase" msprop:Generator_ColumnPropNameInTable="MontoBaseColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="doc_iva" msprop:Generator_UserColumnName="doc_iva" msprop:Generator_ColumnPropNameInRow="doc_iva" msprop:Generator_ColumnVarNameInTable="columndoc_iva" msprop:Generator_ColumnPropNameInTable="doc_ivaColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="MONTOIVA" msprop:Generator_UserColumnName="MONTOIVA" msprop:Generator_ColumnPropNameInRow="MONTOIVA" msprop:Generator_ColumnVarNameInTable="columnMONTOIVA" msprop:Generator_ColumnPropNameInTable="MONTOIVAColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="MontoRetenc" msprop:Generator_UserColumnName="MontoRetenc" msprop:Generator_ColumnPropNameInRow="MontoRetenc" msprop:Generator_ColumnVarNameInTable="columnMontoRetenc" msprop:Generator_ColumnPropNameInTable="MontoRetencColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="NroRetenc" msprop:Generator_UserColumnName="NroRetenc" msprop:Generator_ColumnPropNameInRow="NroRetenc" msprop:Generator_ColumnVarNameInTable="columnNroRetenc" msprop:Generator_ColumnPropNameInTable="NroRetencColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="pro_nombre" msprop:Generator_UserColumnName="pro_nombre" msprop:Generator_ColumnPropNameInRow="pro_nombre" msprop:Generator_ColumnVarNameInTable="columnpro_nombre" msprop:Generator_ColumnPropNameInTable="pro_nombreColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="pro_rif" msprop:Generator_UserColumnName="pro_rif" msprop:Generator_ColumnPropNameInRow="pro_rif" msprop:Generator_ColumnVarNameInTable="columnpro_rif" msprop:Generator_ColumnPropNameInTable="pro_rifColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="IdProveedor" msprop:Generator_UserColumnName="IdProveedor" msprop:Generator_ColumnPropNameInRow="IdProveedor" msprop:Generator_ColumnVarNameInTable="columnIdProveedor" msprop:Generator_ColumnPropNameInTable="IdProveedorColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="pro_direcc1" msprop:Generator_UserColumnName="pro_direcc1" msprop:Generator_ColumnPropNameInRow="pro_direcc1" msprop:Generator_ColumnVarNameInTable="columnpro_direcc1" msprop:Generator_ColumnPropNameInTable="pro_direcc1Column" type="xs:string" minOccurs="0" />
+              <xs:element name="PorcIva2" msprop:Generator_UserColumnName="PorcIva2" msprop:Generator_ColumnVarNameInTable="columnPorcIva2" msprop:Generator_ColumnPropNameInRow="PorcIva2" msprop:Generator_ColumnPropNameInTable="PorcIva2Column" type="xs:string" minOccurs="0" />
+              <xs:element name="doc_base_rd" msprop:Generator_UserColumnName="doc_base_rd" msprop:Generator_ColumnVarNameInTable="columndoc_base_rd" msprop:Generator_ColumnPropNameInRow="doc_base_rd" msprop:Generator_ColumnPropNameInTable="doc_base_rdColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="doc_base_gn" msprop:Generator_UserColumnName="doc_base_gn" msprop:Generator_ColumnVarNameInTable="columndoc_base_gn" msprop:Generator_ColumnPropNameInRow="doc_base_gn" msprop:Generator_ColumnPropNameInTable="doc_base_gnColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="doc_iva_rd" msprop:Generator_UserColumnName="doc_iva_rd" msprop:Generator_ColumnVarNameInTable="columndoc_iva_rd" msprop:Generator_ColumnPropNameInRow="doc_iva_rd" msprop:Generator_ColumnPropNameInTable="doc_iva_rdColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="doc_iva_gn" msprop:Generator_UserColumnName="doc_iva_gn" msprop:Generator_ColumnVarNameInTable="columndoc_iva_gn" msprop:Generator_ColumnPropNameInRow="doc_iva_gn" msprop:Generator_ColumnPropNameInTable="doc_iva_gnColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="MontoRetenc2" msprop:Generator_UserColumnName="MontoRetenc2" msprop:Generator_ColumnVarNameInTable="columnMontoRetenc2" msprop:Generator_ColumnPropNameInRow="MontoRetenc2" msprop:Generator_ColumnPropNameInTable="MontoRetenc2Column" type="xs:string" minOccurs="0" />
+              <xs:element name="periodoFiscal" msprop:Generator_UserColumnName="periodoFiscal" msprop:Generator_ColumnPropNameInRow="periodoFiscal" msprop:Generator_ColumnVarNameInTable="columnperiodoFiscal" msprop:Generator_ColumnPropNameInTable="periodoFiscalColumn" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

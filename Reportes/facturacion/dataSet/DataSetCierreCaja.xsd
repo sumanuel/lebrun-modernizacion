@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="DataSetCierreCaja" targetNamespace="http://tempuri.org/DataSetCierreCaja.xsd" xmlns:mstns="http://tempuri.org/DataSetCierreCaja.xsd" xmlns="http://tempuri.org/DataSetCierreCaja.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="DataSetCierreCaja" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="DataSetCierreCaja" msprop:Generator_DataSetName="DataSetCierreCaja" msprop:EnableTableAdapterManager="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="DataTable1" msprop:Generator_UserTableName="DataTable1" msprop:Generator_RowDeletedName="DataTable1RowDeleted" msprop:Generator_RowChangedName="DataTable1RowChanged" msprop:Generator_RowClassName="DataTable1Row" msprop:Generator_RowChangingName="DataTable1RowChanging" msprop:Generator_RowEvArgName="DataTable1RowChangeEvent" msprop:Generator_RowEvHandlerName="DataTable1RowChangeEventHandler" msprop:Generator_TableClassName="DataTable1DataTable" msprop:Generator_TableVarName="tableDataTable1" msprop:Generator_RowDeletingName="DataTable1RowDeleting" msprop:Generator_TablePropName="DataTable1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="dcli_numero" msprop:Generator_UserColumnName="dcli_numero" msprop:Generator_ColumnPropNameInRow="dcli_numero" msprop:Generator_ColumnVarNameInTable="columndcli_numero" msprop:Generator_ColumnPropNameInTable="dcli_numeroColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="cli_rif" msprop:Generator_UserColumnName="cli_rif" msprop:Generator_ColumnPropNameInRow="cli_rif" msprop:Generator_ColumnVarNameInTable="columncli_rif" msprop:Generator_ColumnPropNameInTable="cli_rifColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="cli_nombre" msprop:Generator_UserColumnName="cli_nombre" msprop:Generator_ColumnPropNameInRow="cli_nombre" msprop:Generator_ColumnVarNameInTable="columncli_nombre" msprop:Generator_ColumnPropNameInTable="cli_nombreColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="cli_telefono" msprop:Generator_UserColumnName="cli_telefono" msprop:Generator_ColumnPropNameInRow="cli_telefono" msprop:Generator_ColumnVarNameInTable="columncli_telefono" msprop:Generator_ColumnPropNameInTable="cli_telefonoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="dcli_mtoiva" msprop:Generator_UserColumnName="dcli_mtoiva" msprop:Generator_ColumnPropNameInRow="dcli_mtoiva" msprop:Generator_ColumnVarNameInTable="columndcli_mtoiva" msprop:Generator_ColumnPropNameInTable="dcli_mtoivaColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="dcli_neto" msprop:Generator_UserColumnName="dcli_neto" msprop:Generator_ColumnPropNameInRow="dcli_neto" msprop:Generator_ColumnVarNameInTable="columndcli_neto" msprop:Generator_ColumnPropNameInTable="dcli_netoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="mocv_forpag2" msprop:Generator_UserColumnName="mocv_forpag2" msprop:Generator_ColumnPropNameInRow="mocv_forpag2" msprop:Generator_ColumnVarNameInTable="columnmocv_forpag2" msprop:Generator_ColumnPropNameInTable="mocv_forpag2Column" type="xs:string" minOccurs="0" />
+              <xs:element name="dcli_numfis" msprop:Generator_UserColumnName="dcli_numfis" msprop:Generator_ColumnVarNameInTable="columndcli_numfis" msprop:Generator_ColumnPropNameInRow="dcli_numfis" msprop:Generator_ColumnPropNameInTable="dcli_numfisColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="dcli_tipdoc" msprop:Generator_UserColumnName="dcli_tipdoc" msprop:Generator_ColumnPropNameInRow="dcli_tipdoc" msprop:Generator_ColumnVarNameInTable="columndcli_tipdoc" msprop:Generator_ColumnPropNameInTable="dcli_tipdocColumn" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="datasetARC" targetNamespace="http://tempuri.org/datasetARC.xsd" xmlns:mstns="http://tempuri.org/datasetARC.xsd" xmlns="http://tempuri.org/datasetARC.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="datasetARC" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_DataSetName="datasetARC" msprop:Generator_UserDSName="datasetARC" msprop:EnableTableAdapterManager="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="DataTable1" msprop:Generator_UserTableName="DataTable1" msprop:Generator_RowDeletedName="DataTable1RowDeleted" msprop:Generator_TableClassName="DataTable1DataTable" msprop:Generator_RowChangedName="DataTable1RowChanged" msprop:Generator_RowClassName="DataTable1Row" msprop:Generator_RowChangingName="DataTable1RowChanging" msprop:Generator_RowEvArgName="DataTable1RowChangeEvent" msprop:Generator_RowEvHandlerName="DataTable1RowChangeEventHandler" msprop:Generator_TablePropName="DataTable1" msprop:Generator_TableVarName="tableDataTable1" msprop:Generator_RowDeletingName="DataTable1RowDeleting">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="MES" msprop:Generator_UserColumnName="MES" msprop:Generator_ColumnPropNameInRow="MES" msprop:Generator_ColumnVarNameInTable="columnMES" msprop:Generator_ColumnPropNameInTable="MESColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="lislr_totalFac" msprop:Generator_UserColumnName="lislr_totalFac" msprop:Generator_ColumnPropNameInRow="lislr_totalFac" msprop:Generator_ColumnVarNameInTable="columnlislr_totalFac" msprop:Generator_ColumnPropNameInTable="lislr_totalFacColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="lislr_porRetenc" msprop:Generator_UserColumnName="lislr_porRetenc" msprop:Generator_ColumnPropNameInRow="lislr_porRetenc" msprop:Generator_ColumnVarNameInTable="columnlislr_porRetenc" msprop:Generator_ColumnPropNameInTable="lislr_porRetencColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="lislr_retenido" msprop:Generator_UserColumnName="lislr_retenido" msprop:Generator_ColumnPropNameInRow="lislr_retenido" msprop:Generator_ColumnVarNameInTable="columnlislr_retenido" msprop:Generator_ColumnPropNameInTable="lislr_retenidoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="lislr_proveedor" msprop:Generator_UserColumnName="lislr_proveedor" msprop:Generator_ColumnPropNameInRow="lislr_proveedor" msprop:Generator_ColumnVarNameInTable="columnlislr_proveedor" msprop:Generator_ColumnPropNameInTable="lislr_proveedorColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="pro_nombre" msprop:Generator_UserColumnName="pro_nombre" msprop:Generator_ColumnPropNameInRow="pro_nombre" msprop:Generator_ColumnVarNameInTable="columnpro_nombre" msprop:Generator_ColumnPropNameInTable="pro_nombreColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="pro_rif" msprop:Generator_UserColumnName="pro_rif" msprop:Generator_ColumnPropNameInRow="pro_rif" msprop:Generator_ColumnVarNameInTable="columnpro_rif" msprop:Generator_ColumnPropNameInTable="pro_rifColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="lislr_totalBase" msprop:Generator_UserColumnName="lislr_totalBase" msprop:Generator_ColumnPropNameInRow="lislr_totalBase" msprop:Generator_ColumnVarNameInTable="columnlislr_totalBase" msprop:Generator_ColumnPropNameInTable="lislr_totalBaseColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="pro_codigo" msprop:Generator_UserColumnName="pro_codigo" msprop:Generator_ColumnPropNameInRow="pro_codigo" msprop:Generator_ColumnVarNameInTable="columnpro_codigo" msprop:Generator_ColumnPropNameInTable="pro_codigoColumn" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
