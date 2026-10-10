@@ -1,0 +1,19 @@
+<Configuration>
+  <VGpu>Disable</VGpu>
+  <Networking>Disable</Networking>
+  <MappedFolders>
+    <MappedFolder>
+      <HostFolder>D:\lebrun_20220627\lebrun_20220627\Instaladores\05_Instalador\salida</HostFolder>
+      <SandboxFolder>C:\Instalador</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+    <MappedFolder>
+      <HostFolder>D:\lebrun_20220627\lebrun_20220627\lebrun\instalador\prueba_sandbox</HostFolder>
+      <SandboxFolder>C:\Prueba</SandboxFolder>
+      <ReadOnly>false</ReadOnly>
+    </MappedFolder>
+  </MappedFolders>
+  <LogonCommand>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Prueba\probar_instalador.ps1</Command>
+  </LogonCommand>
+</Configuration>

@@ -59,16 +59,25 @@ There are no automated tests and no lint configuration in this repository.
 
 ## Installer
 
-The installer is kept **outside the repo** (it is hundreds of MB of binaries): the `Instaladores\` folder next to
-this repo's folder (`D:\lebrun_20220627\lebrun_20220627\Instaladores`). `05_Instalador\Lebrun.iss` is an Inno
-Setup 6 script that produces `Lebrun_Setup_<version>_x86.exe`. To rebuild it, build Release x86 with
-`/p:OutputPath=...\05_Instalador\payload\x86\` and then run `ISCC.exe Lebrun.iss`.
+The installer **script and its test** are in `instalador\` (see `instalador\LEEME.txt`); the **binaries are not in
+the repo** (hundreds of MB). They live in an `Instaladores\` folder next to this repo's folder
+(`D:\lebrun_20220627\lebrun_20220627\Instaladores`): the Crystal Reports runtime MSIs, the three OCX, the TFHKA
+SDK, the compiled app in `05_Instalador\payload\x86\` and the generated setup in `05_Instalador\salida\`.
+`instalador\Lebrun.iss` is an Inno Setup 6 script that produces `Lebrun_Setup_<version>_x86.exe`. To rebuild it,
+build Release x86 with `/p:OutputPath=...\05_Instalador\payload\x86\` and run `ISCC.exe Lebrun.iss` from
+`instalador\` (or `ISCC.exe /DComponentes=<path to Instaladores> Lebrun.iss` if that folder is elsewhere).
 
 It installs the Crystal Reports 13.0.35 **32-bit** runtime if missing, registers the three OCX with the 32-bit
-`regsvr32`, asks for the MySQL server/port/user/password, and writes `ip.txt` and `lebrun.exe.config`.
-`PNPDLL.dll` (native 32-bit DLL of the current fiscal printer, called through P/Invoke) is not in the project; it
-goes in `05_Instalador\extras\` before compiling. The installer script compiles cleanly but has not yet been
-run-tested on a clean Windows 11 machine.
+`regsvr32`, asks for the MySQL server/port/user/password, and writes `ip.txt` and `lebrun.exe.config`. For
+unattended installs pass `/VERYSILENT /Servidor=... /Puerto=... /Usuario=... /Clave=...` (without `/Servidor` a
+silent install leaves `ip.txt` and the config alone). `PNPDLL.dll` (native 32-bit DLL of the current fiscal
+printer, called through P/Invoke) is not in the project; it goes in `05_Instalador\extras\` before compiling.
+
+`instalador\prueba_sandbox\probar_instalador.ps1` installs silently, checks the result, starts the app,
+uninstalls and writes a report; `Lebrun_Prueba.wsb` runs it in Windows Sandbox for a clean-PC test. Run on the
+development PC (2026-10-10) it passed all 33 checks, but that PC already had the Crystal runtime and the OCX, so
+the runtime install and OCX registration were **not** exercised. A clean-PC run (Windows Sandbox, not yet
+enabled on that PC) is still pending.
 
 ## Runtime configuration
 

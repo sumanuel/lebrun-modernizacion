@@ -1,0 +1,36 @@
+PRUEBA DEL INSTALADOR EN UNA PC LIMPIA (Windows Sandbox)
+=========================================================
+
+Windows Sandbox arranca un Windows 11 nuevo y desechable cada vez; al cerrarlo, todo lo que se
+instalo desaparece. Es la forma mas cercana a una PC limpia sin tocar equipos reales.
+
+UNA SOLA VEZ: activar Windows Sandbox
+  1. Abrir PowerShell como administrador.
+  2. Ejecutar:  Enable-WindowsOptionalFeature -Online -FeatureName Containers-DisposableClientVM -All
+  3. Reiniciar el equipo cuando lo pida.
+  Requisitos: Windows 11 Pro, Enterprise o Education, y la virtualizacion activada en la BIOS.
+
+CADA PRUEBA
+  1. Compilar el instalador (salida\Lebrun_Setup_1.0.0_x86.exe).
+  2. Hacer doble clic en Lebrun_Prueba.wsb.
+  3. Esperar: la ventana de Sandbox ejecuta sola probar_instalador.ps1 (unos 2 a 4 minutos, por el
+     runtime de Crystal Reports).
+  4. Al terminar, el informe queda en esta carpeta: resultado.txt (y instalacion.log con el detalle
+     del instalador). Revisar la linea final "RESULTADO".
+
+Que verifica el script
+  - Estado inicial (si el equipo esta realmente limpio: sin Crystal Reports, sin los controles ActiveX).
+  - Instalacion silenciosa con datos de servidor de prueba (/Servidor, /Puerto, /Usuario, /Clave).
+  - Archivos instalados, ejecutable de 32 bits, ip.txt sin salto de linea y configuracion modificada
+    correctamente (incluida una contrasena con caracteres especiales).
+  - Acceso directo y entrada en Agregar o quitar programas.
+  - Runtime de Crystal Reports instalado y los tres controles ActiveX registrados y creables desde 32 bits.
+  - La aplicacion arranca y sigue abierta 12 segundos (se esperan errores de conexion a la base de datos,
+    porque el servidor de prueba no existe).
+  - Desinstalacion y limpieza.
+
+Tambien se puede ejecutar el mismo script en una PC real, como administrador:
+  powershell -ExecutionPolicy Bypass -File probar_instalador.ps1 -Instalador <ruta del .exe> -Reporte <ruta del informe>
+
+NOTA: el script instala y desinstala la aplicacion de verdad. En una PC que ya tiene Lebrun, no es una
+prueba limpia y el informe lo indicara en "Estado inicial".

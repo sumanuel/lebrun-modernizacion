@@ -1,0 +1,29 @@
+INSTALADOR DEL SISTEMA LEBRUN
+=============================
+
+Esta carpeta guarda solo los archivos de texto del instalador. Los binarios (runtime de Crystal Reports,
+controles ActiveX, compilacion de la aplicacion y el .exe generado) NO estan en el repositorio por su
+tamano; viven en la carpeta "Instaladores" junto a la carpeta del repositorio.
+
+Archivos
+  Lebrun.iss                          Guion de Inno Setup 6 (genera Lebrun_Setup_<version>_x86.exe).
+  prueba_sandbox\probar_instalador.ps1  Prueba automatica: instala en silencio, verifica, abre la app,
+                                        desinstala y escribe un informe.
+  prueba_sandbox\Lebrun_Prueba.wsb      Configuracion de Windows Sandbox para ejecutar esa prueba en una
+                                        PC limpia (ver LEEME_PRUEBA.txt). Contiene rutas de este equipo.
+
+Como generar el instalador
+  1. Compilar la aplicacion en Release x86 dentro de Instaladores\05_Instalador\payload\x86\ :
+       MSBuild lebrun.csproj /p:Configuration=Release /p:PlatformTarget=x86
+                 "/p:OutputPath=<ruta>\Instaladores\05_Instalador\payload\x86\"
+                 "/p:IntermediateOutputPath=obj\Release_x86\"
+  2. Desde esta carpeta:   ISCC.exe Lebrun.iss
+     Si "Instaladores" esta en otra ruta:   ISCC.exe /DComponentes=C:\ruta\Instaladores Lebrun.iss
+  El resultado queda en Instaladores\05_Instalador\salida\.
+
+Instalacion desatendida (por ejemplo para varias PC)
+  Lebrun_Setup_1.0.0_x86.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /Servidor=192.168.1.10 /Puerto=3306 /Usuario=root /Clave=xxxx
+  Sin /Servidor, en modo silencioso no se toca ip.txt ni lebrun.exe.config.
+
+Pendiente: PNPDLL.dll (libreria nativa de 32 bits de la impresora fiscal actual) no esta en el proyecto;
+colocarla en Instaladores\05_Instalador\extras\ antes de compilar el instalador.
