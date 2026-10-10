@@ -79,6 +79,22 @@ development PC (2026-10-10) it passed all 33 checks, but that PC already had the
 the runtime install and OCX registration were **not** exercised. A clean-PC run (Windows Sandbox, not yet
 enabled on that PC) is still pending.
 
+## Branches
+
+One branch per part of the agreed scope, plus `main`:
+
+- `main` — integration branch. Holds the work delivered so far (build under VS2022, `lib\`, the
+  `Producto.cs` fix, the installer, documentation). Changes reach it only from the part branches.
+- `parte-a-entorno` — Part A: development environment (validation in Visual Studio 2026, user manuals,
+  repositories for the ModelSoft and historical-patch archives) and deployment/installer work.
+- `parte-b-mejoras` — Part B: functional improvements (gerencial adjustments, suggested purchases, product
+  reports, reservations view, costs in USD, Factory/TFHKA fiscal printer).
+- `parte-c-base-de-datos` — Part C: MySQL upgrade (connector, incompatible queries, parallel test server,
+  migration).
+
+Work on the branch of the part it belongs to and merge into `main` once reviewed. All four branches started at
+the same commit, so a part branch only shows the work done for that part.
+
 ## Runtime configuration
 
 - `App.config` `appSettings` holds the MySQL connection parameters (`server`, `db1`/`db2`/`db3`, `login`,
