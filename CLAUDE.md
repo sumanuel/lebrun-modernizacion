@@ -34,14 +34,16 @@ and the `TM_FISCAL` fiscal-printer control (`MSCOMM32.OCX`, `Comdlg32.ocx`, `TMF
 (Adjust the path for your VS edition/version; there is no `msbuild` on `PATH` outside a Developer Command Prompt.)
 Debug and Release build with zero errors; what remains is ordinary C# warnings (unused variables and the like).
 
-- **Use the 32-bit MSBuild** (`Bin\MSBuild.exe`), not `Bin\amd64\`. On a clean build (empty `obj\`) the 64-bit
-  `AxImp` cannot see the 32-bit-registered controls and fails with "No se puede encontrar un control ActiveX
-  registrado en ...SysWow64\...ocx". Incremental builds that reuse an existing `obj\` can hide this.
+- Either MSBuild works (`Bin\MSBuild.exe` or `Bin\amd64\MSBuild.exe`). Verified 2026-10 on a fresh clone of the
+  GitHub repo with an empty `obj\`: Release x86 and Debug AnyCPU build with 0 errors, and so does the 64-bit
+  MSBuild with x86 or AnyCPU. The one combination that fails is **`PlatformTarget=x64`** (see below).
 - **The app must run as x86.** The csproj sets no `PlatformTarget` (AnyCPU), which on 64-bit Windows runs as a
   64-bit process that cannot instantiate the three controls, so the forms that host them (the designers of
   `frmFactura`, `frmFacturaVivienda` and `ReportesZ_X` declare `AxTM_FISCAL`) cannot create them. There is no
-  x64 option: with `PlatformTarget=x64` the control wrappers cannot
-  even be generated. Pass `/p:PlatformTarget=x86` for anything that will be run or deployed. (Checked 2026-10:
+  x64 option: with `PlatformTarget=x64`, `AxImp` cannot find the controls (they are registered only in the
+  32-bit registry view) and fails with "No se puede encontrar un control ActiveX registrado en
+  ...SysWow64\...ocx", with either MSBuild, so the control wrappers cannot even be generated. Pass
+  `/p:PlatformTarget=x86` for anything that will be run or deployed. (Checked 2026-10:
   creating the controls from 64-bit PowerShell fails, from 32-bit PowerShell works.)
 - **Third-party DLLs live in `lib\`** and are referenced by `HintPath`: `MySql.Data.dll` (6.3.7.0),
   `Interop.Microsoft.Office.Core.dll`, `Microsoft.Office.Interop.Excel.dll`, `Microsoft.Vbe.Interop.dll` and
