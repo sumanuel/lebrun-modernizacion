@@ -17,3 +17,6 @@ log.txt
 # OS files
 Thumbs.db
 Desktop.ini
+
+# Claude Code local (personal) settings
+.claude/settings.local.json

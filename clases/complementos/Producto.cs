@@ -168,8 +168,14 @@ namespace lebrun.clases.complementos
             tablaDolar8 = database.fDataTable(sqldolar8);
             tablaeuro8 = database.fDataTable(sqleuro8);
 
-            valorDolar8 = Convert.ToDecimal(tablaDolar8.Rows[0]["histo_valor"].ToString().Replace(",", "."));
-            valorEuro8 = Convert.ToDecimal(tablaeuro8.Rows[0]["histo_valor"].ToString().Replace(",", "."));
+            if (tablaDolar8.Rows.Count > 0)
+            {
+                valorDolar8 = Convert.ToDecimal(tablaDolar8.Rows[0]["histo_valor"].ToString().Replace(",", "."));
+            }
+            if (tablaeuro8.Rows.Count > 0)
+            {
+                valorEuro8 = Convert.ToDecimal(tablaeuro8.Rows[0]["histo_valor"].ToString().Replace(",", "."));
+            }
 
             StrSql = "SELECT adminv.inv_codigo AS Codigo,adminv.inv_descri AS Descripcion,adminvmed.ime_undmed AS Unidad, " +
                     "admprecios.pre_precio AS Precio, existencia AS Existencia,inv_ex AS Exento,precio_pmvp AS PMVP,inv_proced AS Procedencia,ult_provee AS pro_principal," +
@@ -233,8 +239,14 @@ namespace lebrun.clases.complementos
             tablaDolar8 = database.fDataTable(sqldolar8);
             tablaeuro8 = database.fDataTable(sqleuro8);
 
-            valorDolar8 = Convert.ToDecimal(tablaDolar8.Rows[0]["histo_valor"].ToString().Replace(",", "."));
-            valorEuro8 = Convert.ToDecimal(tablaeuro8.Rows[0]["histo_valor"].ToString().Replace(",", "."));
+            if (tablaDolar8.Rows.Count > 0)
+            {
+                valorDolar8 = Convert.ToDecimal(tablaDolar8.Rows[0]["histo_valor"].ToString().Replace(",", "."));
+            }
+            if (tablaeuro8.Rows.Count > 0)
+            {
+                valorEuro8 = Convert.ToDecimal(tablaeuro8.Rows[0]["histo_valor"].ToString().Replace(",", "."));
+            }
 
             string condicion = null;
             //filtro = string.Format("{0:000000000000000}",filtro.ToString());

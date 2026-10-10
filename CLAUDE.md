@@ -22,25 +22,51 @@ found, check that the six `CrystalDecisions.*` references in `lebrun.csproj` are
 
 ## Build
 
-Requires MSBuild for .NET Framework 4.8 (Visual Studio 2022/2026 with the ".NET desktop development" workload)
-on Windows, since this targets WinForms and references COM/Interop assemblies (Crystal Reports, Office Excel
-Interop, a serial-port `MSComm`/`MSComDlg` control, and a `TM_FISCAL` fiscal-printer COM component) that aren't
-available cross-platform and must be registered on the build/run machine.
+Windows only: Visual Studio 2022/2026 (".NET desktop development" workload) plus the SAP Crystal Reports 13.0
+runtime. The project references COM components — Office/Excel interop, a serial-port `MSComm`/`MSComDlg` control
+and the `TM_FISCAL` fiscal-printer control (`MSCOMM32.OCX`, `Comdlg32.ocx`, `TMFISCAL.ocx`) — that exist only as
+**32-bit ActiveX controls** and must be registered on the build/run machine (in `SysWOW64`).
 
 ```powershell
-& "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\amd64\MSBuild.exe" lebrun.csproj /p:Configuration=Debug
+& "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" lebrun.csproj /p:Configuration=Release /p:PlatformTarget=x86
 ```
 
-(Adjust the MSBuild path for your VS edition/version — there's no `msbuild` on `PATH` by default outside a
-Developer Command Prompt.) Confirmed working: both `Configuration=Debug` and `Configuration=Release` build
-clean (zero `error CS`/`error MSB`) against VS2022 Community with the CR 13.0.4000.0 runtime installed. Expect
-~20 harmless `warning MSB3179` lines ("Error al aislar la referencia COM ...") for `MSComDlg`/`MSCommLib`/
-`TM_FISCAL` if those COM components aren't registered on the build machine — this doesn't fail the build.
-`GenerateManifests` is set to `false` in the csproj because the leftover ClickOnce publish settings
-(`Install=true`, `PublishUrl`, etc. — unused boilerplate, the app is deployed by xcopy, not ClickOnce) made
-`GenerateApplicationManifest` crash trying to isolate those same unregistered COM components in Release builds.
+(Adjust the path for your VS edition/version; there is no `msbuild` on `PATH` outside a Developer Command Prompt.)
+Debug and Release build with zero errors; what remains is ordinary C# warnings (unused variables and the like).
+
+- **Use the 32-bit MSBuild** (`Bin\MSBuild.exe`), not `Bin\amd64\`. On a clean build (empty `obj\`) the 64-bit
+  `AxImp` cannot see the 32-bit-registered controls and fails with "No se puede encontrar un control ActiveX
+  registrado en ...SysWow64\...ocx". Incremental builds that reuse an existing `obj\` can hide this.
+- **The app must run as x86.** The csproj sets no `PlatformTarget` (AnyCPU), which on 64-bit Windows runs as a
+  64-bit process that cannot instantiate the three controls, so the forms that host them (the designers of
+  `frmFactura`, `frmFacturaVivienda` and `ReportesZ_X` declare `AxTM_FISCAL`) cannot create them. There is no
+  x64 option: with `PlatformTarget=x64` the control wrappers cannot
+  even be generated. Pass `/p:PlatformTarget=x86` for anything that will be run or deployed. (Checked 2026-10:
+  creating the controls from 64-bit PowerShell fails, from 32-bit PowerShell works.)
+- **Third-party DLLs live in `lib\`** and are referenced by `HintPath`: `MySql.Data.dll` (6.3.7.0),
+  `Interop.Microsoft.Office.Core.dll`, `Microsoft.Office.Interop.Excel.dll`, `Microsoft.Vbe.Interop.dll` and
+  `office.dll`. They used to be resolved from `bin\Debug\`, which is gitignored, so a fresh clone could not build.
+  Do not point references back at `bin\`.
+- **`COMReference` items have `<Isolated>False</Isolated>`.** With `True`, MSBuild's `GenerateApplicationManifest`
+  tried to build a registration-free manifest from the COM components and crashed intermittently (a different
+  HRESULT each time). `Install` and `GenerateManifests` are also `false`: the app is deployed by copying files,
+  not by ClickOnce.
+- To build somewhere other than `bin\`, pass `/p:OutputPath=...\ /p:IntermediateOutputPath=obj\<name>\`.
 
 There are no automated tests and no lint configuration in this repository.
+
+## Installer
+
+The installer is kept **outside the repo** (it is hundreds of MB of binaries): the `Instaladores\` folder next to
+this repo's folder (`D:\lebrun_20220627\lebrun_20220627\Instaladores`). `05_Instalador\Lebrun.iss` is an Inno
+Setup 6 script that produces `Lebrun_Setup_<version>_x86.exe`. To rebuild it, build Release x86 with
+`/p:OutputPath=...\05_Instalador\payload\x86\` and then run `ISCC.exe Lebrun.iss`.
+
+It installs the Crystal Reports 13.0.35 **32-bit** runtime if missing, registers the three OCX with the 32-bit
+`regsvr32`, asks for the MySQL server/port/user/password, and writes `ip.txt` and `lebrun.exe.config`.
+`PNPDLL.dll` (native 32-bit DLL of the current fiscal printer, called through P/Invoke) is not in the project; it
+goes in `05_Instalador\extras\` before compiling. The installer script compiles cleanly but has not yet been
+run-tested on a clean Windows 11 machine.
 
 ## Runtime configuration
 
@@ -49,11 +75,34 @@ There are no automated tests and no lint configuration in this repository.
   (system/config), `sysconta` (accounting) — selected by index (1/2/3) when opening a connection.
 - At startup, `ControladorMain` (`ControladorMain.cs`) overrides the `server` setting by reading an `ip.txt` file
   from the executable's directory (`Application.StartupPath`). This file is expected to exist in the deployed
-  output but is not part of the source tree.
+  output but is not part of the source tree. It is read raw, so it must contain only the host with no trailing
+  newline.
+- The main menu is built from the database (`conf_menu.menu_ruta` / `confmapamenu.mmn_formulario`, per user
+  profile) and each entry opens its form by reflection from the class name stored there. An entry with no form
+  assigned does nothing when clicked (for example "Compras Sugeridas", which has no form). In the reduced backup
+  reviewed in 2026-10, only 49 of the 236 `conf_menu` rows carry a `menu_ruta`; whether the rest are unimplemented
+  or resolved another way has not been verified.
 - `ControladorMain` also supports launching directly into a specific sub-form via command-line arguments (e.g.
   `parametrosContables`, `facturacion`, `frmPagare`) instead of the normal login flow — used for shortcuts/
   external launchers that jump straight to one screen.
-- Runtime errors that escape to `Program.Main` are appended to a `log.txt` next to the executable.
+- Runtime errors that escape to `Program.Main` are appended to a `log.txt` next to the executable. There is no
+  global exception handler (`Application.ThreadException`). Seen under the debugger (F5): an unhandled exception
+  in a form's event handler reached that `catch`, which shows "Excepcion no controlada: ...", writes `log.txt` and
+  exits the whole application. Without a debugger WinForms would normally show its own unhandled-exception dialog
+  instead; that behavior has not been checked in this app.
+
+## Database notes
+
+- Production is genuine Oracle **MySQL 5.5**. A local XAMPP server on a developer machine is **MariaDB**, which is
+  fine for exploring a restored backup but is not a faithful stand-in for MySQL 5.5 or for a MySQL 8 upgrade.
+- The bundled connector (`MySql.Data` 6.3.7.0, ~2011) cannot authenticate against MySQL 8's default
+  `caching_sha2_password`; an upgrade to MySQL 8.x requires replacing it.
+- The SQL relies on lenient MySQL 5.5 behavior: roughly 22 distinct `GROUP BY` queries select non-grouped columns
+  (rejected under `ONLY_FULL_GROUP_BY`), and zero dates (`0000-00-00`) exist in the data. Most tables are
+  `latin1_swedish_ci`; the web-module tables are `utf8mb4`. Literals such as `'€8'` in SQL depend on the
+  connection charset (the euro is stored as the single byte `0x80`).
+- `admhistodivi` (exchange-rate history) can lack the rows the code looks up; `Producto.cargarProductos()` and
+  `buscarProductos()` guard against an empty result instead of indexing `Rows[0]`.
 
 ## Architecture
 
@@ -95,7 +144,9 @@ There are no automated tests and no lint configuration in this repository.
 **Legacy/dead code — do not build on these:** `Malo_Julio2018/` and the `clases/Copia de facturacion`,
 `clases/Copia de importaciones`, `formularios/Copia de facturacion` folders are abandoned backup copies not
 referenced by `lebrun.csproj`. Treat any file under a `Copia de ...` or `Malo_*` path as historical reference
-only, never as the live implementation.
+only, never as the live implementation. Other uncompiled duplicates exist too (`clases/complementos/Nueva carpeta/`,
+`clases/facturacion/SENIAT/clases/`, `formularios/complementos/frmConsultaArticulos.cs`). When a class appears
+in more than one place, check which file has a `<Compile Include>` entry in `lebrun.csproj` before editing it.
 
 ## Conventions to know before editing
 

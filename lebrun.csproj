@@ -15,8 +15,10 @@
     <GenerateManifests>false</GenerateManifests>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <StartupObject>
+    </StartupObject>
     <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
+    <Install>false</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
     <UpdateMode>Foreground</UpdateMode>
@@ -29,8 +31,6 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <StartupObject>
-    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,6 +40,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,6 +49,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
@@ -56,17 +58,18 @@
     <Reference Include="CrystalDecisions.Windows.Forms, Version=13.0.4000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" />
     <Reference Include="Interop.Microsoft.Office.Core, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Interop.Microsoft.Office.Core.dll</HintPath>
+      <HintPath>lib\Interop.Microsoft.Office.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <HintPath>lib\Microsoft.Office.Interop.Excel.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Vbe.Interop, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Microsoft.Vbe.Interop.dll</HintPath>
+      <HintPath>lib\Microsoft.Vbe.Interop.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.3.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>lib\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -1516,7 +1519,6 @@
     </Compile>
     <Compile Include="Reportes\bulto\dataset\DataSetBultos.cs">
       <DependentUpon>DataSetBultos.xsd</DependentUpon>
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Reportes\bulto\dataset\DataSetBultos.Designer.cs">
       <DependentUpon>DataSetBultos.cs</DependentUpon>
@@ -1535,7 +1537,6 @@
     </Compile>
     <Compile Include="Reportes\compras\dataset\DataSetOrden.cs">
       <DependentUpon>DataSetOrden.xsd</DependentUpon>
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Reportes\compras\dataset\DataSetOrden.Designer.cs">
       <DependentUpon>DataSetOrden.cs</DependentUpon>
@@ -1572,7 +1573,6 @@
     </Compile>
     <Compile Include="Reportes\DataSet1.cs">
       <DependentUpon>DataSet1.xsd</DependentUpon>
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Reportes\DataSet11.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -1671,7 +1671,6 @@
     </Compile>
     <Compile Include="Reportes\cotizacion\dataset\dsPedido.cs">
       <DependentUpon>dsPedido.xsd</DependentUpon>
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Reportes\cotizacion\dataset\dsPedido1.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -1692,7 +1691,6 @@
     </Compile>
     <Compile Include="Reportes\pedido\dataset\dsPedido.cs">
       <DependentUpon>dsPedido.xsd</DependentUpon>
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Reportes\pedido\dataset\dsPedido1.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -1752,14 +1750,12 @@
     </Compile>
     <Compile Include="Reportes\retenciones\dataset\DataSetRetencionISLR.cs">
       <DependentUpon>DataSetRetencionISLR.xsd</DependentUpon>
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Reportes\retenciones\dataset\DataSetRetencionISLR.Designer.cs">
       <DependentUpon>DataSetRetencionISLR.cs</DependentUpon>
     </Compile>
     <Compile Include="Reportes\retenciones\dataset\dataSetRetencionIva.cs">
       <DependentUpon>dataSetRetencionIva.xsd</DependentUpon>
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Reportes\retenciones\dataset\dataSetRetencionIva.Designer.cs">
       <DependentUpon>dataSetRetencionIva.cs</DependentUpon>
@@ -1892,6 +1888,11 @@
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5</ProductName>
       <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
       <Visible>False</Visible>
@@ -2095,7 +2096,7 @@
       <VersionMinor>2</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>aximp</WrapperTool>
-      <Isolated>True</Isolated>
+      <Isolated>False</Isolated>
     </COMReference>
     <COMReference Include="AxMSCommLib">
       <Guid>{648A5603-2C6E-101B-82B6-000000000014}</Guid>
@@ -2103,7 +2104,7 @@
       <VersionMinor>1</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>aximp</WrapperTool>
-      <Isolated>True</Isolated>
+      <Isolated>False</Isolated>
     </COMReference>
     <COMReference Include="AxTM_FISCAL">
       <Guid>{603F56B7-4798-4F9E-9DF9-02FD0EE61745}</Guid>
@@ -2111,7 +2112,7 @@
       <VersionMinor>0</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>aximp</WrapperTool>
-      <Isolated>True</Isolated>
+      <Isolated>False</Isolated>
     </COMReference>
     <COMReference Include="MSComDlg">
       <Guid>{F9043C88-F6F2-101A-A3C9-08002B2F49FB}</Guid>
@@ -2119,7 +2120,7 @@
       <VersionMinor>2</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>True</Isolated>
+      <Isolated>False</Isolated>
     </COMReference>
     <COMReference Include="MSCommLib">
       <Guid>{648A5603-2C6E-101B-82B6-000000000014}</Guid>
@@ -2127,7 +2128,7 @@
       <VersionMinor>1</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>True</Isolated>
+      <Isolated>False</Isolated>
     </COMReference>
     <COMReference Include="stdole">
       <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
@@ -2143,7 +2144,7 @@
       <VersionMinor>0</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>True</Isolated>
+      <Isolated>False</Isolated>
     </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
