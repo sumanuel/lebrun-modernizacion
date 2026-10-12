@@ -444,24 +444,41 @@ namespace lebrun
                         "Pantalla no disponible", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
-                Form f = (Form)Activator.CreateInstance(formtype);
-                f.MdiParent = this;
-                if ((menuPresionado.Name.ToString() != "") || (menuPresionado.Name != null))
-                {
-                    f.Name = menuPresionado.Name;
-                }
-                if ((menuPresionado.Name.Equals("Factura de Venta")) || (menuPresionado.Name.Equals("Devolucion de Venta"))
-                    || (menuPresionado.Name.Equals("Reporte X")) || (menuPresionado.Name.Equals("Reporte Z")) || (menuPresionado.Name.Equals("Pedido")))
-                {
-                    f.Name = menuPresionado.Name;
-                }
+                Form f = null;
                 try
                 {
-                    f.Show();
-                }
-                catch (Win32Exception w)
-                {
+                    f = (Form)Activator.CreateInstance(formtype);
+                    f.MdiParent = this;
+                    if ((menuPresionado.Name.ToString() != "") || (menuPresionado.Name != null))
+                    {
+                        f.Name = menuPresionado.Name;
+                    }
+                    if ((menuPresionado.Name.Equals("Factura de Venta")) || (menuPresionado.Name.Equals("Devolucion de Venta"))
+                        || (menuPresionado.Name.Equals("Reporte X")) || (menuPresionado.Name.Equals("Reporte Z")) || (menuPresionado.Name.Equals("Pedido")))
+                    {
+                        f.Name = menuPresionado.Name;
+                    }
+                    try
+                    {
+                        f.Show();
+                    }
+                    catch (Win32Exception w)
+                    {
 
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Un error al crear o cargar la pantalla no debe cerrar el sistema: se registra con la opcion de menu y la clase.
+                    RegistroErrores.ErrorAlAbrirOpcion(ex, menuPresionado.Name, temp.Tag.ToString());
+                    try
+                    {
+                        if (f != null && !f.IsDisposed)
+                        {
+                            f.Dispose();
+                        }
+                    }
+                    catch (Exception) { }
                 }
 
             }

@@ -85,7 +85,7 @@ namespace lebrun.clasesData
             try
             {
                 StringBuilder sb = new StringBuilder();
-                EscribirEncabezado(sb, titulo);
+                EscribirEncabezado(sb, titulo, ex);
                 if (!string.IsNullOrEmpty(detalle))
                 {
                     sb.AppendLine(detalle);
@@ -111,7 +111,7 @@ namespace lebrun.clasesData
             try
             {
                 StringBuilder sb = new StringBuilder();
-                EscribirEncabezado(sb, titulo);
+                EscribirEncabezado(sb, titulo, null);
                 sb.AppendLine(detalle);
                 sb.AppendLine();
                 Escribir(sb.ToString());
@@ -119,7 +119,7 @@ namespace lebrun.clasesData
             catch (Exception) { }
         }
 
-        private static void EscribirEncabezado(StringBuilder sb, string titulo)
+        private static void EscribirEncabezado(StringBuilder sb, string titulo, Exception ex)
         {
             sb.AppendLine("------------------------------------------------------");
             sb.AppendLine("------------------------------------------------------");
@@ -127,6 +127,11 @@ namespace lebrun.clasesData
             sb.AppendLine("Error Fecha " + DateTime.Now);
             sb.AppendLine("Tipo: " + titulo);
             sb.AppendLine("Pantalla: " + DescribirPantallaActiva());
+            string origen = OrigenEnElCodigo(ex);
+            if (origen != null)
+            {
+                sb.AppendLine("Origen en el codigo: " + origen);
+            }
             sb.AppendLine("Usuario: " + DescribirUsuario());
             sb.AppendLine("Version: " + Assembly.GetExecutingAssembly().GetName().Version + "   Equipo: " + Environment.MachineName);
             sb.AppendLine();
@@ -167,6 +172,50 @@ namespace lebrun.clasesData
             }
         }
 
+        // Primer metodo propio (namespace lebrun) de la pila, empezando por la excepcion mas interna. Sirve cuando el error
+        // ocurre al cargar una pantalla que aun no es la activa.
+        private static string OrigenEnElCodigo(Exception ex)
+        {
+            try
+            {
+                List<Exception> cadena = new List<Exception>();
+                for (Exception actual = ex; actual != null; actual = actual.InnerException)
+                {
+                    cadena.Add(actual);
+                }
+                for (int i = cadena.Count - 1; i >= 0; i--)
+                {
+                    if (cadena[i].StackTrace == null)
+                    {
+                        continue;
+                    }
+                    foreach (string linea in cadena[i].StackTrace.Split('\n'))
+                    {
+                        string t = linea.Trim();
+                        int pos = t.IndexOf(" lebrun.", StringComparison.Ordinal);
+                        if (pos >= 0 && t.IndexOf("RegistroErrores", StringComparison.Ordinal) < 0)
+                        {
+                            int fin = t.IndexOf('(', pos);
+                            return fin > pos ? t.Substring(pos + 1, fin - pos - 1) : t.Substring(pos + 1);
+                        }
+                    }
+                }
+            }
+            catch (Exception) { }
+            return null;
+        }
+
+        /// <summary>Error al abrir una opcion del menu: se registra con la opcion y la clase, y se avisa sin cerrar la aplicacion.</summary>
+        public static void ErrorAlAbrirOpcion(Exception ex, string opcion, string clase)
+        {
+            Registrar(ex, "Error al abrir una opcion del menu",
+                "Opcion de menu: " + opcion + Environment.NewLine + "Clase asignada en el menu: " + clase);
+            MostrarAviso("Ocurrio un error al abrir la opcion \"" + opcion + "\" y quedo registrado. Puede seguir trabajando; si el problema se repite, avise a Sistemas.\n\n" +
+                "Error: " + Raiz(ex).Message + "\n\n" +
+                "Registro: " + RutaLog,
+                "Lebrun - Error");
+        }
+
         private static string DescribirUsuario()
         {
             try
@@ -176,7 +225,8 @@ namespace lebrun.clasesData
                     Principal p = f as Principal;
                     if (p != null && p.usuarioActual != null)
                     {
-                        return p.usuarioActual.NombreUsuario + " (empresa " + p.usuarioActual.Codigo + ")";
+                        string empresa = p.empresaActual != null ? p.empresaActual.Codigo + " " + p.empresaActual.Nombre : "(sin empresa)";
+                        return p.usuarioActual.NombreUsuario + " (empresa " + empresa + ")";
                     }
                 }
                 return "(sin sesion iniciada)";
