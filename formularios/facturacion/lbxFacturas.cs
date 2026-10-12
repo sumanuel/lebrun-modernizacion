@@ -69,6 +69,19 @@ namespace lebrun.formularios.facturacion
                 this.dataGridView1.DataSource = dtFact;
                 this.Text = this.Text + this.Name;
             }
+
+            // Este listado solo admite Factura de Venta y Devolucion de Venta. Otras opciones del menu que usan esta pantalla
+            // (por ejemplo Nota de Debito, que no tiene implementacion) no cargan datos ni columnas: se avisa y se cierra.
+            if (!this.Name.Equals("Factura de Venta") && !this.Name.Equals("Devolucion de Venta"))
+            {
+                lebrun.clasesData.RegistroErrores.RegistrarTexto("Opcion de menu no implementada en este listado",
+                    "Opcion: " + this.Name + Environment.NewLine + "Pantalla: " + this.GetType().FullName);
+                MessageBox.Show("La opcion \"" + this.Name + "\" todavia no esta disponible: este listado solo admite Factura de Venta y Devolucion de Venta.",
+                    "Opcion no disponible", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.BeginInvoke(new MethodInvoker(this.Close));
+                return;
+            }
+
             dataGridView1.Columns[0].HeaderText = "Numero";
             dataGridView1.Columns[1].HeaderText = "Codigo";
             dataGridView1.Columns[2].HeaderText = "Cliente";
