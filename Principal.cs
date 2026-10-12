@@ -435,6 +435,15 @@ namespace lebrun
             if (temp.Tag.ToString().Length > 0)
             {
                 Type formtype = asm.GetType(temp.Tag.ToString());
+                if (formtype == null)
+                {
+                    RegistroErrores.RegistrarTexto("Opcion de menu sin pantalla disponible",
+                        "Opcion: " + menuPresionado.Name + " (" + menuPresionado.Text + ")" + Environment.NewLine +
+                        "Clase asignada en el menu: " + temp.Tag.ToString());
+                    MessageBox.Show("La opcion \"" + menuPresionado.Text + "\" no tiene una pantalla disponible en esta version del sistema.\n\nQuedo registrada en el archivo de registro de errores.",
+                        "Pantalla no disponible", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
                 Form f = (Form)Activator.CreateInstance(formtype);
                 f.MdiParent = this;
                 if ((menuPresionado.Name.ToString() != "") || (menuPresionado.Name != null))

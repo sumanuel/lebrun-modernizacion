@@ -573,40 +573,11 @@ namespace lebrun.clasesData
             catch (MySqlException e)
             {
                 resultado = e.Number;
-                StreamWriter sw;
-                sw = null;
-                string ruta = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-                ruta = ruta.Remove(0, 6);
                 if (resultado == 1062)
                 {
                     MessageBox.Show("Por Favor Comunicarse Con el departo de Sistemas!!!!", "Error ", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                try
-                {
-                    if (File.Exists(ruta + "\\log.txt"))
-                    {
-                        sw = File.AppendText(ruta + "\\log.txt");
-                    }
-                    else
-                    {
-                        sw = File.CreateText(ruta + "\\log.txt");
-                    }
-                    sw.WriteLine("------------------------------------------------------");
-                    sw.WriteLine("------------------------------------------------------");
-                    sw.WriteLine();
-                    sw.WriteLine("Error Fecha " + DateTime.Now);
-                    sw.WriteLine();
-                    sw.WriteLine("Sentencia Involucrada:");
-                    sw.WriteLine(sentenciaSql);
-                    sw.WriteLine("Codigo de error: " + e.Number);
-                    sw.WriteLine("Mensaje del Error: " + e.Message);
-                    sw.WriteLine();
-                }
-                catch (Exception x) { }
-                finally
-                {
-                    sw.Close();
-                }
+                RegistroErrores.Registrar(e, "Error de MySQL", "Sentencia Involucrada:" + Environment.NewLine + sentenciaSql + Environment.NewLine + "Codigo de error: " + e.Number);
                 return resultado;
             }
             finally

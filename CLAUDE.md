@@ -112,11 +112,7 @@ the same commit, so a part branch only shows the work done for that part.
 - `ControladorMain` also supports launching directly into a specific sub-form via command-line arguments (e.g.
   `parametrosContables`, `facturacion`, `frmPagare`) instead of the normal login flow — used for shortcuts/
   external launchers that jump straight to one screen.
-- Runtime errors that escape to `Program.Main` are appended to a `log.txt` next to the executable. There is no
-  global exception handler (`Application.ThreadException`). Seen under the debugger (F5): an unhandled exception
-  in a form's event handler reached that `catch`, which shows "Excepcion no controlada: ...", writes `log.txt` and
-  exits the whole application. Without a debugger WinForms would normally show its own unhandled-exception dialog
-  instead; that behavior has not been checked in this app.
+- **Global error capture** (`clasesData/RegistroErrores.cs`, installed by `Program.Main` before any form is created): handles `Application.ThreadException` (errors in UI events: logs, shows a message and keeps the app running; more than 5 errors in 10 s closes it) and `AppDomain.UnhandledException` (other threads / startup: logs and, if the process is terminating, shows a message). Every entry in `log.txt` has the active screen (menu option name, title, class), user and company (read from `Principal.usuarioActual`), version, machine, and the exception with its inner exceptions. The log goes to `C:\ProgramData\Lebrun\log.txt`, falling back to the executable folder and then the temp folder; the installer creates that folder with write permission for all users. `ControladorMain` and `ConexionBD.ejecutarInsert` write through `RegistroErrores` (they used to have their own writers next to the exe). `Principal.MenuItemClicked` no longer crashes when a menu entry names a class that does not exist: it logs the option and shows "Pantalla no disponible". Older `log.txt` files next to the exe are legacy.
 
 ## Database notes
 

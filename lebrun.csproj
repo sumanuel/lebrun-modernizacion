@@ -106,6 +106,7 @@
     <Compile Include="clasesData\ConexionBD.cs" />
     <Compile Include="clasesData\FuncionesTexbox.cs" />
     <Compile Include="clasesData\Inputbox.cs" />
+    <Compile Include="clasesData\RegistroErrores.cs" />
     <Compile Include="clasesData\UsuarioSistema.cs" />
     <Compile Include="clases\bancos\Banco.cs" />
     <Compile Include="clases\bulto\Bulto.cs" />

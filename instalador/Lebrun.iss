@@ -55,6 +55,10 @@ Source: "{#Componentes}\02_Controles_ActiveX\Comdlg32.ocx"; DestDir: "{sys}"; Fl
 ; Runtime de Crystal Reports: solo se extrae si no esta instalado
 Source: "{#Componentes}\01_Runtime_CrystalReports\{#CrMsi}"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: NecesitaCrystal
 
+[Dirs]
+; Carpeta del registro de errores (log.txt): todos los usuarios deben poder escribir en ella
+Name: "{commonappdata}\Lebrun"; Permissions: users-modify
+
 [Icons]
 Name: "{autoprograms}\Lebrun"; Filename: "{app}\{#AppExe}"; WorkingDir: "{app}"
 Name: "{autodesktop}\Lebrun"; Filename: "{app}\{#AppExe}"; WorkingDir: "{app}"; Tasks: desktopicon

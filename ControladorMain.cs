@@ -11,6 +11,7 @@ using lebrun.formularios.transporte;
 using lebrun.formularios.importaciones;
 using lebrun.formularios.complementos;
 using lebrun;
+using lebrun.clasesData;
 
 
 namespace lebrun
@@ -87,35 +88,7 @@ namespace lebrun
                 {
                     MessageBox.Show("Excepcion no controlada:" + errorG.Message, "Error ", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     MessageBox.Show("La aplicacion se cerrara", "Error ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    StreamWriter sw;
-                    sw = null;
-                    string ruta = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-                    ruta = ruta.Remove(0, 6);
-                    try
-                    {
-                        if (File.Exists(ruta + "\\log.txt"))
-                        {
-                            sw = File.AppendText(ruta + "\\log.txt");
-                        }
-                        else
-                        {
-                            sw = File.CreateText(ruta + "\\log.txt");
-                        }
-                        sw.WriteLine("------------------------------------------------------");
-                        sw.WriteLine("------------------------------------------------------");
-                        sw.WriteLine();
-                        sw.WriteLine("Error Fecha " + DateTime.Now);
-                        sw.WriteLine();
-                        sw.WriteLine("Metodo de error: " + errorG.TargetSite);
-                        sw.WriteLine("Pila de llamadas: " + errorG.StackTrace);
-                        sw.WriteLine("Mensaje del Error: " + errorG.Message);
-                        sw.WriteLine();
-                    }
-                    catch (Exception eq) { }
-                    finally
-                    {
-                        sw.Close();
-                    }
+                    RegistroErrores.Registrar(errorG, "Excepcion no controlada al iniciar la aplicacion");
                     Application.Exit();
                 }
             }

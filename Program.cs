@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using lebrun.clasesData;
 
 namespace lebrun
 {
@@ -15,6 +16,7 @@ namespace lebrun
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            RegistroErrores.Instalar();
             ControladorMain c1 = new ControladorMain();
         }
     }
