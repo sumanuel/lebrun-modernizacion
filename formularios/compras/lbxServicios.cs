@@ -305,7 +305,12 @@ namespace lebrun.formularios.compras
 
         private void btnModificar_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.CurrentRow.Cells[7].Value.ToString().Equals("En Carga"))
+            if (dataGridView1.CurrentRow == null)
+            {
+                MessageBox.Show("Seleccione un documento de la lista ", "Algo no esta bien ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (Convert.ToString(dataGridView1.CurrentRow.Cells[7].Value).Equals("En Carga"))
             {
                 formServicio = new frmServicios(dataGridView1.CurrentRow.Cells[0].Value.ToString(), dataGridView1.CurrentRow.Cells[1].Value.ToString(), dataGridView1.CurrentRow.Cells[3].Value.ToString(), dataGridView1.CurrentRow.Cells[10].Value.ToString(), 2, 2);
                 formServicio.obtenerUsuario(Principal2.usuarioActual.Id);

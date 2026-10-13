@@ -531,6 +531,57 @@ namespace lebrun.clases.clientes
         //}
 
 
+        // Lecturas tolerantes a valores NULL: los datos antiguos tienen campos nulos y GetString/GetDecimal/GetInt32 lanzan
+        // SqlNullValueException en ese caso.
+        private static string Txt(MySqlDataReader dr, string col)
+        {
+            int i = dr.GetOrdinal(col);
+            return dr.IsDBNull(i) ? "" : dr.GetString(i);
+        }
+
+        private static string TxtNulo(MySqlDataReader dr, string col)
+        {
+            int i = dr.GetOrdinal(col);
+            return dr.IsDBNull(i) ? null : dr.GetString(i);
+        }
+
+        private static decimal Dec(MySqlDataReader dr, string col)
+        {
+            int i = dr.GetOrdinal(col);
+            return dr.IsDBNull(i) ? 0m : dr.GetDecimal(i);
+        }
+
+        private static int Ent(MySqlDataReader dr, string col)
+        {
+            int i = dr.GetOrdinal(col);
+            return dr.IsDBNull(i) ? 0 : dr.GetInt32(i);
+        }
+
+        private static int Entero(string valor)
+        {
+            int n;
+            return int.TryParse(valor, out n) ? n : 0;
+        }
+
+        // Fecha dd/MM/yyyy; vacia si el valor es NULL o una fecha invalida (0000-00-00)
+        private static string Fecha(MySqlDataReader dr, string col)
+        {
+            try
+            {
+                int i = dr.GetOrdinal(col);
+                if (dr.IsDBNull(i))
+                {
+                    return "";
+                }
+                DateTime d = dr.GetDateTime(i);
+                return d.Day.ToString().PadLeft(2, '0') + "/" + d.Month.ToString().PadLeft(2, '0') + "/" + d.Year.ToString();
+            }
+            catch (Exception)
+            {
+                return "";
+            }
+        }
+
         public void cargarDatosCliente()
         {
             MySqlDataReader dr;
@@ -552,35 +603,35 @@ namespace lebrun.clases.clientes
             {
                 while (dr.Read())
                 {
-                    this.nombre = (dr.GetString("cli_nombre") == "") ? "" : dr.GetString("cli_nombre");
-                    this.rif = (dr.GetString("cli_rif") == "") ? "" : dr.GetString("cli_rif");
-                    this.vendedor = (dr.GetString("cli_vendedor") == "") ? "" : dr.GetString("cli_vendedor");
-                    this.telefono = (dr.GetString("cli_telefono") == "") ? "" : dr.GetString("cli_telefono");
-                    this.direccion = (dr.GetString("cli_direc1") == "") ? "" : dr.GetString("cli_direc1");
-                    this.zonaGeografica = (dr.GetString("cli_estado") == "") ? "" : dr.GetString("cli_estado");
-                    this.direccion2 = (dr.GetString("cli_direc2") == "") ? "" : dr.GetString("cli_direc2");
-                    this.direccionEnvio = (dr.GetString("cli_direc3") == "") ? "" : dr.GetString("cli_direc3");
-                    this.fax = (dr.GetString("cli_fax") == "") ? "" : dr.GetString("cli_fax");
-                    this.tipoNegocio = (dr.GetString("cli_otrocel") == "") ? "" : dr.GetString("cli_otrocel");
-                    this.email = (dr.GetString("cli_correo") == "") ? "" : dr.GetString("cli_correo");
-                    this.tipoPersona = (dr.GetString("cli_tipoper") == "") ? "" : dr.GetString("cli_tipoper");
-                    this.observaciones = (dr.GetString("cli_memo2") == "") ? "" : dr.GetString("cli_memo2");
-                    this.cobrador = (dr.GetString("cli_cobrador") == "") ? "" : dr.GetString("cli_cobrador");
-                    this.diaCobro = (dr.GetString("cli_diacaja") == "") ? 0 : Convert.ToInt32(dr.GetString("cli_diacaja"));
-                    this.tipoLista = (dr.GetString("Cli_lisprecio") == "") ? "" : dr.GetString("Cli_lisprecio");
-                    this.fechaInicioVaca = (dr.GetString("cli_inivaca") == "") ? "" : dr.GetString("cli_inivaca");
-                    this.fechaFinVaca = (dr.GetString("cli_finvaca") == "") ? "" : dr.GetString("cli_finvaca");
-                    this.clientePlanC = (dr.GetString("admAC_codigoCuenta") == "") ? "" : dr.GetString("admAC_codigoCuenta");
-                    this.clienteAuxiliar = (dr.GetString("admAC_codigoAuxiliarContable") == "") ? "" : dr.GetString("admAC_codigoAuxiliarContable");
-                    this.condicionPago = (dr.GetString("cli_condipag") == "" ? "" : dr.GetString("cli_condipag"));
-                    this.divisaCliente = (dr.GetString("cli_divisa") == "" ? "" : dr.GetString("cli_divisa"));
-                    this.situacion = (dr.GetString("cli_situacion") == "" ? "" : dr.GetString("cli_situacion"));
-                    this.condicionPago = (dr.GetString("cli_condipag") == "" ? "" : dr.GetString("cli_condipag"));
-                    this.descuentoEnventas = (dr.GetDecimal("cli_descuento") == null ? 0 : dr.GetDecimal("cli_descuento"));
-                    this.cuentaManor = ((dr.GetString("admAC_codigoCuenta") == null) ? null : dr.GetString("admAC_codigoCuenta"));
-                    this.auxiliarC = ((dr.GetString("admAC_codigoAuxiliarContable") == null) ? null : dr.GetString("admAC_codigoAuxiliarContable"));
-                    this.contribuyente = dr.GetString("cli_contriespe").ToString();
-                    this.limiteCredito = dr.GetDecimal("cli_lincredito");
+                    this.nombre = (Txt(dr, "cli_nombre") == "") ? "" : Txt(dr, "cli_nombre");
+                    this.rif = (Txt(dr, "cli_rif") == "") ? "" : Txt(dr, "cli_rif");
+                    this.vendedor = (Txt(dr, "cli_vendedor") == "") ? "" : Txt(dr, "cli_vendedor");
+                    this.telefono = (Txt(dr, "cli_telefono") == "") ? "" : Txt(dr, "cli_telefono");
+                    this.direccion = (Txt(dr, "cli_direc1") == "") ? "" : Txt(dr, "cli_direc1");
+                    this.zonaGeografica = (Txt(dr, "cli_estado") == "") ? "" : Txt(dr, "cli_estado");
+                    this.direccion2 = (Txt(dr, "cli_direc2") == "") ? "" : Txt(dr, "cli_direc2");
+                    this.direccionEnvio = (Txt(dr, "cli_direc3") == "") ? "" : Txt(dr, "cli_direc3");
+                    this.fax = (Txt(dr, "cli_fax") == "") ? "" : Txt(dr, "cli_fax");
+                    this.tipoNegocio = (Txt(dr, "cli_otrocel") == "") ? "" : Txt(dr, "cli_otrocel");
+                    this.email = (Txt(dr, "cli_correo") == "") ? "" : Txt(dr, "cli_correo");
+                    this.tipoPersona = (Txt(dr, "cli_tipoper") == "") ? "" : Txt(dr, "cli_tipoper");
+                    this.observaciones = (Txt(dr, "cli_memo2") == "") ? "" : Txt(dr, "cli_memo2");
+                    this.cobrador = (Txt(dr, "cli_cobrador") == "") ? "" : Txt(dr, "cli_cobrador");
+                    this.diaCobro = Entero(Txt(dr, "cli_diacaja"));
+                    this.tipoLista = (Txt(dr, "Cli_lisprecio") == "") ? "" : Txt(dr, "Cli_lisprecio");
+                    this.fechaInicioVaca = (Txt(dr, "cli_inivaca") == "") ? "" : Txt(dr, "cli_inivaca");
+                    this.fechaFinVaca = (Txt(dr, "cli_finvaca") == "") ? "" : Txt(dr, "cli_finvaca");
+                    this.clientePlanC = (Txt(dr, "admAC_codigoCuenta") == "") ? "" : Txt(dr, "admAC_codigoCuenta");
+                    this.clienteAuxiliar = (Txt(dr, "admAC_codigoAuxiliarContable") == "") ? "" : Txt(dr, "admAC_codigoAuxiliarContable");
+                    this.condicionPago = (Txt(dr, "cli_condipag") == "" ? "" : Txt(dr, "cli_condipag"));
+                    this.divisaCliente = (Txt(dr, "cli_divisa") == "" ? "" : Txt(dr, "cli_divisa"));
+                    this.situacion = (Txt(dr, "cli_situacion") == "" ? "" : Txt(dr, "cli_situacion"));
+                    this.condicionPago = (Txt(dr, "cli_condipag") == "" ? "" : Txt(dr, "cli_condipag"));
+                    this.descuentoEnventas = Dec(dr, "cli_descuento");
+                    this.cuentaManor = (TxtNulo(dr, "admAC_codigoCuenta"));
+                    this.auxiliarC = (TxtNulo(dr, "admAC_codigoAuxiliarContable"));
+                    this.contribuyente = Txt(dr, "cli_contriespe").ToString();
+                    this.limiteCredito = Dec(dr, "cli_lincredito");
                     //            sentenciaS = sentenciaS.Replace("$cli_lincredito", (this.limiteCredito.ToString().Replace(",", ".")));
                     sentenciaS = null;
                     sentenciaS = "SELECT conp_codigo FROM admcondpago WHERE conp_descripcion ='$1';";
@@ -608,18 +659,18 @@ namespace lebrun.clases.clientes
             {
                 while (dr.Read())
                 {
-                    this.zonaPostal = (dr.GetInt32("cli2_zonaPostal") == 0) ? 0 : dr.GetInt32("cli2_zonaPostal");
-                    this.nif = (dr.GetString("cli2_nif") == "") ? "" : dr.GetString("cli2_nif");
-                    this.representante = (dr.GetString("cli2_representante") == "") ? "" : dr.GetString("cli2_representante");
-                    this.comisionVen = (dr.GetDecimal("cli2_comisionVendedor") == 0) ? 0 : dr.GetDecimal("cli2_comisionVendedor");
-                    this.comisionCobrador = (dr.GetDecimal("cli2_comisionCobrador") == 0) ? 0 : dr.GetDecimal("cli2_comisionCobrador");
-                    this.idTipoNegocio = (dr.GetString("cli2_tipoNegocio") == "") ? "01" : dr.GetString("cli2_tipoNegocio");
-                    this.descuento2 = (dr.GetDecimal("cli2_descuento2") == 0) ? 0 : dr.GetDecimal("cli2_descuento2");
-                    this.descuento3 = (dr.GetDecimal("cli2_descuento3") == 0) ? 0 : dr.GetDecimal("cli2_descuento3");
-                    this.fechaUltimaCompra = (dr.GetDateTime("cli2_fechaUltimaCompra") == null) ? "" : "" + dr.GetDateTime("cli2_fechaUltimaCompra").Day.ToString().PadLeft(2, '0') + "/" + dr.GetDateTime("cli2_fechaUltimaCompra").Month.ToString().PadLeft(2, '0') + "/" + dr.GetDateTime("cli2_fechaUltimaCompra").Year.ToString();
+                    this.zonaPostal = (Ent(dr, "cli2_zonaPostal") == 0) ? 0 : Ent(dr, "cli2_zonaPostal");
+                    this.nif = (Txt(dr, "cli2_nif") == "") ? "" : Txt(dr, "cli2_nif");
+                    this.representante = (Txt(dr, "cli2_representante") == "") ? "" : Txt(dr, "cli2_representante");
+                    this.comisionVen = (Dec(dr, "cli2_comisionVendedor") == 0) ? 0 : Dec(dr, "cli2_comisionVendedor");
+                    this.comisionCobrador = (Dec(dr, "cli2_comisionCobrador") == 0) ? 0 : Dec(dr, "cli2_comisionCobrador");
+                    this.idTipoNegocio = (Txt(dr, "cli2_tipoNegocio") == "") ? "01" : Txt(dr, "cli2_tipoNegocio");
+                    this.descuento2 = (Dec(dr, "cli2_descuento2") == 0) ? 0 : Dec(dr, "cli2_descuento2");
+                    this.descuento3 = (Dec(dr, "cli2_descuento3") == 0) ? 0 : Dec(dr, "cli2_descuento3");
+                    this.fechaUltimaCompra = Fecha(dr, "cli2_fechaUltimaCompra");
                     //cli2_fechaRegistro
-                    this.fechaRegistro = (dr.GetDateTime("cli2_fechaRegistro") == null) ? "" : "" + dr.GetDateTime("cli2_fechaRegistro").Day.ToString().PadLeft(2, '0') + "/" + dr.GetDateTime("cli2_fechaRegistro").Month.ToString().PadLeft(2, '0') + "/" + dr.GetDateTime("cli2_fechaRegistro").Year.ToString();
-                    this.transporte = (dr.GetString("dcli_transporte") == null ? null : dr.GetString("dcli_transporte"));
+                    this.fechaRegistro = Fecha(dr, "cli2_fechaRegistro");
+                    this.transporte = TxtNulo(dr, "dcli_transporte");
                 }
             }
             dr.Close();
