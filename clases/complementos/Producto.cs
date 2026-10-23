@@ -1249,7 +1249,39 @@ namespace lebrun.clases.complementos
             StrSql = StrSql.Replace("$hora", DateTime.Now.ToString("hh:mm:ss tt"));
 
 
-            database.insertdataGridView(tabla, parametros, StrSql);
+            // Los importes del grid (precio nuevo, utilidad, descuentos) se escriben con la coma decimal del equipo; enviados
+            // como texto a MySQL, "26,50" se guarda como 26.00. Se envian con punto y luego se restauran los valores mostrados.
+            string[,] originales = new string[tabla.Rows.Count, 4];
+            for (int i = 0; i < tabla.Rows.Count; i++)
+            {
+                for (int c = 6; c <= 9; c++)
+                {
+                    object valor = tabla.Rows[i].Cells[c].Value;
+                    originales[i, c - 6] = (valor == null) ? null : valor.ToString();
+                    if (valor != null)
+                    {
+                        tabla.Rows[i].Cells[c].Value = valor.ToString().Replace(",", ".");
+                    }
+                }
+            }
+
+            try
+            {
+                database.insertdataGridView(tabla, parametros, StrSql);
+            }
+            finally
+            {
+                for (int i = 0; i < tabla.Rows.Count; i++)
+                {
+                    for (int c = 6; c <= 9; c++)
+                    {
+                        if (originales[i, c - 6] != null)
+                        {
+                            tabla.Rows[i].Cells[c].Value = originales[i, c - 6];
+                        }
+                    }
+                }
+            }
             database.cerrarConexion();
 
         }
