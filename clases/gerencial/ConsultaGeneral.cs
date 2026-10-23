@@ -569,6 +569,18 @@ namespace lebrun.clases.gerencial
             dataBaseConection.cerrarConexion();
             return dt;
         }
+        // Decimal tolerante a NULL o vacio: los LEFT JOIN de la consulta devuelven NULL cuando el producto no tiene proveedor,
+        // arancel o historial de divisas.
+        private static decimal DecSeguro(object valor)
+        {
+            if (valor == null || valor == DBNull.Value)
+            {
+                return 0m;
+            }
+            decimal d;
+            return decimal.TryParse(valor.ToString(), out d) ? d : 0m;
+        }
+
         public void consultaGeneralProveedor(string Codigo) 
         {
             senteciaSql = null;
@@ -592,24 +604,29 @@ namespace lebrun.clases.gerencial
                  "ORDER BY " +
                     "histo_fecha DESC,histo_hora DESC;";
             dt = dataBaseConection.fDataTable(senteciaSql);
+            if (dt.Rows.Count == 0)
+            {
+                dataBaseConection.cerrarConexion();
+                return;
+            }
             this.aranDescProduc = dt.Rows[0]["ara_descri"].ToString();
-            this.aranPorsProduc =Convert.ToDecimal(dt.Rows[0]["ara_porcen"].ToString());
+            this.aranPorsProduc =DecSeguro(dt.Rows[0]["ara_porcen"]);
             this.proveeNombr = dt.Rows[0]["pro_nombre"].ToString();
             this.descPais = dt.Rows[0]["pais_descri"].ToString();
-            this.facCif = Convert.ToDecimal(dt.Rows[0]["Factor_CIF"].ToString());
-            this.facFin = Convert.ToDecimal(dt.Rows[0]["Factor_FIN"].ToString());
-            this.facGas = Convert.ToDecimal(dt.Rows[0]["Factor_GAS"].ToString());
-            this.facOtro = Convert.ToDecimal(dt.Rows[0]["Factor_Otros"].ToString());
+            this.facCif = DecSeguro(dt.Rows[0]["Factor_CIF"]);
+            this.facFin = DecSeguro(dt.Rows[0]["Factor_FIN"]);
+            this.facGas = DecSeguro(dt.Rows[0]["Factor_GAS"]);
+            this.facOtro = DecSeguro(dt.Rows[0]["Factor_Otros"]);
             this.monDescrp = dt.Rows[0]["mon_descri"].ToString();
             this.histMond = dt.Rows[0]["histo_valor"].ToString();
-            this.provDes1 = Convert.ToDecimal(dt.Rows[0]["pro_descuento"].ToString());
-            this.provDes2 = Convert.ToDecimal(dt.Rows[0]["pro_dcto2"].ToString());
-            this.provDesc3 =Convert.ToDecimal(dt.Rows[0]["pro_dcto3"].ToString());
+            this.provDes1 = DecSeguro(dt.Rows[0]["pro_descuento"]);
+            this.provDes2 = DecSeguro(dt.Rows[0]["pro_dcto2"]);
+            this.provDesc3 =DecSeguro(dt.Rows[0]["pro_dcto3"]);
             this.pinMoned = dt.Rows[0]["pin_moneda"].ToString();
             this.facEnt = dt.Rows[0]["Factor_Ent"].ToString();
-            this.provd1 = Convert.ToDecimal(dt.Rows[0]["K1"].ToString());
-            this.provd2 = Convert.ToDecimal(dt.Rows[0]["K2"].ToString());
-            this.provd3 =Convert.ToDecimal( dt.Rows[0]["K3"].ToString());
+            this.provd1 = DecSeguro(dt.Rows[0]["K1"]);
+            this.provd2 = DecSeguro(dt.Rows[0]["K2"]);
+            this.provd3 = DecSeguro(dt.Rows[0]["K3"]);
             
 
             senteciaSql = null;
@@ -618,10 +635,10 @@ namespace lebrun.clases.gerencial
                   " Group by histo_moneda order by histo_moneda desc,histo_fecha desc,histo_hora desc";
             dt = dataBaseConection.fDataTable(senteciaSql);
             cantFila =dt.Rows.Count;
-            hisValor1 = Convert.ToDecimal(dt.Rows[0]["histo_valor"].ToString());
-            hisValor2 = Convert.ToDecimal(dt.Rows[1]["histo_valor"].ToString());
-            hisValor3 = Convert.ToDecimal(dt.Rows[2]["histo_valor"].ToString());
-            hisValor4 = Convert.ToDecimal(dt.Rows[3]["histo_valor"].ToString());
+            hisValor1 = (dt.Rows.Count > 0) ? DecSeguro(dt.Rows[0]["histo_valor"]) : 0m;
+            hisValor2 = (dt.Rows.Count > 1) ? DecSeguro(dt.Rows[1]["histo_valor"]) : 0m;
+            hisValor3 = (dt.Rows.Count > 2) ? DecSeguro(dt.Rows[2]["histo_valor"]) : 0m;
+            hisValor4 = (dt.Rows.Count > 3) ? DecSeguro(dt.Rows[3]["histo_valor"]) : 0m;
             dataBaseConection.cerrarConexion();
             
             if (AranPorsProduc == Convert.ToDecimal(0.00))
