@@ -84,11 +84,30 @@ namespace lebrun.formularios.facturacion
             this.Close();
         }
 
+        // El formulario padre MDI puede no estar asignado todavia cuando se carga (por ejemplo, al abrirlo desde el listado de
+        // Devolucion de Venta): se busca la ventana principal entre los formularios abiertos.
+        private Principal ObtenerPrincipal()
+        {
+            Principal principal = this.MdiParent as Principal;
+            if (principal == null)
+            {
+                foreach (Form f in Application.OpenForms)
+                {
+                    principal = f as Principal;
+                    if (principal != null)
+                    {
+                        break;
+                    }
+                }
+            }
+            return principal;
+        }
+
         private void frmFactura_Load(object sender, EventArgs e)
         {
             groupBox5.Enabled = false;
             dataGridView1.Enabled = false;
-            referenciaPrincipal = (Principal)this.MdiParent;
+            referenciaPrincipal = ObtenerPrincipal();
             
             if (referenciaPrincipal.empresaActual.Codigo.Equals("08")) { 
                 txtDescuentoGeneral.Enabled = true;
@@ -121,7 +140,7 @@ namespace lebrun.formularios.facturacion
         }
 
         public void frmFactura_Load(object sender, EventArgs e, bool v) {
-            referenciaPrincipal = (Principal)this.MdiParent;
+            referenciaPrincipal = ObtenerPrincipal();
             if (referenciaPrincipal.empresaActual.Codigo.Equals("08"))
             {
                 txtDescuentoGeneral.Enabled = true;

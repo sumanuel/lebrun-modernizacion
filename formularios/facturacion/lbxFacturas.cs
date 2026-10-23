@@ -353,10 +353,12 @@ namespace lebrun.formularios.facturacion
         {
             if (dataGridView1.Rows.Count > 0)
             {
+                // tipoOperacion debe quedar asignado antes de mostrar pictureBox1: su Paint lo consulta y puede ejecutarse
+                // mientras se reasigna el formulario padre.
+                tipoOperacion = "ver";
                 pictureBox1.Visible = true;
                 frmFacturacion = frmFactura.DefInstance;
                 frmFacturacion.MdiParent = this.MdiParent;
-                tipoOperacion = "ver";
                 backgroundWorker1.RunWorkerAsync(frmFacturacion);
             }
             else {
@@ -558,7 +560,7 @@ namespace lebrun.formularios.facturacion
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            if (tipoOperacion.Equals("ver"))
+            if ("ver".Equals(tipoOperacion))
             {
                 using (Font myFont = new Font("Arial", 24))
                 {
@@ -566,21 +568,21 @@ namespace lebrun.formularios.facturacion
                 }
             }
 
-            if (tipoOperacion.Equals("reimp")) {
+            if ("reimp".Equals(tipoOperacion)) {
                 using (Font myFont = new Font("Arial", 24))
                 {
                     e.Graphics.DrawString("Cargando Datos Por Favor Espere!", myFont, Brushes.Black, new Point(2, 2));
                 }
             }
 
-            if (tipoOperacion.Equals("reimpFAV")) {
+            if ("reimpFAV".Equals(tipoOperacion)) {
                 using (Font myFont = new Font("Arial", 24))
                 {
                     e.Graphics.DrawString("Imprimiendo Factura Por Favor Espere!", myFont, Brushes.Black, new Point(2, 2));
                 }
             }
 
-            if (tipoOperacion.Equals("reimpDEV"))
+            if ("reimpDEV".Equals(tipoOperacion))
             {
                 using (Font myFont = new Font("Arial", 24))
                 {
