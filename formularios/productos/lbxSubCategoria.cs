@@ -66,7 +66,6 @@ namespace lebrun.formularios.productos
             dataGridView1.Columns[2].HeaderText = "Descripcion";
             dataGridView1.Columns[3].HeaderText = "Comision Venta";
             dataGridView1.Columns[4].HeaderText = "Comision Compra";
-            dataGridView1.Columns[5].HeaderText = "Statud";
             if (frmProduct != "Producto")
             {
                 SistemaUsuario = (Principal)this.MdiParent;
@@ -99,7 +98,6 @@ namespace lebrun.formularios.productos
                             dataGridView1.Columns[2].HeaderText = "Descripcion";
                             dataGridView1.Columns[3].HeaderText = "Comision Venta";
                             dataGridView1.Columns[4].HeaderText = "Comision Compra";
-                            dataGridView1.Columns[5].HeaderText = "Statud";
                             dataGridView1.Update();
                         }
                     }
@@ -119,7 +117,6 @@ namespace lebrun.formularios.productos
                             dataGridView1.Columns[2].HeaderText = "Descripcion";
                             dataGridView1.Columns[3].HeaderText = "Comision Venta";
                             dataGridView1.Columns[4].HeaderText = "Comision Compra";
-                            dataGridView1.Columns[5].HeaderText = "Statud";
                             dataGridView1.Update();
                         }
                     }
@@ -141,7 +138,6 @@ namespace lebrun.formularios.productos
                         dataGridView1.Columns[2].HeaderText = "Descripcion";
                         dataGridView1.Columns[3].HeaderText = "Comision Venta";
                         dataGridView1.Columns[4].HeaderText = "Comision Compra";
-                        dataGridView1.Columns[5].HeaderText = "Statud";
                         dataGridView1.Update();
                    }
                   
@@ -162,7 +158,6 @@ namespace lebrun.formularios.productos
                         dataGridView1.Columns[2].HeaderText = "Descripcion";
                         dataGridView1.Columns[3].HeaderText = "Comision Venta";
                         dataGridView1.Columns[4].HeaderText = "Comision Compra";
-                        dataGridView1.Columns[5].HeaderText = "Statud";
                         dataGridView1.Update();
                    }
                 }
@@ -185,7 +180,6 @@ namespace lebrun.formularios.productos
                         dataGridView1.Columns[2].HeaderText = "Descripcion";
                         dataGridView1.Columns[3].HeaderText = "Comision Venta";
                         dataGridView1.Columns[4].HeaderText = "Comision Compra";
-                        dataGridView1.Columns[5].HeaderText = "Statud";
                         dataGridView1.Update();
                     }
                 }
@@ -206,7 +200,6 @@ namespace lebrun.formularios.productos
                         dataGridView1.Columns[2].HeaderText = "Descripcion";
                         dataGridView1.Columns[3].HeaderText = "Comision Venta";
                         dataGridView1.Columns[4].HeaderText = "Comision Compra";
-                        dataGridView1.Columns[5].HeaderText = "Statud";
                         dataGridView1.Update();
                     }
 
@@ -227,7 +220,6 @@ namespace lebrun.formularios.productos
                         dataGridView1.Columns[2].HeaderText = "Descripcion";
                         dataGridView1.Columns[3].HeaderText = "Comision Venta";
                         dataGridView1.Columns[4].HeaderText = "Comision Compra";
-                        dataGridView1.Columns[5].HeaderText = "Statud";
                         dataGridView1.Update();
                     }
                 }
@@ -339,7 +331,8 @@ namespace lebrun.formularios.productos
             accion = "Elim";
             if (MessageBox.Show("Desea Eliminar Esta Sub-Categoria Del Sistema", "Agregar Nueva Informacion Data", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                if (dataGridView1.CurrentRow.Cells["sgr_statud"].Value.ToString().Equals("Activo"))
+                SubCategoria.codigoSubCat = dataGridView1.CurrentRow.Cells["sgr_codigo"].Value.ToString();
+                if (!SubCategoria.subCategoriaEnUso())
                 {
                     SubCategoria.codigoSubCat = dataGridView1.CurrentRow.Cells["sgr_codigo"].Value.ToString();
                     SubCategoria.codigoCategoria = dataGridView1.CurrentRow.Cells["sgr_grupo"].Value.ToString();
@@ -350,7 +343,7 @@ namespace lebrun.formularios.productos
                 }
                 else
                 {
-                    MessageBox.Show("La Sub-Categoria Que a Elejido Se Encuetra Eliminado", "Imformacion", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show("No se puede eliminar la sub-categoria porque tiene productos asociados", "Imformacion", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
         }
@@ -366,7 +359,6 @@ namespace lebrun.formularios.productos
             dataGridView1.Columns[2].HeaderText = "Descripcion";
             dataGridView1.Columns[3].HeaderText = "Comision Venta";
             dataGridView1.Columns[4].HeaderText = "Comision Compra";
-            dataGridView1.Columns[5].HeaderText = "Statud";  
         }
 
         private void btnSalir_Click(object sender, EventArgs e)

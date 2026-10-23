@@ -65,7 +65,6 @@ namespace lebrun.formularios.productos
             dataGridView1.Columns[1].HeaderText = "Descripcion";
             dataGridView1.Columns[2].HeaderText = "Comision Ventas";
             dataGridView1.Columns[3].HeaderText = "Comision Combranza";
-            dataGridView1.Columns[4].HeaderText = "Status";
             if (frmProduct != "Producto")
             {
                 SistemaUsuario = (Principal)this.MdiParent;
@@ -219,7 +218,7 @@ namespace lebrun.formularios.productos
 
         private void btnModificar_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.CurrentRow.Cells["gru_statud"].Value.ToString().Equals("Activo"))
+            if (dataGridView1.CurrentRow != null)
             {
                 frmEditorCategoria Modificarlbx = new frmEditorCategoria();
                 Modificarlbx.txtCodigoCategoria.Text = dataGridView1.CurrentRow.Cells["gru_codigo"].Value.ToString();
@@ -246,7 +245,8 @@ namespace lebrun.formularios.productos
             accion = "Elim";
             if (MessageBox.Show("Desea Eliminar Esta Categoria Del Sistema", "Agregar Nueva Informacion Data", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                if (dataGridView1.CurrentRow.Cells["gru_statud"].Value.ToString().Equals("Activo"))
+                Categoria1.codigoCategoria = dataGridView1.CurrentRow.Cells["gru_codigo"].Value.ToString();
+                if (!Categoria1.categoriaEnUso())
                 {
                     Categoria1.codigoCategoria = dataGridView1.CurrentRow.Cells["gru_codigo"].Value.ToString();
                     Categoria1.eliminarOactulizarCategoria();
@@ -256,7 +256,7 @@ namespace lebrun.formularios.productos
                 }
                 else
                 {
-                    MessageBox.Show("La Categoria Que a Elejido Se Encuetra Eliminado", "Imformacion", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show("No se puede eliminar la categoria porque tiene productos o sub-categorias asociados", "Imformacion", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
         }
@@ -273,7 +273,6 @@ namespace lebrun.formularios.productos
             dataGridView1.Columns[1].HeaderText = "Descripcion";
             dataGridView1.Columns[2].HeaderText = "Comision Ventas";
             dataGridView1.Columns[3].HeaderText = "Comision Combranza";
-            dataGridView1.Columns[4].HeaderText = "Statud";
             txtBuscador.Clear();
         }
 
@@ -350,7 +349,7 @@ namespace lebrun.formularios.productos
         private void btnVisor_Click(object sender, EventArgs e)
         {
 
-            if (dataGridView1.CurrentRow.Cells["gru_statud"].Value.ToString().Equals("Activo"))
+            if (dataGridView1.CurrentRow != null)
             {
                 frmEditorCategoria Visor = new frmEditorCategoria();
                 Visor.txtCodigoCategoria.Text = dataGridView1.CurrentRow.Cells["gru_codigo"].Value.ToString();

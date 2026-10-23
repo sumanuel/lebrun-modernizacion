@@ -551,7 +551,7 @@ namespace lebrun.clases.producto
         {
             DataTable dt;
             senteciaSql = null;
-            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob,sgr_statud FROM admsubgrupo WHERE sgr_statud='Activo';";
+            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob FROM admsubgrupo;";
             dt = dataBaseConection.fDataTable(senteciaSql);
             dataBaseConection.cerrarConexion();
             return dt;
@@ -562,7 +562,7 @@ namespace lebrun.clases.producto
         { 
           DataTable dt;
           senteciaSql = null;
-          senteciaSql = "SELECT gru_codigo,gru_descri,gru_comvta,gru_comcob,gru_statud FROM admgrupo WHERE gru_statud='Activo';";
+          senteciaSql = "SELECT gru_codigo,gru_descri,gru_comvta,gru_comcob FROM admgrupo;";
           dt=dataBaseConection.fDataTable(senteciaSql);
           dataBaseConection.cerrarConexion();
           return dt;
@@ -594,7 +594,7 @@ namespace lebrun.clases.producto
         {
             DataTable dt;
             senteciaSql = null;
-            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob,sgr_statud FROM admsubgrupo WHERE sgr_codigo='@subGrupo';";
+            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob FROM admsubgrupo WHERE sgr_codigo='@subGrupo';";
             senteciaSql = senteciaSql.Replace("@subGrupo", subCodigoSubCategoriaBusca);
             dt = dataBaseConection.fDataTable(senteciaSql);
             dataBaseConection.cerrarConexion();
@@ -605,7 +605,7 @@ namespace lebrun.clases.producto
         {
             DataTable dt;
             senteciaSql = null;
-            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob,sgr_statud FROM admsubgrupo WHERE sgr_codigo Like '%@subGrupo%';";
+            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob FROM admsubgrupo WHERE sgr_codigo Like '%@subGrupo%';";
             senteciaSql = senteciaSql.Replace("@subGrupo", subCodigoSubCategoriaBuscas);
             dt = dataBaseConection.fDataTable(senteciaSql);
             dataBaseConection.cerrarConexion();
@@ -616,7 +616,7 @@ namespace lebrun.clases.producto
         {
             DataTable dt;
             senteciaSql = null;
-            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob,sgr_statud FROM admsubgrupo WHERE sgr_descri='@descri';";
+            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob FROM admsubgrupo WHERE sgr_descri='@descri';";
             senteciaSql = senteciaSql.Replace("@descri", descripSubCategoriaBusca);
             dt = dataBaseConection.fDataTable(senteciaSql);
             dataBaseConection.cerrarConexion();
@@ -627,7 +627,7 @@ namespace lebrun.clases.producto
         {
             DataTable dt;
             senteciaSql = null;
-            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob,sgr_statud FROM admsubgrupo WHERE sgr_descri Like '%@descri%';";
+            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob FROM admsubgrupo WHERE sgr_descri Like '%@descri%';";
             senteciaSql = senteciaSql.Replace("@descri", descripSubCategoriaBuscas);
             dt = dataBaseConection.fDataTable(senteciaSql);
             dataBaseConection.cerrarConexion();
@@ -638,7 +638,7 @@ namespace lebrun.clases.producto
         {
             DataTable dt;
             senteciaSql = null;
-            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob,sgr_statud FROM admsubgrupo WHERE sgr_grupo='@codigo';";
+            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob FROM admsubgrupo WHERE sgr_grupo='@codigo';";
             senteciaSql = senteciaSql.Replace("@codigo", codigoSubCategoriaBusca);
             dt = dataBaseConection.fDataTable(senteciaSql);
             dataBaseConection.cerrarConexion();
@@ -650,7 +650,7 @@ namespace lebrun.clases.producto
         {
              DataTable dt;
             senteciaSql = null;
-            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob,sgr_statud FROM admsubgrupo WHERE sgr_grupo Like '%@codigo%';";
+            senteciaSql = "SELECT sgr_grupo,sgr_codigo,sgr_descri,sgr_comvta,sgr_comcob FROM admsubgrupo WHERE sgr_grupo Like '%@codigo%';";
             senteciaSql = senteciaSql.Replace("@codigo", codigoSubCategoriaBuscas);
             dt = dataBaseConection.fDataTable(senteciaSql);
             dataBaseConection.cerrarConexion();
@@ -662,7 +662,7 @@ namespace lebrun.clases.producto
         {
             DataTable dt;
             senteciaSql = null;
-            senteciaSql = "SELECT gru_codigo,gru_descri,gru_comvta,gru_comcob,gru_statud FROM admgrupo WHERE gru_codigo='@codigo';";
+            senteciaSql = "SELECT gru_codigo,gru_descri,gru_comvta,gru_comcob FROM admgrupo WHERE gru_codigo='@codigo';";
             senteciaSql = senteciaSql.Replace("@codigo", codigoCategoriaBuscar);
             dt = dataBaseConection.fDataTable(senteciaSql);
             dataBaseConection.cerrarConexion();
@@ -673,7 +673,7 @@ namespace lebrun.clases.producto
         {
             DataTable dt;
             senteciaSql = null;
-            senteciaSql = "SELECT gru_codigo,gru_descri,gru_comvta,gru_comcob,gru_statud FROM admgrupo WHERE gru_codigo Like '%@codigo%';";
+            senteciaSql = "SELECT gru_codigo,gru_descri,gru_comvta,gru_comcob FROM admgrupo WHERE gru_codigo Like '%@codigo%';";
             senteciaSql = senteciaSql.Replace("@codigo", codigoCategoriaBuscas);
             dt = dataBaseConection.fDataTable(senteciaSql);
             dataBaseConection.cerrarConexion();
@@ -684,7 +684,7 @@ namespace lebrun.clases.producto
         {
             DataTable dt;
             senteciaSql = null;
-            senteciaSql = "SELECT gru_codigo,gru_descri,gru_comvta,gru_comcob,gru_statud FROM admgrupo WHERE gru_descri='@descrip';";
+            senteciaSql = "SELECT gru_codigo,gru_descri,gru_comvta,gru_comcob FROM admgrupo WHERE gru_descri='@descrip';";
             senteciaSql = senteciaSql.Replace("@descrip", descripCategoriaBuscar);
             dt = dataBaseConection.fDataTable(senteciaSql);
             dataBaseConection.cerrarConexion();
@@ -695,7 +695,7 @@ namespace lebrun.clases.producto
         {
             DataTable dt;
             senteciaSql = null;
-            senteciaSql = "SELECT gru_codigo,gru_descri,gru_comvta,gru_comcob,gru_statud FROM admgrupo WHERE gru_descri Like '%@descrip%';";
+            senteciaSql = "SELECT gru_codigo,gru_descri,gru_comvta,gru_comcob FROM admgrupo WHERE gru_descri Like '%@descrip%';";
             senteciaSql = senteciaSql.Replace("@descrip", descripCategoriaBuscas);
             dt = dataBaseConection.fDataTable(senteciaSql);
             dataBaseConection.cerrarConexion();
@@ -754,7 +754,7 @@ namespace lebrun.clases.producto
             senteciaSql = null;
             try
             {
-                senteciaSql = "INSERT INTO admsubgrupo(sgr_codigo,sgr_grupo,sgr_descri,sgr_comvta,sgr_comcob,sgr_memo,sgr_imagen,sgr_statud)VALUE('@codigo','@scodigo','@descrip','@venta','@compra','@coment','@imagen','Activo');";
+                senteciaSql = "INSERT INTO admsubgrupo(sgr_codigo,sgr_grupo,sgr_descri,sgr_comvta,sgr_comcob,sgr_memo,sgr_imagen)VALUE('@codigo','@scodigo','@descrip','@venta','@compra','@coment','@imagen');";
                 senteciaSql = senteciaSql.Replace("@codigo", codigoSubCat);
                 senteciaSql = senteciaSql.Replace("@scodigo", codigoCategoria);
                 senteciaSql = senteciaSql.Replace("@descrip", descripSubCat);
@@ -780,7 +780,7 @@ namespace lebrun.clases.producto
             senteciaSql = null;
             try  
             {
-                senteciaSql = "INSERT INTO admgrupo(gru_codigo,gru_descri,gru_comvta,gru_comcob,gru_coment,gru_imagen,gru_statud)VALUE('@codigo','@descrip','@venta','@compra','@coment','@imagen','Activo');";
+                senteciaSql = "INSERT INTO admgrupo(gru_codigo,gru_descri,gru_comvta,gru_comcob,gru_coment,gru_imagen)VALUE('@codigo','@descrip','@venta','@compra','@coment','@imagen');";
                 senteciaSql = senteciaSql.Replace("@codigo", codigoCategoria);
                 senteciaSql = senteciaSql.Replace("@descrip",descripCategoria);
                 senteciaSql = senteciaSql.Replace("@venta", ventaCategoria.Replace(",", "."));
@@ -870,14 +870,35 @@ namespace lebrun.clases.producto
     
         } 
 
-        //Eliminar o Desativar Sub-Categoria
+        // admgrupo y admsubgrupo no tienen columna de estado: antes de borrar se comprueba que no esten en uso
+        public bool categoriaEnUso()
+        {
+            DataTable dt;
+            senteciaSql = "SELECT (SELECT COUNT(*) FROM adminv WHERE inv_grupo='@codigo') + (SELECT COUNT(*) FROM admsubgrupo WHERE sgr_grupo='@codigo') AS usos;";
+            senteciaSql = senteciaSql.Replace("@codigo", codigoCategoria);
+            dt = dataBaseConection.fDataTable(senteciaSql);
+            dataBaseConection.cerrarConexion();
+            return dt.Rows.Count > 0 && Convert.ToInt32(dt.Rows[0]["usos"]) > 0;
+        }
+
+        public bool subCategoriaEnUso()
+        {
+            DataTable dt;
+            senteciaSql = "SELECT COUNT(*) AS usos FROM adminv WHERE inv_subgru='@codigo';";
+            senteciaSql = senteciaSql.Replace("@codigo", codigoSubCat);
+            dt = dataBaseConection.fDataTable(senteciaSql);
+            dataBaseConection.cerrarConexion();
+            return dt.Rows.Count > 0 && Convert.ToInt32(dt.Rows[0]["usos"]) > 0;
+        }
+
+        //Eliminar Sub-Categoria
         public bool eliminarOactulizarSubCateg()
         {
             bool Ciclope = true;
             senteciaSql = null;
             try
             {
-                senteciaSql = "UPDATE admsubgrupo SET sgr_statud='Inactivo' WHERE sgr_codigo='@codigo' AND sgr_grupo='@scodigo';";
+                senteciaSql = "DELETE FROM admsubgrupo WHERE sgr_codigo='@codigo' AND sgr_grupo='@scodigo';";
                 senteciaSql = senteciaSql.Replace("@codigo", codigoSubCat);
                 senteciaSql = senteciaSql.Replace("@scodigo", codigoCategoria);
                 dataBaseConection.ejecutarInsert(senteciaSql);
@@ -888,14 +909,14 @@ namespace lebrun.clases.producto
             dataBaseConection.cerrarConexion();
             return Ciclope;
         }
-        // Eliminar o Desativar Categoria
+        // Eliminar Categoria
         public bool eliminarOactulizarCategoria()
         {
             bool Ciclope = true;
             senteciaSql = null;
             try
             {
-                senteciaSql = "UPDATE admgrupo SET gru_statud='Inactivo' WHERE gru_codigo='@gru_codigo';";
+                senteciaSql = "DELETE FROM admgrupo WHERE gru_codigo='@gru_codigo';";
                 senteciaSql = senteciaSql.Replace("@gru_codigo", codigoCategoria);
                 dataBaseConection.ejecutarInsert(senteciaSql);
             }
