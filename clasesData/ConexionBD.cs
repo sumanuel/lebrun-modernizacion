@@ -204,6 +204,24 @@ namespace lebrun.clasesData
         }
 
 
+        // MySQL 8 trae ONLY_FULL_GROUP_BY activo por defecto y rechaza las consultas que seleccionan columnas que no estan en
+        // el GROUP BY (MySQL 5.5 las admite). Mientras esas consultas no se reescriban una por una, cada conexion que se abre
+        // quita solo ese modo de su sesion; en MySQL 5.5 no cambia nada. El resto de los modos del servidor se conserva.
+        private void abrirConexion()
+        {
+            mySqlConnection.Open();
+            try
+            {
+                MySqlCommand modo = mySqlConnection.CreateCommand();
+                modo.CommandText = "SET SESSION sql_mode = TRIM(BOTH ',' FROM REPLACE(CONCAT(',', @@SESSION.sql_mode, ','), ',ONLY_FULL_GROUP_BY,', ','))";
+                modo.ExecuteNonQuery();
+            }
+            catch (Exception)
+            {
+                // si no se pudo cambiar el modo, la conexion sigue funcionando como antes
+            }
+        }
+
         /* No Implementado CERRAR EL DATAREADER POR CUENTA PROPIA 23/05/2012 */
         public MySqlDataReader ejecutarQueryDr(string sentenciaSql)
         {
@@ -212,7 +230,7 @@ namespace lebrun.clasesData
 
             try
             {
-                mySqlConnection.Open();
+                abrirConexion();
 
                 if (conexionExitosa == true)
                 {
@@ -242,7 +260,7 @@ namespace lebrun.clasesData
 
             try
             {
-                mySqlConnection.Open();
+                abrirConexion();
 
                 if (conexionExitosa == true)
                 {
@@ -276,7 +294,7 @@ namespace lebrun.clasesData
             {
                 mySqlConnection = new MySqlConnection(strConnectionString);
                 MySqlDataAdapter Adaptador = new MySqlDataAdapter(sentenciaSql, mySqlConnection);
-                mySqlConnection.Open();
+                abrirConexion();
                 temp = mySqlConnection.ServerThread;
                 Adaptador.Fill(resultDataSet,"tablas");             
                 return resultDataSet;
@@ -299,7 +317,7 @@ namespace lebrun.clasesData
             try
             {
                 mySqlConnection = new MySqlConnection(strConnectionString);
-                mySqlConnection.Open();
+                abrirConexion();
                 if (conexionExitosa == true)
                 {
                     MySqlCommand comando = new MySqlCommand(sentenciaSql, mySqlConnection);                    
@@ -327,7 +345,7 @@ namespace lebrun.clasesData
             try
             {
                 mySqlConnection = new MySqlConnection(strConnectionString);
-                mySqlConnection.Open();
+                abrirConexion();
                 Da = new MySqlDataAdapter();
                 MySqlCommand comandoT = new MySqlCommand(sentenciaSql, mySqlConnection);
                 //comandoT.CommandTimeout = 200;
@@ -363,7 +381,7 @@ namespace lebrun.clasesData
             try
             {
                 mySqlConnection = new MySqlConnection(strConnectionString);
-                mySqlConnection.Open();
+                abrirConexion();
                 Da = new MySqlDataAdapter();
                 MySqlCommand comandoT = new MySqlCommand(sentenciaSql, mySqlConnection);
                 comandoT.CommandTimeout = 200;
@@ -392,7 +410,7 @@ namespace lebrun.clasesData
             mySqlConnection = new MySqlConnection(strConnectionString);
             try
             {
-                mySqlConnection.Open();
+                abrirConexion();
                 MySqlCommand cmd = mySqlConnection.CreateCommand();
                 cmd.CommandTimeout = timeOut;
 
@@ -425,7 +443,7 @@ namespace lebrun.clasesData
             mySqlConnection = new MySqlConnection(strConnectionString);
             try
             {
-                mySqlConnection.Open();
+                abrirConexion();
 
                 foreach (DataRow fila in data.Rows)
                 {
@@ -502,7 +520,7 @@ namespace lebrun.clasesData
             Boolean centinela = true;
             try
             {
-                mySqlConnection.Open();
+                abrirConexion();
                 if (conexionExitosa == true)
                 {
                     MySqlCommand sql = new MySqlCommand(sentenciaSql, mySqlConnection);
@@ -534,7 +552,7 @@ namespace lebrun.clasesData
             Boolean centinela = true;
             try
             {
-                mySqlConnection.Open();
+                abrirConexion();
                 if (conexionExitosa == true)
                 {
                     MySqlCommand sql = new MySqlCommand(sentenciaSql, mySqlConnection);
@@ -561,7 +579,7 @@ namespace lebrun.clasesData
             int resultado = -1;
             try
             {
-                mySqlConnection.Open();
+                abrirConexion();
                 if (conexionExitosa == true)
                 {
                     MySqlCommand sql = new MySqlCommand(sentenciaSql, mySqlConnection);
@@ -607,7 +625,7 @@ namespace lebrun.clasesData
             mySqlConnection = new MySqlConnection(strConnectionString);
             try
             {
-                mySqlConnection.Open();
+                abrirConexion();
 
                 foreach (DataGridViewRow fila in data.Rows)
                 {
@@ -641,7 +659,7 @@ namespace lebrun.clasesData
             mySqlConnection = new MySqlConnection(strConnectionString);
             try
             {
-                mySqlConnection.Open();
+                abrirConexion();
 
                 foreach (DataGridViewRow fila in data.Rows)
                 {
@@ -676,7 +694,7 @@ namespace lebrun.clasesData
             mySqlConnection = new MySqlConnection(strConnectionString);
             try
             {
-                mySqlConnection.Open();
+                abrirConexion();
 
                 MySqlCommand cmd = mySqlConnection.CreateCommand();
                 cmd.CommandText = sentenciaSql;
@@ -706,7 +724,7 @@ namespace lebrun.clasesData
             mySqlConnection = new MySqlConnection(strConnectionString);
             try
             {
-                mySqlConnection.Open();
+                abrirConexion();
 
                 MySqlCommand cmd = mySqlConnection.CreateCommand();
                 cmd.CommandText = sentenciaSql;
@@ -738,7 +756,7 @@ namespace lebrun.clasesData
             mySqlConnection = new MySqlConnection(strConnectionString);
             try
             {
-                mySqlConnection.Open();
+                abrirConexion();
                 MySqlCommand cmd = mySqlConnection.CreateCommand();
                 for (int z = 0; z < valores.GetLength(0); z++) {
                     cmd = mySqlConnection.CreateCommand();
