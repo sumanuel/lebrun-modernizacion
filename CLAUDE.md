@@ -71,7 +71,9 @@ It installs the Crystal Reports 13.0.35 **32-bit** runtime if missing, registers
 `regsvr32`, asks for the MySQL server/port/user/password, and writes `ip.txt` and `lebrun.exe.config`. For
 unattended installs pass `/VERYSILENT /Servidor=... /Puerto=... /Usuario=... /Clave=...` (without `/Servidor` a
 silent install leaves `ip.txt` and the config alone). `PNPDLL.dll` (native 32-bit DLL of the current fiscal
-printer, called through P/Invoke) is not in the project; it goes in `05_Instalador\extras\` before compiling.
+printer, called through P/Invoke) is not in the project but is already in `05_Instalador\extras\`, so the setup installs it
+into the app folder (checked 2026-10-23: it loads in a 32-bit process and exports `PFAbreNF`, `PFabrefiscal`, `PFtotal`,
+`PFrepz`, `PFrepx` and `PFrenglon`). It has **not** been tested against a connected fiscal printer.
 
 `instalador\prueba_sandbox\probar_instalador.ps1` installs silently, checks the result, starts the app,
 uninstalls and writes a report; `Lebrun_Prueba.wsb` runs it in Windows Sandbox for a clean-PC test. Run on the

@@ -25,5 +25,6 @@ Instalacion desatendida (por ejemplo para varias PC)
   Lebrun_Setup_1.0.0_x86.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /Servidor=192.168.1.10 /Puerto=3306 /Usuario=root /Clave=xxxx
   Sin /Servidor, en modo silencioso no se toca ip.txt ni lebrun.exe.config.
 
-Pendiente: PNPDLL.dll (libreria nativa de 32 bits de la impresora fiscal actual) no esta en el proyecto;
-colocarla en Instaladores\05_Instalador\extras\ antes de compilar el instalador.
+PNPDLL.dll (libreria nativa de 32 bits de la impresora fiscal actual) no esta en el proyecto: se toma de
+Instaladores\05_Instalador\extras\ al compilar el instalador y se copia a la carpeta de la aplicacion. Ya esta en
+esa carpeta (23/10/2026); carga bien en 32 bits, pero falta probarla con la impresora fiscal conectada.
