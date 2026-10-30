@@ -397,6 +397,19 @@
       <DependentUpon>lbxConsultaGerencial.cs</DependentUpon>
     </Compile>
     <Compile Include="formularios\gerencial\EstiloGerencial.cs" />
+    <Compile Include="formularios\gerencial\lbxListadoGerencial.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxArticulosExistencia.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxArticulosSinVender.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxPreciosCambiados.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="clases\gerencial\ListadosGerenciales.cs" />
     <Compile Include="formularios\gerencial\lbxConsultaGerente.Diseno.cs">
       <DependentUpon>lbxConsultaGerente.cs</DependentUpon>
     </Compile>

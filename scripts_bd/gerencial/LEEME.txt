@@ -1,0 +1,22 @@
+SCRIPTS DE MENU DEL MODULO GERENCIAL
+====================================
+
+El menu de la aplicacion sale de la base de datos: la tabla sysconf.conf_menu dice que pantalla abre cada opcion (columna
+menu_ruta = nombre completo de la clase) y sysconf.confmapamenu dice quien puede verla. Las opciones de Gerencial ya existen en
+las bases de produccion con la ruta vacia; estos scripts solo completan esa ruta cuando cada pantalla esta construida.
+
+Como se usan
+- Un par de archivos por etapa de trabajo (ver Seguimiento_Modulo_Gerencial.xlsx):
+    etapaN_<nombre>_menu.sql            asigna las rutas
+    etapaN_<nombre>_menu_revertir.sql   las deja otra vez vacias
+- Se pueden ejecutar mas de una vez: solo cambian las filas cuya ruta esta vacia (NULL, '', 'NULL' o '(NULL)'); una ruta que ya
+  tenga otro valor no se toca.
+- Se ejecutan sobre la base ya montada, con cualquier cliente de MySQL (mysql, Workbench, phpMyAdmin):
+    mysql -u usuario -p < etapa1_listas_simples_menu.sql
+- Cada script termina con una consulta que muestra el resultado; todas las opciones listadas deben tener su ruta.
+- La aplicacion lee el menu al iniciar sesion: despues de ejecutar el script hay que cerrar sesion y volver a entrar.
+- Aplicar el script antes de instalar la version de la aplicacion que trae la pantalla hace que la opcion muestre "Pantalla no
+  disponible" (el programa lo avisa y lo registra); no daña nada.
+
+Estado de las etapas
+- etapa1_listas_simples: Articulos Agotados, Articulos Negativos, Art. Sin Vender, Precios Cambiados.
