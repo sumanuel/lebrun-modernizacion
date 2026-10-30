@@ -2,25 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using static lebrun.formularios.gerencial.EstiloGerencial;
 
 namespace lebrun.formularios.gerencial
 {
     // Diseno visual de la pantalla. Se aplica al crear el formulario (AplicarDiseno): reubica y da estilo a los controles que
     // declara lbxConsultaGerencial.Designer.cs, sin cambiar sus nombres ni la logica que los llena (lbxConsultaGerencial.cs).
-    // Los colores salen de los que ya usa el sistema: azul (49,106,197), celeste de las grillas (232,240,250), verde oscuro del
-    // nombre del producto y rojo (192,0,0) de los avisos.
+    // Las piezas comunes (colores, tarjetas, campos, grillas) estan en EstiloGerencial.cs.
     public partial class lbxConsultaGerencial
     {
-        private static readonly Color Azul = Color.FromArgb(49, 106, 197);
-        private static readonly Color AzulClaro = Color.FromArgb(232, 240, 250);
-        private static readonly Color Fondo = Color.FromArgb(244, 246, 250);
-        private static readonly Color Borde = Color.FromArgb(205, 214, 228);
-        private static readonly Color CampoFondo = Color.FromArgb(238, 242, 248);
-        private static readonly Color TextoSecundario = Color.FromArgb(84, 94, 110);
-        private static readonly Color Negativo = Color.FromArgb(192, 0, 0);
-        private const string Fuente = "Segoe UI";
-        private const int AltoFila = 26;
-
         // Controles que crea el diseno (no estan en el Designer.cs)
         private DataGridView dataGridView4;
         private Label lblNotaExistencias;
@@ -36,6 +26,7 @@ namespace lebrun.formularios.gerencial
 
         private void AplicarDiseno()
         {
+            CamposTexto = camposTexto;
             SuspendLayout();
             AutoScaleMode = AutoScaleMode.None;
             Font = new Font(Fuente, 9F);
@@ -63,21 +54,9 @@ namespace lebrun.formularios.gerencial
             dataGridView1.CellFormatting += FormatearMovimiento;
             dataGridView4.CellFormatting += FormatearMovimiento;
             dataGridView3.CellFormatting += dataGridView3_CellFormatting;
-            EstiloPestanas();
+            EstiloPestanas(txtRes1);
 
-            TableLayoutPanel raiz = new TableLayoutPanel();
-            raiz.Dock = DockStyle.Fill;
-            raiz.ColumnCount = 1;
-            raiz.RowCount = 2;
-            raiz.Padding = new Padding(12, 10, 12, 10);
-            raiz.RowStyles.Add(new RowStyle(SizeType.Absolute, 70));
-            raiz.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            txtRes1.Dock = DockStyle.Fill;
-            txtRes1.Margin = new Padding(0);
-            Controls.Clear();
-            raiz.Controls.Add(encabezado, 0, 0);
-            raiz.Controls.Add(txtRes1, 0, 1);
-            Controls.Add(raiz);
+            ArmarPantalla(this, encabezado, txtRes1);
 
             // los contenedores originales ya quedaron vacios: sus controles se movieron a las tarjetas nuevas
             Control[] viejos = { groupBox1, groupBox2, groupBox3, groupBox4, groupBox5, groupBox6, groupBox7, groupBox8, groupBox9,
@@ -91,56 +70,7 @@ namespace lebrun.formularios.gerencial
 
         private Control ConstruirEncabezado()
         {
-            TableLayoutPanel t = new TableLayoutPanel();
-            t.Dock = DockStyle.Fill;
-            t.BackColor = Color.White;
-            t.Margin = new Padding(0, 0, 0, 10);
-            t.Padding = new Padding(14, 6, 14, 6);
-            t.ColumnCount = 4;
-            t.RowCount = 1;
-            t.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-            t.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 210));
-            t.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 52));
-            t.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            t.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            ConBorde(t);
-
-            Etiqueta(label21, "Código del producto");
-            label21.Font = new Font(Fuente, 9.5F, FontStyle.Bold);
-            label21.Margin = new Padding(0, 0, 10, 0);
-
-            txtCodigo.BorderStyle = BorderStyle.FixedSingle;
-            txtCodigo.BackColor = Color.White;
-            txtCodigo.Font = new Font(Fuente, 12F, FontStyle.Bold);
-            txtCodigo.Dock = DockStyle.None;
-            txtCodigo.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            txtCodigo.Margin = new Padding(0, 0, 8, 0);
-
-            button3.FlatStyle = FlatStyle.Flat;
-            button3.FlatAppearance.BorderColor = Borde;
-            button3.BackColor = Color.White;
-            button3.Cursor = Cursors.Hand;
-            button3.Size = new Size(40, 32);
-            button3.Anchor = AnchorStyles.Left;
-            button3.Margin = new Padding(0);
-
-            label22.AutoSize = false;
-            label22.Dock = DockStyle.Fill;
-            label22.AutoEllipsis = true;
-            label22.TextAlign = ContentAlignment.MiddleLeft;
-            label22.Font = new Font(Fuente, 15F, FontStyle.Bold);
-            label22.ForeColor = Color.DarkGreen;
-            label22.Margin = new Padding(8, 0, 0, 0);
-            if (label22.Text == "Esperado Codigo")
-            {
-                label22.Text = "Escriba un código y presione Enter";
-            }
-
-            t.Controls.Add(label21, 0, 0);
-            t.Controls.Add(txtCodigo, 1, 0);
-            t.Controls.Add(button3, 2, 0);
-            t.Controls.Add(label22, 3, 0);
-            return t;
+            return EncabezadoProducto(label21, txtCodigo, button3, label22);
         }
 
         private void ConstruirGeneral()
@@ -207,7 +137,7 @@ namespace lebrun.formularios.gerencial
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             t.Controls.Add(Tarjeta("Movimientos de inventario", dataGridView1, out cabeceraMovimientos), 0, 2);
-            PaginaConContenido(tabPage2, t);
+            PaginaConContenido(tabPage2, t, new Size(900, 420));
         }
 
         // Pestana Costos: cifras de costo arriba, las compras del producto y el costo registrado en ventas y ajustes.
@@ -239,18 +169,7 @@ namespace lebrun.formularios.gerencial
             dataGridView4.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView4.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             t.Controls.Add(Tarjeta("Costo registrado en ventas y ajustes", dataGridView4, out cabeceraCostoMov), 0, 2);
-            PaginaConContenido(tabPage3, t);
-        }
-
-        private void PaginaConContenido(TabPage pagina, Control contenido)
-        {
-            pagina.Controls.Clear();
-            pagina.Padding = new Padding(10, 10, 0, 0);
-            pagina.BackColor = Fondo;
-            pagina.UseVisualStyleBackColor = false;
-            pagina.AutoScroll = true;
-            contenido.MinimumSize = new Size(900, 420);
-            pagina.Controls.Add(contenido);
+            PaginaConContenido(tabPage3, t, new Size(900, 420));
         }
 
         private Control FilaIndicadores()
@@ -407,150 +326,6 @@ namespace lebrun.formularios.gerencial
             return Tarjeta("Movimientos del año actual", t);
         }
 
-        // ---------- piezas de construccion ----------
-
-        private TableLayoutPanel Columnas(float[] porcentajes)
-        {
-            TableLayoutPanel t = new TableLayoutPanel();
-            t.Dock = DockStyle.Fill;
-            t.BackColor = Fondo;
-            t.Margin = new Padding(0);
-            t.ColumnCount = porcentajes.Length;
-            t.RowCount = 1;
-            foreach (float p in porcentajes)
-            {
-                t.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, p));
-            }
-            t.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            return t;
-        }
-
-        // Rejilla de pares etiqueta/valor: por cada par, una columna de ancho automatico (etiqueta) y otra que se reparte el resto.
-        private TableLayoutPanel Rejilla(int pares, int filas)
-        {
-            TableLayoutPanel t = new TableLayoutPanel();
-            t.Dock = DockStyle.Fill;
-            t.BackColor = Color.White;
-            t.Margin = new Padding(0);
-            t.ColumnCount = pares * 2;
-            t.RowCount = filas + 1;
-            for (int i = 0; i < pares; i++)
-            {
-                t.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-                t.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / pares));
-            }
-            for (int i = 0; i < filas; i++)
-            {
-                t.RowStyles.Add(new RowStyle(SizeType.Absolute, AltoFila));
-            }
-            // fila de relleno: sin ella la ultima fila absorbe el espacio sobrante y se estira
-            t.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            return t;
-        }
-
-        private void Par(TableLayoutPanel t, int fila, int par, Label etiqueta, string texto, Control valor)
-        {
-            Par(t, fila, par, etiqueta, valor, texto);
-        }
-
-        private void Par(TableLayoutPanel t, int fila, int par, Label etiqueta, Control valor, string texto)
-        {
-            t.Controls.Add(Etiqueta(etiqueta, texto), par * 2, fila);
-            if (valor != null)
-            {
-                t.Controls.Add(Campo(valor), par * 2 + 1, fila);
-            }
-        }
-
-        private Label Etiqueta(Label l, string texto)
-        {
-            l.AutoSize = true;
-            l.Dock = DockStyle.None;
-            l.Anchor = AnchorStyles.Left;
-            l.Margin = new Padding(0, 0, 8, 0);
-            l.TextAlign = ContentAlignment.MiddleLeft;
-            l.Font = new Font(Fuente, 9F);
-            l.ForeColor = TextoSecundario;
-            l.BackColor = Color.Transparent;
-            l.Visible = true;
-            if (texto != null)
-            {
-                l.Text = texto;
-            }
-            return l;
-        }
-
-        private Label EtiquetaNueva(string texto)
-        {
-            return Etiqueta(new Label(), texto);
-        }
-
-        private Label Subtitulo(string texto)
-        {
-            Label l = Etiqueta(new Label(), texto);
-            l.Font = new Font(Fuente, 8.5F, FontStyle.Bold);
-            l.ForeColor = Azul;
-            return l;
-        }
-
-        // Devuelve el control que debe ir en la celda: los cuadros de texto se envuelven en un panel con fondo para que se vean
-        // como campos; la lista de precios se estiliza directamente.
-        private Control Campo(Control c)
-        {
-            TextBox texto = c as TextBox;
-            if (texto == null)
-            {
-                c.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-                c.Margin = new Padding(0, 2, 10, 2);
-                ComboBox lista = c as ComboBox;
-                if (lista != null)
-                {
-                    lista.FlatStyle = FlatStyle.Flat;
-                    lista.BackColor = CampoFondo;
-                    lista.Font = new Font(Fuente, 9F, FontStyle.Bold);
-                }
-                return c;
-            }
-            texto.BorderStyle = BorderStyle.None;
-            texto.ReadOnly = true;
-            texto.TabStop = false;
-            texto.BackColor = CampoFondo;
-            texto.ForeColor = Color.Black;
-            texto.Font = new Font(Fuente, 9F, FontStyle.Bold);
-            texto.TextAlign = camposTexto.Contains(texto.Name) ? HorizontalAlignment.Left : HorizontalAlignment.Right;
-            texto.Dock = DockStyle.Fill;
-            texto.Margin = new Padding(0);
-
-            Panel envoltorio = new Panel();
-            envoltorio.BackColor = CampoFondo;
-            envoltorio.Dock = DockStyle.Fill;
-            envoltorio.Margin = new Padding(0, 2, 10, 2);
-            envoltorio.Padding = new Padding(6, 3, 4, 0);
-            envoltorio.Controls.Add(texto);
-            return envoltorio;
-        }
-
-        // Varios campos en una misma celda (por ejemplo los tres descuentos).
-        private Control Varios(params TextBox[] campos)
-        {
-            TableLayoutPanel t = new TableLayoutPanel();
-            t.Dock = DockStyle.Fill;
-            t.BackColor = Color.White;
-            t.Margin = new Padding(0);
-            t.ColumnCount = campos.Length;
-            t.RowCount = 1;
-            t.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            for (int i = 0; i < campos.Length; i++)
-            {
-                t.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / campos.Length));
-                Control c = Campo(campos[i]);
-                c.Margin = new Padding(0, 2, i == campos.Length - 1 ? 10 : 4, 2);
-                c.Padding = new Padding(3, 3, 2, 0);
-                t.Controls.Add(c, i, 0);
-            }
-            return t;
-        }
-
         // ENT y su porcentaje comparten celda: [valor] % [valor]
         private Control EntregaPorcentaje()
         {
@@ -574,175 +349,6 @@ namespace lebrun.formularios.gerencial
             return t;
         }
 
-        private Control Tarjeta(string titulo, Control cuerpo)
-        {
-            Label cabecera;
-            return Tarjeta(titulo, cuerpo, out cabecera);
-        }
-
-        private Control Tarjeta(string titulo, Control cuerpo, out Label cabeceraCreada)
-        {
-            TableLayoutPanel c = new TableLayoutPanel();
-            c.Dock = DockStyle.Fill;
-            c.BackColor = Color.White;
-            c.Margin = new Padding(0, 0, 10, 10);
-            c.Padding = new Padding(12, 9, 6, 6);
-            c.ColumnCount = 1;
-            c.RowCount = 2;
-            c.RowStyles.Add(new RowStyle(SizeType.Absolute, 26));
-            c.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            ConBorde(c);
-
-            Label cabecera = new Label();
-            cabeceraCreada = cabecera;
-            cabecera.Text = titulo;
-            cabecera.AutoSize = false;
-            cabecera.Dock = DockStyle.Fill;
-            cabecera.TextAlign = ContentAlignment.MiddleLeft;
-            cabecera.Font = new Font(Fuente, 9.5F, FontStyle.Bold);
-            cabecera.ForeColor = Azul;
-            cabecera.Margin = new Padding(0);
-            c.Controls.Add(cabecera, 0, 0);
-            cuerpo.Dock = DockStyle.Fill;
-            c.Controls.Add(cuerpo, 0, 1);
-            return c;
-        }
-
-        // Cifra destacada: etiqueta pequena arriba y el valor grande debajo.
-        private Control Indicador(Label etiqueta, string texto, TextBox valor)
-        {
-            TableLayoutPanel c = new TableLayoutPanel();
-            c.Dock = DockStyle.Fill;
-            c.BackColor = Color.White;
-            c.Margin = new Padding(0, 0, 10, 10);
-            c.Padding = new Padding(12, 8, 6, 4);
-            c.ColumnCount = 1;
-            c.RowCount = 2;
-            c.RowStyles.Add(new RowStyle(SizeType.Absolute, 20));
-            c.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            ConBorde(c);
-
-            Etiqueta(etiqueta, texto);
-            etiqueta.Font = new Font(Fuente, 8.5F);
-            etiqueta.Margin = new Padding(0);
-            valor.BorderStyle = BorderStyle.None;
-            valor.ReadOnly = true;
-            valor.TabStop = false;
-            valor.BackColor = Color.White;
-            valor.ForeColor = Azul;
-            valor.Font = new Font(Fuente, 17F, FontStyle.Bold);
-            valor.TextAlign = HorizontalAlignment.Left;
-            valor.Dock = DockStyle.None;
-            valor.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            valor.Margin = new Padding(0);
-            c.Controls.Add(etiqueta, 0, 0);
-            c.Controls.Add(valor, 0, 1);
-            return c;
-        }
-
-        // Cifra destacada que repite el valor de un campo de la pestana General: se actualiza sola cuando ese campo cambia.
-        private Control IndicadorEspejo(string titulo, TextBox origen)
-        {
-            Label valor = new Label();
-            valor.AutoSize = false;
-            valor.Font = new Font(Fuente, 17F, FontStyle.Bold);
-            valor.ForeColor = Azul;
-            valor.BackColor = Color.White;
-            valor.TextAlign = ContentAlignment.MiddleLeft;
-            valor.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            valor.Margin = new Padding(0);
-            valor.Height = 36;
-            valor.Text = origen.Text;
-            origen.TextChanged += delegate { valor.Text = origen.Text; };
-
-            TableLayoutPanel c = new TableLayoutPanel();
-            c.Dock = DockStyle.Fill;
-            c.BackColor = Color.White;
-            c.Margin = new Padding(0, 0, 10, 10);
-            c.Padding = new Padding(12, 8, 6, 4);
-            c.ColumnCount = 1;
-            c.RowCount = 2;
-            c.RowStyles.Add(new RowStyle(SizeType.Absolute, 20));
-            c.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            ConBorde(c);
-            Label etiqueta = EtiquetaNueva(titulo);
-            etiqueta.Font = new Font(Fuente, 8.5F);
-            etiqueta.Margin = new Padding(0);
-            c.Controls.Add(etiqueta, 0, 0);
-            c.Controls.Add(valor, 0, 1);
-            return c;
-        }
-
-        private void ConBorde(Control c)
-        {
-            c.Paint += PintarTarjeta;
-            c.Resize += delegate { c.Invalidate(); };
-        }
-
-        private void PintarTarjeta(object sender, PaintEventArgs e)
-        {
-            Control c = (Control)sender;
-            using (Pen lapiz = new Pen(Borde))
-            {
-                e.Graphics.DrawRectangle(lapiz, 0, 0, c.Width - 1, c.Height - 1);
-            }
-            using (SolidBrush pincel = new SolidBrush(Azul))
-            {
-                e.Graphics.FillRectangle(pincel, 0, 0, c.Width, 3);
-            }
-        }
-
-        private void EstiloGrilla(DataGridView g)
-        {
-            g.BorderStyle = BorderStyle.None;
-            g.BackgroundColor = Color.White;
-            g.EnableHeadersVisualStyles = false;
-            g.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            g.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            g.ColumnHeadersHeight = 30;
-            g.ColumnHeadersDefaultCellStyle.BackColor = Azul;
-            g.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            g.ColumnHeadersDefaultCellStyle.SelectionBackColor = Azul;
-            g.ColumnHeadersDefaultCellStyle.Font = new Font(Fuente, 9F, FontStyle.Bold);
-            g.DefaultCellStyle.Font = new Font(Fuente, 9F);
-            g.DefaultCellStyle.SelectionBackColor = Color.FromArgb(190, 212, 240);
-            g.DefaultCellStyle.SelectionForeColor = Color.Black;
-            g.AlternatingRowsDefaultCellStyle.BackColor = AzulClaro;
-            g.GridColor = Borde;
-            g.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            g.RowHeadersVisible = false;
-            g.RowTemplate.Height = 24;
-            g.AllowUserToResizeRows = false;
-        }
-
-        private void EstiloPestanas()
-        {
-            txtRes1.DrawMode = TabDrawMode.OwnerDrawFixed;
-            txtRes1.SizeMode = TabSizeMode.Fixed;
-            txtRes1.ItemSize = new Size(130, 32);
-            txtRes1.Font = new Font(Fuente, 9.5F, FontStyle.Bold);
-            txtRes1.DrawItem += txtRes1_DrawItem;
-        }
-
-        private void txtRes1_DrawItem(object sender, DrawItemEventArgs e)
-        {
-            Rectangle zona = txtRes1.GetTabRect(e.Index);
-            bool activa = e.Index == txtRes1.SelectedIndex;
-            using (SolidBrush fondo = new SolidBrush(Fondo))
-            {
-                e.Graphics.FillRectangle(fondo, zona);
-            }
-            TextRenderer.DrawText(e.Graphics, txtRes1.TabPages[e.Index].Text, txtRes1.Font, zona, activa ? Azul : TextoSecundario,
-                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
-            if (activa)
-            {
-                using (SolidBrush linea = new SolidBrush(Azul))
-                {
-                    e.Graphics.FillRectangle(linea, zona.Left + 8, zona.Bottom - 3, zona.Width - 16, 3);
-                }
-            }
-        }
-
         // La consulta del historial trae los encabezados tal como los escribio el SQL (CANT_Vendida, Utilida...): se muestran legibles.
         private void dataGridView3_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
@@ -752,37 +358,6 @@ namespace lebrun.formularios.gerencial
                 dataGridView3.Columns[i].HeaderText = encabezados[i];
             }
             ActualizarContador(dataGridView3, cabeceraHistorial, "Historial de ventas");
-        }
-
-        // Cuenta de registros junto al titulo de cada tarjeta con grilla.
-        private void ActualizarContador(DataGridView g, Label cabecera, string titulo)
-        {
-            if (cabecera == null)
-            {
-                return;
-            }
-            int n = g.Rows.Count;
-            if (n > 0)
-            {
-                cabecera.Text = titulo + "  ·  " + n + (n == 1 ? " registro" : " registros");
-            }
-            else
-            {
-                cabecera.Text = g.DataSource != null ? titulo + "  ·  sin registros" : titulo;
-            }
-        }
-
-        private void AlinearNumericas(DataGridView g, params string[] columnas)
-        {
-            foreach (string nombre in columnas)
-            {
-                if (g.Columns.Contains(nombre))
-                {
-                    g.Columns[nombre].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-                    g.Columns[nombre].DefaultCellStyle.Format = "n2";
-                    g.Columns[nombre].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight;
-                }
-            }
         }
 
         private void dataGridView1_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)

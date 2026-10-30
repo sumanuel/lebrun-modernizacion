@@ -21,6 +21,7 @@ namespace lebrun.formularios.gerencial
         public lbxConsultaGerente()
         {
             InitializeComponent();
+            AplicarDiseno();
         }
 
         private void lbxConsultaGerente_Load(object sender, EventArgs e)
@@ -55,7 +56,7 @@ namespace lebrun.formularios.gerencial
                 txtCodigo.SelectionStart = 0;
                 txtCodigo.SelectionLength = txtCodigo.Text.Length;
 
-                label22.Text = "Esperado Codigo";
+                label22.Text = "Escriba un código y presione Enter";
                 txtCateg.Clear();
                 txtSubCat.Clear();
                 txtUniM.Clear();
@@ -97,12 +98,12 @@ namespace lebrun.formularios.gerencial
                     if (consulGeneral.EstadoProduc == "Activo")
                     {
                         txtEstado.Text = consulGeneral.EstadoProduc;
-                        txtEstado.ForeColor = Color.Lime;
+                        txtEstado.ForeColor = Color.DarkGreen;
                     }
                     else
                     {
                         txtEstado.Text = consulGeneral.EstadoProduc;
-                        txtEstado.ForeColor = Color.Red;
+                        txtEstado.ForeColor = Color.FromArgb(192, 0, 0);
                     }
                     txtUltCompra.Text = consulGeneral.FecUltCompProduc;
                     txtCantComp.Text = consulGeneral.UltCantCompProduc;
