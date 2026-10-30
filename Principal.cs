@@ -127,6 +127,7 @@ namespace lebrun
         }
         private void Principal_Load(object sender, EventArgs e)
         {
+            this.MdiChildActivate += CentrarHijoMdi;
             string[] parametros;
             parametros = Environment.GetCommandLineArgs();
             /************************
@@ -422,6 +423,36 @@ namespace lebrun
                 //NuevoMenu[0].
             }
             MenuPadre.DropDownItems.Add(NuevoMenu[0]);
+        }
+
+        // Cada pantalla hija se abre centrada en el area de trabajo la primera vez que se muestra (despues queda donde el usuario la
+        // ponga). Las pantallas maximizadas no se tocan.
+        private readonly HashSet<Form> hijosCentrados = new HashSet<Form>();
+
+        private void CentrarHijoMdi(object sender, EventArgs e)
+        {
+            Form hijo = this.ActiveMdiChild;
+            if (hijo == null || hijosCentrados.Contains(hijo))
+            {
+                return;
+            }
+            hijosCentrados.Add(hijo);
+            hijo.FormClosed += delegate { hijosCentrados.Remove(hijo); };
+            if (hijo.WindowState != FormWindowState.Normal)
+            {
+                return;
+            }
+            foreach (Control control in this.Controls)
+            {
+                if (control is MdiClient)
+                {
+                    Rectangle area = control.ClientRectangle;
+                    int x = Math.Max(0, (area.Width - hijo.Width) / 2);
+                    int y = Math.Max(0, (area.Height - hijo.Height) / 2);
+                    hijo.Location = new Point(x, y);
+                    break;
+                }
+            }
         }
 
         private void MenuItemClicked(object sender, EventArgs e)

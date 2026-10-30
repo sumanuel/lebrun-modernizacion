@@ -393,6 +393,9 @@
     <Compile Include="formularios\gerencial\lbxConsultaGerencial.Designer.cs">
       <DependentUpon>lbxConsultaGerencial.cs</DependentUpon>
     </Compile>
+    <Compile Include="formularios\gerencial\lbxConsultaGerencial.Diseno.cs">
+      <DependentUpon>lbxConsultaGerencial.cs</DependentUpon>
+    </Compile>
     <Compile Include="formularios\gerencial\lbxConsultaGerente.cs">
       <SubType>Form</SubType>
     </Compile>

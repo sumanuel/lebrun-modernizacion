@@ -1091,6 +1091,136 @@ namespace lebrun.clases.gerencial
                 }
             }
         }
+        // Movimientos de inventario del producto (kardex): ventas, devoluciones, ajustes y compras que afectan la existencia, del mas
+        // reciente al mas antiguo. El saldo se calcula hacia atras a partir de la existencia actual (adminv2.existencia).
+        // Si los movimientos no suman esa existencia (por ejemplo, saldo inicial cargado sin movimiento), diferenciaSaldo lo indica.
+        public DataTable consultaMovimientosInventario(string codigo, out decimal diferenciaSaldo)
+        {
+            diferenciaSaldo = 0m;
+            string cod = codigo.Replace("'", "''");
+            string[] tablas = { "adminvmov", "adminvmov2" };
+            StringBuilder consulta = new StringBuilder();
+            for (int i = 0; i < tablas.Length; i++)
+            {
+                if (i > 0)
+                {
+                    consulta.Append(" UNION ALL ");
+                }
+                consulta.Append("SELECT IF(m.mov_fecha > '1900-01-01', m.mov_fecha, NULL) AS fecha, " + HoraOrdenable("m.mov_hora") + " AS hora, m.mov_tipdoc AS tipo, m.mov_docume AS documento, " +
+                                "a.alm_descri AS almacen, m.mov_cant AS cantidad, m.mov_costo AS costo, m.mov_fisico AS fisico " +
+                                "FROM " + tablas[i] + " m LEFT JOIN admalmacenes a ON a.alm_codigo = m.mov_codalm " +
+                                "WHERE m.mov_codigo='" + cod + "' AND m.mov_invact='1' AND m.mov_fisico IN ('1','-1')");
+            }
+            consulta.Append(" ORDER BY fecha DESC, hora DESC LIMIT 500");
+            DataTable origen = dataBaseConection.fDataTable(consulta.ToString());
+            dataBaseConection.cerrarConexion();
+
+            DataTable existenciaTabla = dataBaseConection.fDataTable("SELECT existencia FROM adminv2 WHERE inv2_codigo='" + cod + "'");
+            dataBaseConection.cerrarConexion();
+            decimal existencia = 0m;
+            if (existenciaTabla.Rows.Count > 0)
+            {
+                existencia = DecSeguro(existenciaTabla.Rows[0]["existencia"]);
+            }
+
+            DataTable resultado = new DataTable();
+            resultado.Columns.Add("Fecha", typeof(string));
+            resultado.Columns.Add("Tipo", typeof(string));
+            resultado.Columns.Add("Documento", typeof(string));
+            resultado.Columns.Add("Almacén", typeof(string));
+            resultado.Columns.Add("Entrada", typeof(decimal));
+            resultado.Columns.Add("Salida", typeof(decimal));
+            resultado.Columns.Add("Saldo", typeof(decimal));
+            resultado.Columns.Add("Costo", typeof(decimal));
+
+            decimal saldo = existencia;
+            foreach (DataRow fila in origen.Rows)
+            {
+                decimal cantidad = DecSeguro(fila["cantidad"]);
+                string fisico = Convert.ToString(fila["fisico"]).Trim();
+                decimal entrada = fisico == "1" ? cantidad : 0m;
+                decimal salida = fisico == "-1" ? cantidad : 0m;
+                DataRow nueva = resultado.NewRow();
+                nueva["Fecha"] = FechaLegible(fila["fecha"]);
+                nueva["Tipo"] = NombreTipoMovimiento(Convert.ToString(fila["tipo"]).Trim());
+                nueva["Documento"] = Convert.ToString(fila["documento"]).Trim();
+                nueva["Almacén"] = Convert.ToString(fila["almacen"]).Trim();
+                nueva["Entrada"] = entrada;
+                nueva["Salida"] = salida;
+                nueva["Saldo"] = saldo;
+                nueva["Costo"] = DecSeguro(fila["costo"]);
+                resultado.Rows.Add(nueva);
+                saldo = saldo - entrada + salida;
+            }
+            // al llegar al movimiento mas antiguo que se muestra, lo que queda es el saldo previo; si se mostraron todos los
+            // movimientos (menos de 500) y no es cero, la existencia tiene un saldo que no proviene de movimientos
+            if (origen.Rows.Count < 500)
+            {
+                diferenciaSaldo = saldo;
+            }
+            return resultado;
+        }
+
+        // Costo registrado en cada venta, devolucion o ajuste del producto (mov_costo), del mas reciente al mas antiguo.
+        public DataTable consultaCostoEnMovimientos(string codigo)
+        {
+            string cod = codigo.Replace("'", "''");
+            DataTable origen = dataBaseConection.fDataTable(
+                "SELECT IF(mov_fecha > '1900-01-01', mov_fecha, NULL) AS fecha, " + HoraOrdenable("mov_hora") + " AS hora, mov_tipdoc AS tipo, mov_docume AS documento, mov_cant AS cantidad, mov_costo AS costo " +
+                "FROM adminvmov WHERE mov_codigo='" + cod + "' AND mov_invact='1' ORDER BY fecha DESC, hora DESC LIMIT 500");
+            dataBaseConection.cerrarConexion();
+
+            DataTable resultado = new DataTable();
+            resultado.Columns.Add("Fecha", typeof(string));
+            resultado.Columns.Add("Tipo", typeof(string));
+            resultado.Columns.Add("Documento", typeof(string));
+            resultado.Columns.Add("Cantidad", typeof(decimal));
+            resultado.Columns.Add("Costo", typeof(decimal));
+            foreach (DataRow fila in origen.Rows)
+            {
+                DataRow nueva = resultado.NewRow();
+                nueva["Fecha"] = FechaLegible(fila["fecha"]);
+                nueva["Tipo"] = NombreTipoMovimiento(Convert.ToString(fila["tipo"]).Trim());
+                nueva["Documento"] = Convert.ToString(fila["documento"]).Trim();
+                nueva["Cantidad"] = DecSeguro(fila["cantidad"]);
+                nueva["Costo"] = DecSeguro(fila["costo"]);
+                resultado.Rows.Add(nueva);
+            }
+            return resultado;
+        }
+
+        // mov_hora se guardo con dos formatos ("08:16:25" y "02:07:20 p.m."): se convierte a hora de 24 horas para poder ordenar.
+        private static string HoraOrdenable(string columna)
+        {
+            return "IF(" + columna + " LIKE '%m.', STR_TO_DATE(REPLACE(REPLACE(" + columna + ", 'a.m.', 'AM'), 'p.m.', 'PM'), '%h:%i:%s %p'), " +
+                   "STR_TO_DATE(" + columna + ", '%H:%i:%s'))";
+        }
+
+        // Los codigos de documento del inventario: FAV y DEV (ventas), NDE (nota de entrega), DINV (ajuste), 37 y 43 (compras; el sistema ya los muestra como FAC y DEV).
+        private static string NombreTipoMovimiento(string tipo)
+        {
+            switch (tipo)
+            {
+                case "FAV": return "Factura de venta";
+                case "DEV": return "Devolución de venta";
+                case "DINV": return "Ajuste de inventario";
+                case "NDE": return "Nota de entrega";
+                case "37": return "Factura de compra";
+                case "43": return "Devolución (compra)";
+                default: return tipo;
+            }
+        }
+
+        // Fecha del movimiento a dd/MM/yyyy; vacia cuando el movimiento no tiene fecha (0000-00-00).
+        private static string FechaLegible(object fecha)
+        {
+            if (fecha is DateTime)
+            {
+                return ((DateTime)fecha).ToString("dd/MM/yyyy");
+            }
+            return "";
+        }
+
         public DataTable datosHistoriaVentas(string codigo)
         {
 

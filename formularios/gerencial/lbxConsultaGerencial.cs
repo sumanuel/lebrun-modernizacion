@@ -21,6 +21,7 @@ namespace lebrun.formularios.gerencial
         public lbxConsultaGerencial()
         {
             InitializeComponent();
+            AplicarDiseno();
         }
 
         private void txtCodigo_KeyPress(object sender, KeyPressEventArgs e)
@@ -43,7 +44,7 @@ namespace lebrun.formularios.gerencial
                 {
                     cmbPrecios.Items.Clear();
                     cmbPrecios.ResetText();
-                    label22.Text = "Esperado Codigo";
+                    label22.Text = "Escriba un código y presione Enter";
                     txtCateg.Clear();
                     txtSubCat.Clear();
                     txtUniM.Clear();
@@ -108,7 +109,7 @@ namespace lebrun.formularios.gerencial
                     txtProU3.Clear();
                     txtProU6.Clear();
                     txtProU12.Clear();
-                    dataGridView1.DataSource = null;
+                    limpiarExistenciasYCostos();
                     dataGridView2.DataSource = null;
                     dataGridView3.DataSource = null;
 
@@ -170,8 +171,8 @@ namespace lebrun.formularios.gerencial
                     dataGridView2.DataSource = consulGeneral.consultaCosto(txtCodigo.Text);
                     dataGridView2.AutoResizeColumns();
                     dataGridView2.Columns[0].DefaultCellStyle.ForeColor = Color.Black;
-                    dataGridView2.Columns[0].DefaultCellStyle.Font = new Font("Microsoft Sans Serif", 12);
-                    dataGridView2.Columns[0].DefaultCellStyle.BackColor = Color.Thistle;
+                    dataGridView2.Columns[0].DefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+                    dataGridView2.Columns[0].DefaultCellStyle.BackColor = Color.FromArgb(232, 240, 250);
                     dataGridView2.Columns[2].DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter;
                     dataGridView2.Columns[3].DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter;
                     dataGridView2.Columns[4].DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter;
@@ -211,6 +212,7 @@ namespace lebrun.formularios.gerencial
                     dataGridView3.Columns[3].DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight;
                     dataGridView3.Columns[4].DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight;
                     dataGridView3.Columns[5].DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight;
+                    cargarExistenciasYCostos(txtCodigo.Text);
                     costoMontVend();
                 }
                 else 
@@ -218,7 +220,7 @@ namespace lebrun.formularios.gerencial
                    txtCodigo.Focus();
                    cmbPrecios.Items.Clear();
                    cmbPrecios.ResetText();
-                   label22.Text = "Esperado Codigo";
+                   label22.Text = "Escriba un código y presione Enter";
                    txtCateg.Clear();
                    txtSubCat.Clear();
                    txtUniM.Clear();
@@ -283,7 +285,7 @@ namespace lebrun.formularios.gerencial
                    txtProU3.Clear();
                    txtProU6.Clear();
                    txtProU12.Clear();
-                   dataGridView1.DataSource = null;
+                   limpiarExistenciasYCostos();
                    dataGridView2.DataSource = null;
                    dataGridView3.DataSource = null;
                 }
@@ -308,6 +310,22 @@ namespace lebrun.formularios.gerencial
             txtCodigo.SelectionStart = 0;
             txtCodigo.SelectionLength = txtCodigo.Text.Length;
         }
+        // Kardex de la pestana Existencias y costo en movimientos de la pestana Costos
+        private void cargarExistenciasYCostos(string codigo)
+        {
+            decimal saldoPrevio;
+            dataGridView1.DataSource = consulGeneral.consultaMovimientosInventario(codigo, out saldoPrevio);
+            MostrarNotaExistencias(saldoPrevio, dataGridView1.Rows.Count);
+            dataGridView4.DataSource = consulGeneral.consultaCostoEnMovimientos(codigo);
+        }
+
+        private void limpiarExistenciasYCostos()
+        {
+            dataGridView1.DataSource = null;
+            dataGridView4.DataSource = null;
+            MostrarNotaExistencias(0m, 0);
+        }
+
         public void costoMontVend() 
         {
             for (int i = 0; i < dataGridView3.Rows.Count; i++)
