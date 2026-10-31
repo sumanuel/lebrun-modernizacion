@@ -73,6 +73,36 @@ namespace lebrun.clases.gerencial
             return Ejecutar(sql);
         }
 
+        // Promociones vigentes en la fecha indicada (todas = true ignora la fecha y trae todas las promociones).
+        public DataTable Ofertas(DateTime vigentesAl, bool todas)
+        {
+            string sql =
+                "SELECT a.inv_codigo AS Codigo, a.inv_descri AS Descripcion, p.prom_undmed AS Unidad, b.existencia AS Existencia, " +
+                "p.prom_fchedes AS Desde, p.prom_fchfin AS Hasta, DATEDIFF(p.prom_fchfin, CURDATE()) AS DiasRestantes, " +
+                "p.prom_canreq AS Compra, p.prom_cantpro AS Lleva, p.prom_pordes AS PorcDescuento, " +
+                "pr.pre_precio AS PrecioNormal, p.porm_precio AS PrecioOferta, " +
+                FechaOVacia("b.fec_ult_vent", "UltimaVenta") + " " +
+                "FROM admpromociones p INNER JOIN adminv a ON a.inv_codigo = p.prom_codigo " +
+                "LEFT JOIN adminv2 b ON b.inv2_codigo = a.inv_codigo " +
+                "LEFT JOIN admprecios pr ON pr.pre_codigo = p.prom_codigo AND pr.pre_lista = p.prom_lista AND pr.pre_undmed = p.prom_undmed AND pr.pre_act = 1 " +
+                (todas ? "" : "WHERE '" + Fecha(vigentesAl) + "' BETWEEN p.prom_fchedes AND p.prom_fchfin ") +
+                "ORDER BY p.prom_fchfin DESC, a.inv_descri LIMIT " + (LimiteFilas + 1);
+            return Ejecutar(sql);
+        }
+
+        // Facturas del producto vendidas durante la promocion (entre sus fechas de inicio y fin).
+        public DataTable VentasDuranteOferta(string codigoProducto, DateTime desde, DateTime hasta)
+        {
+            string sql =
+                "SELECT m.mov_fecha AS Fecha, m.mov_docume AS Documento, " +
+                "(SELECT t.tra_nombre FROM admtrabajador t WHERE t.tra_codigo = m.mov_vendedor) AS Vendedor, " +
+                "m.mov_cant AS Cantidad, m.mov_precio AS Precio " +
+                "FROM adminvmov m WHERE m.mov_codigo = '" + codigoProducto.Replace("'", "''") + "' AND m.mov_tipdoc = 'FAV' " +
+                "AND m.mov_fecha BETWEEN '" + Fecha(desde) + "' AND '" + Fecha(hasta) + "' " +
+                "ORDER BY m.mov_fecha DESC, m.mov_docume DESC LIMIT " + (LimiteFilas + 1);
+            return Ejecutar(sql);
+        }
+
         // Vendedores (para el filtro de Precios Cambiados): codigo y nombre.
         public DataTable Vendedores()
         {

@@ -410,6 +410,16 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="clases\gerencial\ListadosGerenciales.cs" />
+    <Compile Include="clases\gerencial\ConsultasTerceros.cs" />
+    <Compile Include="formularios\gerencial\lbxOfertas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxConsultaTercero.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxConsultaClienteProveedor.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="formularios\gerencial\lbxConsultaGerente.Diseno.cs">
       <DependentUpon>lbxConsultaGerente.cs</DependentUpon>
     </Compile>

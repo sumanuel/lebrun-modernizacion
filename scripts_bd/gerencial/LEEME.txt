@@ -20,3 +20,4 @@ Como se usan
 
 Estado de las etapas
 - etapa1_listas_simples: Articulos Agotados, Articulos Negativos, Art. Sin Vender, Precios Cambiados.
+- etapa2_consultas: Ofertas, Consulta Cliente, Consulta Proveedor.

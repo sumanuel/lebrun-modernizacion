@@ -25,6 +25,8 @@ namespace lebrun.formularios.gerencial
         private readonly Button cmdConsultar = new Button();
         private readonly Button cmdExportar = new Button();
         private Label cabeceraGrilla;
+        private Label cabeceraDetalle;
+        protected readonly DataGridView grillaDetalle = new DataGridView();
 
         protected abstract string TituloPantalla { get; }
         protected abstract string DescripcionPantalla { get; }
@@ -41,6 +43,12 @@ namespace lebrun.formularios.gerencial
 
         // Texto de resumen al pie (totales); null = ninguno.
         protected virtual string ResumenDe(DataTable tabla) { return null; }
+
+        // Detalle opcional: una segunda grilla bajo la principal que muestra los datos de la fila seleccionada.
+        protected virtual bool TieneDetalle { get { return false; } }
+        protected virtual string TituloDetalle { get { return "Detalle"; } }
+        protected virtual DataTable ConsultarDetalle(DataRow fila) { return null; }
+        protected virtual void DarFormatoDetalle() { }
 
         // true cuando la consulta tenia mas filas que el limite y solo se muestran las primeras.
         protected bool ResultadoRecortado { get; private set; }
@@ -121,7 +129,23 @@ namespace lebrun.formularios.gerencial
             EstiloGrilla(grilla);
             grilla.CellFormatting += FormatearCelda;
             Control tarjeta = Tarjeta(TituloGrilla, grilla, out cabeceraGrilla);
-            tarjeta.Margin = new Padding(0, 0, 0, 6);
+            tarjeta.Margin = new Padding(0, 0, 0, TieneDetalle ? 10 : 6);
+
+            Control tarjetaDetalle = null;
+            if (TieneDetalle)
+            {
+                grillaDetalle.AllowUserToAddRows = false;
+                grillaDetalle.AllowUserToDeleteRows = false;
+                grillaDetalle.ReadOnly = true;
+                grillaDetalle.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                grillaDetalle.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                grillaDetalle.Margin = new Padding(0);
+                EstiloGrilla(grillaDetalle);
+                grillaDetalle.CellFormatting += FormatearCelda;
+                tarjetaDetalle = Tarjeta(TituloDetalle, grillaDetalle, out cabeceraDetalle);
+                tarjetaDetalle.Margin = new Padding(0, 0, 0, 6);
+                grilla.SelectionChanged += delegate { CargarDetalle(); };
+            }
 
             // resumen
             lblResumen.AutoSize = false;
@@ -133,16 +157,24 @@ namespace lebrun.formularios.gerencial
             TableLayoutPanel raiz = new TableLayoutPanel();
             raiz.Dock = DockStyle.Fill;
             raiz.ColumnCount = 1;
-            raiz.RowCount = 4;
+            raiz.RowCount = TieneDetalle ? 5 : 4;
             raiz.Padding = new Padding(12, 10, 12, 8);
             raiz.RowStyles.Add(new RowStyle(SizeType.Absolute, 74));
             raiz.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            raiz.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            raiz.RowStyles.Add(new RowStyle(SizeType.Percent, TieneDetalle ? 58 : 100));
+            if (TieneDetalle)
+            {
+                raiz.RowStyles.Add(new RowStyle(SizeType.Percent, 42));
+            }
             raiz.RowStyles.Add(new RowStyle(SizeType.Absolute, 26));
             raiz.Controls.Add(encabezado, 0, 0);
             raiz.Controls.Add(panelFiltros, 0, 1);
             raiz.Controls.Add(tarjeta, 0, 2);
-            raiz.Controls.Add(lblResumen, 0, 3);
+            if (TieneDetalle)
+            {
+                raiz.Controls.Add(tarjetaDetalle, 0, 3);
+            }
+            raiz.Controls.Add(lblResumen, 0, TieneDetalle ? 4 : 3);
             Controls.Clear();
             Controls.Add(raiz);
             ResumeLayout(true);
@@ -241,6 +273,37 @@ namespace lebrun.formularios.gerencial
             }
         }
 
+        private void CargarDetalle()
+        {
+            if (!TieneDetalle)
+            {
+                return;
+            }
+            DataRowView fila = grilla.CurrentRow == null ? null : grilla.CurrentRow.DataBoundItem as DataRowView;
+            if (fila == null)
+            {
+                grillaDetalle.DataSource = null;
+                ActualizarContador(grillaDetalle, cabeceraDetalle, TituloDetalle);
+                return;
+            }
+            try
+            {
+                DataTable detalle = ConsultarDetalle(fila.Row);
+                while (detalle != null && detalle.Rows.Count > ListadosGerenciales.LimiteFilas)
+                {
+                    detalle.Rows.RemoveAt(detalle.Rows.Count - 1);
+                }
+                grillaDetalle.DataSource = detalle;
+                DarFormatoDetalle();
+                ActualizarContador(grillaDetalle, cabeceraDetalle, TituloDetalle);
+            }
+            catch (Exception ex)
+            {
+                RegistroErrores.Registrar(ex, "Detalle de " + TituloPantalla);
+                grillaDetalle.DataSource = null;
+            }
+        }
+
         // Numeros negativos en rojo en las columnas con formato numerico.
         private void FormatearCelda(object sender, DataGridViewCellFormattingEventArgs e)
         {
@@ -256,6 +319,11 @@ namespace lebrun.formularios.gerencial
 
         protected void ColumnaNumerica(string nombre, string formato, float peso)
         {
+            ColumnaNumerica(grilla, nombre, formato, peso);
+        }
+
+        protected static void ColumnaNumerica(DataGridView grilla, string nombre, string formato, float peso)
+        {
             if (!grilla.Columns.Contains(nombre))
             {
                 return;
@@ -269,6 +337,11 @@ namespace lebrun.formularios.gerencial
 
         protected void ColumnaFecha(string nombre, float peso)
         {
+            ColumnaFecha(grilla, nombre, peso);
+        }
+
+        protected static void ColumnaFecha(DataGridView grilla, string nombre, float peso)
+        {
             if (!grilla.Columns.Contains(nombre))
             {
                 return;
@@ -281,6 +354,11 @@ namespace lebrun.formularios.gerencial
         }
 
         protected void ColumnaTexto(string nombre, string encabezado, float peso)
+        {
+            ColumnaTexto(grilla, nombre, encabezado, peso);
+        }
+
+        protected static void ColumnaTexto(DataGridView grilla, string nombre, string encabezado, float peso)
         {
             if (!grilla.Columns.Contains(nombre))
             {

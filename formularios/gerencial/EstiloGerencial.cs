@@ -362,6 +362,45 @@ namespace lebrun.formularios.gerencial
             }
         }
 
+        // Formato de columnas de una grilla (numerica, fecha o texto) con el peso de ancho indicado.
+        public static void ColNumerica(DataGridView g, string nombre, string formato, float peso)
+        {
+            if (!g.Columns.Contains(nombre))
+            {
+                return;
+            }
+            DataGridViewColumn c = g.Columns[nombre];
+            c.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            c.DefaultCellStyle.Format = formato;
+            c.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight;
+            c.FillWeight = peso;
+        }
+
+        public static void ColFecha(DataGridView g, string nombre, string encabezado, float peso)
+        {
+            if (!g.Columns.Contains(nombre))
+            {
+                return;
+            }
+            DataGridViewColumn c = g.Columns[nombre];
+            c.HeaderText = encabezado ?? c.HeaderText;
+            c.DefaultCellStyle.Format = "dd/MM/yyyy";
+            c.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            c.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            c.FillWeight = peso;
+        }
+
+        public static void ColTexto(DataGridView g, string nombre, string encabezado, float peso)
+        {
+            if (!g.Columns.Contains(nombre))
+            {
+                return;
+            }
+            DataGridViewColumn c = g.Columns[nombre];
+            c.HeaderText = encabezado ?? c.HeaderText;
+            c.FillWeight = peso;
+        }
+
         // Encabezado de las pantallas de consulta de producto: codigo con boton de busqueda y, al lado, el nombre del producto.
         public static Control EncabezadoProducto(Label etiquetaCodigo, TextBox codigo, Button buscar, Label nombre)
         {
