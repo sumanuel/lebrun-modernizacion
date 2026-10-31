@@ -420,6 +420,19 @@
     <Compile Include="formularios\gerencial\lbxConsultaClienteProveedor.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="clases\gerencial\MovimientosGerenciales.cs" />
+    <Compile Include="formularios\gerencial\lbxTablaEmergente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxMovimientoPeriodo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxMovimientoTerceros.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\gerencial\lbxVentasCompras.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="formularios\gerencial\lbxConsultaGerente.Diseno.cs">
       <DependentUpon>lbxConsultaGerente.cs</DependentUpon>
     </Compile>

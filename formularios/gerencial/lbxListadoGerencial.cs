@@ -50,6 +50,12 @@ namespace lebrun.formularios.gerencial
         protected virtual DataTable ConsultarDetalle(DataRow fila) { return null; }
         protected virtual void DarFormatoDetalle() { }
 
+        // Se llama al hacer doble clic en una fila del detalle (por ejemplo, para abrir los documentos de un dia).
+        protected virtual void AlAbrirDetalle(DataRow fila) { }
+
+        // Cantidad de filas de la grilla que son totales y no registros (no se cuentan en el titulo de la tarjeta).
+        protected virtual int FilasDeTotales { get { return 0; } }
+
         // true cuando la consulta tenia mas filas que el limite y solo se muestran las primeras.
         protected bool ResultadoRecortado { get; private set; }
 
@@ -145,6 +151,7 @@ namespace lebrun.formularios.gerencial
                 tarjetaDetalle = Tarjeta(TituloDetalle, grillaDetalle, out cabeceraDetalle);
                 tarjetaDetalle.Margin = new Padding(0, 0, 0, 6);
                 grilla.SelectionChanged += delegate { CargarDetalle(); };
+                grillaDetalle.CellDoubleClick += delegate (object remitente, DataGridViewCellEventArgs a) { AbrirDetalle(a.RowIndex); };
             }
 
             // resumen
@@ -245,6 +252,11 @@ namespace lebrun.formularios.gerencial
                 grilla.DataSource = tabla;
                 DarFormato();
                 ActualizarContador(grilla, cabeceraGrilla, TituloGrilla);
+                if (FilasDeTotales > 0 && grilla.Rows.Count >= FilasDeTotales)
+                {
+                    int registros = grilla.Rows.Count - FilasDeTotales;
+                    cabeceraGrilla.Text = TituloGrilla + "  ·  " + registros + (registros == 1 ? " registro" : " registros");
+                }
                 string resumen = ResumenDe(tabla);
                 if (recortado)
                 {
@@ -270,6 +282,19 @@ namespace lebrun.formularios.gerencial
             finally
             {
                 Cursor = Cursors.Default;
+            }
+        }
+
+        private void AbrirDetalle(int indice)
+        {
+            if (indice < 0 || indice >= grillaDetalle.Rows.Count)
+            {
+                return;
+            }
+            DataRowView fila = grillaDetalle.Rows[indice].DataBoundItem as DataRowView;
+            if (fila != null)
+            {
+                AlAbrirDetalle(fila.Row);
             }
         }
 
