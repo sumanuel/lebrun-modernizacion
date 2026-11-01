@@ -433,6 +433,10 @@
     <Compile Include="formularios\gerencial\lbxVentasCompras.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="clases\gerencial\ComprasSugeridas.cs" />
+    <Compile Include="formularios\gerencial\lbxComprasSugeridas.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="formularios\gerencial\lbxConsultaGerente.Diseno.cs">
       <DependentUpon>lbxConsultaGerente.cs</DependentUpon>
     </Compile>

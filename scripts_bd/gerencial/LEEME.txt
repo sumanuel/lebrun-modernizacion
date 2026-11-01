@@ -22,3 +22,4 @@ Estado de las etapas
 - etapa1_listas_simples: Articulos Agotados, Articulos Negativos, Art. Sin Vender, Precios Cambiados.
 - etapa2_consultas: Ofertas, Consulta Cliente, Consulta Proveedor.
 - etapa3_movimientos_ventas: Movimiento Facturacion, Movimiento Producto, Movimientos Clientes, Movimiento Productos (items), Productos por Vendedor, Ventas por Vendedor, Compras por Proveedor.
+- etapa4_compras_sugeridas: Compras Sugeridas.
