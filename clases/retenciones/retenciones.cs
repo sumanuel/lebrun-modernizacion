@@ -80,7 +80,7 @@ namespace lebrun.clases.retenciones
 
         public void actualizarSaldo(string saldo, string estatus, string numDocum)
         {
-            StrSql = "UPDATE admsalcli SET sal_actual= $1, Status= '$3' WHERE NroDocum = '$2';";
+            StrSql = "UPDATE admsalcli SET sal_actual= $1, MontoCob = IFNULL(MontoTotal - ABS($1), MontoCob), Status= '$3' WHERE NroDocum = '$2';";
             StrSql = StrSql.Replace("$1", saldo.Replace(",","."));
             StrSql = StrSql.Replace("$2", numDocum);
             StrSql = StrSql.Replace("$3", estatus);

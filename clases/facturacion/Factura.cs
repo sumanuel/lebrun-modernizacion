@@ -1086,13 +1086,19 @@ namespace lebrun.clases.facturacion
 
             DateTime diaVen = DateTime.Now.AddDays(this.plazoDias);
             sentenciaSql = sentenciaSql.Replace("@cli_codigo", clienteFactura.Codigo);
+            // Monto total = neto del documento; monto cobrado = lo que se pago en el momento (sin pasarse del neto: lo que sobra es el vuelto);
+            // saldo = lo que queda pendiente. Factura: saldo positivo (el cliente debe); devolucion: saldo negativo (se le debe al cliente).
+            System.Globalization.CultureInfo invariante = System.Globalization.CultureInfo.InvariantCulture;
+            decimal neto = Convert.ToDecimal(txtContado.Text.Replace(".", ","));
+            decimal pagado = Convert.ToDecimal(txtPagado.Text.Replace(".", ","));
+            decimal cobrado = Math.Min(Math.Max(pagado, 0m), neto);
             if (this.tipoDocumento.Equals("FAV"))
             {
-                sentenciaSql = sentenciaSql.Replace("@sal_actual", (Convert.ToString((-1) * (Convert.ToDecimal((txtPagado.Text.Replace(".", ","))) - (Convert.ToDecimal(txtContado.Text.Replace(".", ","))))).Replace(",", ".")));
+                sentenciaSql = sentenciaSql.Replace("@sal_actual", Math.Max(neto - pagado, 0m).ToString(invariante));
             }
             if (this.tipoDocumento.Equals("DEV"))
             {
-                sentenciaSql = sentenciaSql.Replace("@sal_actual", Convert.ToString((Convert.ToDecimal(txtPagado.Text.Replace(".", ","))) - (Convert.ToDecimal(txtContado.Text.Replace(".", ",")))).Replace(",", "."));
+                sentenciaSql = sentenciaSql.Replace("@sal_actual", Math.Min(pagado - neto, 0m).ToString(invariante));
             }
             sentenciaSql = sentenciaSql.Replace("@TipoDoc", this.tipoDocumento);
             sentenciaSql = sentenciaSql.Replace("@NroDocum", this.correlativoInterno);
@@ -1101,7 +1107,7 @@ namespace lebrun.clases.facturacion
             sentenciaSql = sentenciaSql.Replace("@FechaVenc", "" + diaVen.Year + "-" + diaVen.Month + "-" + diaVen.Day);
             sentenciaSql = sentenciaSql.Replace("@FechaCarga", "" + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
             sentenciaSql = sentenciaSql.Replace("@MontoTotal", txtContado.Text.Replace(",","."));
-            sentenciaSql = sentenciaSql.Replace("@MontoCob", txtContado.Text.Replace(",","."));
+            sentenciaSql = sentenciaSql.Replace("@MontoCob", (this.tipoDocumento.Equals("FAV") || this.tipoDocumento.Equals("DEV") ? cobrado : neto).ToString(invariante));
             sentenciaSql = sentenciaSql.Replace("@CostoFact", (Convert.ToString((this.CostoNacional + this.CostoImportado)).Replace(",", ".")));
             sentenciaSql = sentenciaSql.Replace("@MontoNac", (Convert.ToString(this.CostoNacional).Replace(",",".")));
             sentenciaSql = sentenciaSql.Replace("@MontoImp", (Convert.ToString(this.CostoImportado).Replace(",", ".")));

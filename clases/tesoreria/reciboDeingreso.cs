@@ -508,7 +508,7 @@ namespace lebrun.clases.tesoreria
         public void actualizarReciboSalcli(DataGridView tabla)
         {
             string[] parametros = new string[3];
-            StrSql = "UPDATE admsalcli SET sal_actual= @sal_actual, FechaPago='$1', Status= @Status WHERE NroDocum = @NroDocum";
+            StrSql = "UPDATE admsalcli SET sal_actual= @sal_actual, MontoCob = IFNULL(MontoTotal - ABS(@sal_actual), MontoCob), FechaPago='$1', Status= @Status WHERE NroDocum = @NroDocum";
 
             StrSql = StrSql.Replace("$1",""+ DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString());
             parametros[0] = "@sal_actual";

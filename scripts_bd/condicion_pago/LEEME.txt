@@ -5,7 +5,7 @@ Cambian la tabla sisadm.admcondpago para que sea la unica fuente de condiciones 
 formas de pago (Efectivo, Tarjeta, Divisa, ...), y pasan lo que estaba guardado como texto a codigos.
 Los scripts son para MySQL 5.5 y MariaDB. Se pueden ejecutar mas de una vez sin dañar nada.
 
-Orden de ejecucion (cada uno tiene su archivo _revertir; para revertir se va en el orden inverso: 4, 3, 2, 1)
+Orden de ejecucion (cada uno tiene su archivo _revertir; para revertir se va en el orden inverso: 5, 4, 3, 2, 1)
   01_condicion_pago_estructura.sql      agrega conp_tipo (C condicion / F forma de pago) y conp_siglas (hasta 4 letras) y pone siglas
                                         sugeridas a las condiciones que ya existen.
   02_condicion_pago_migracion.sql       clientes y documentos que tenian el texto "Contado" pasan al codigo 07, la mora de "Contado" pasa
@@ -14,12 +14,15 @@ Orden de ejecucion (cada uno tiene su archivo _revertir; para revertir se va en 
   03_condicion_pago_menu.sql            (base sysconf) deja la pantalla de mantenimiento en Tesoreria > Fichero > Marcas Financieras.
   04_formas_pago.sql                    agrega conp_req_banco y conp_grupo y crea las formas de pago F01 a F07 (Efectivo, Tarjeta de Debito,
                                         Tarjeta de Credito, Cheque, Divisa $, Divisa Euro, Cachea). Desde aqui mocv_forpag guarda el codigo.
+  05_salcli_monto_cobrado.sql           (cuentas por cobrar) los documentos abiertos con saldo pasan a tener en MontoCob lo realmente cobrado (antes
+                                        tenian el total). Guarda copia en bk_salcli_montocob. Es opcional si no hay documentos abiertos.
 
 Como se ejecutan (con cualquier cliente de MySQL; cada archivo ya indica la base con USE):
     mysql -u usuario -p < 01_condicion_pago_estructura.sql
     mysql -u usuario -p < 02_condicion_pago_migracion.sql
     mysql -u usuario -p < 03_condicion_pago_menu.sql
     mysql -u usuario -p < 04_formas_pago.sql
+    mysql -u usuario -p < 05_salcli_monto_cobrado.sql
 
 Importante
 - Hacer respaldo de la base antes de ejecutar el paso 2.
