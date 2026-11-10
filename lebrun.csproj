@@ -235,6 +235,9 @@
     <Compile Include="formularios\complementos\frmClasificacionEconomica.designer.cs">
       <DependentUpon>frmClasificacionEconomica.cs</DependentUpon>
     </Compile>
+    <Compile Include="formularios\complementos\dlgClaveSupervision.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="formularios\complementos\frmConsultaArticulos2.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -711,6 +714,9 @@
     </Compile>
     <Compile Include="formularios\tesoreria\frmRetIvaCli.Designer.cs">
       <DependentUpon>frmRetIvaCli.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\tesoreria\lbxCondicionesPago.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="formularios\tesoreria\lbxReciboIngreso.cs">
       <SubType>Form</SubType>

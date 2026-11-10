@@ -12,6 +12,7 @@ using lebrun.clasesData;
 using lebrun.clases.contabilidad;
 using lebrun.clases.vendedores;
 using lebrun.clases.complementos;
+using lebrun.formularios.complementos;
 namespace lebrun.formularios.clientes
 {
     public partial class frmClientes : Form
@@ -26,6 +27,8 @@ namespace lebrun.formularios.clientes
         private bool modificar;
         private TipoNegocio tipoN;
         private Principal referenciaPrincipal;
+        // la condicion de pago del cliente se muestra bloqueada (por omision Contado, 07) y solo se cambia con clave de supervision
+        private bool condicionBloqueada = true;
         private CondicionPago condicion_pago;
 
         public frmClientes()
@@ -393,15 +396,8 @@ namespace lebrun.formularios.clientes
             cli1.ClienteAuxiliar = (txtAuxiliar.Text == "") ? "" : txtAuxiliar.Text;
             cli1.Observaciones = (txtObservaciones.Text == "") ? "" : txtObservaciones.Text;
             cli1.Situacion = cboSituacion.Text;
-            //cli1.CondicionPago = cboCondicionPago.Text;
-            if (referenciaPrincipal.empresaActual.Rif.Equals("J003680290"))//rif ferle
-            {
-                cli1.CondicionPago = cboCPFerle.SelectedValue.ToString();
-            }
-            else
-            {
-                cli1.CondicionPago = cboCondicionPago.Text;
-            }
+            // se guarda el codigo de la condicion (admcondpago.conp_codigo)
+            cli1.CondicionPago = cboCondicionPago.SelectedValue != null ? cboCondicionPago.SelectedValue.ToString() : CondicionPago.CodigoContado;
             cli1.DescuentoEnventas = (txtDescuentoVentas.Text == "") ? 0 : Convert.ToDecimal(txtDescuentoVentas.Text.Replace(".", ","));
             cli1.descuento2 = (txtDescuento2.Text == "") ? 0 : Convert.ToDecimal((txtDescuento2.Text.Replace(".", ",")));
             cli1.descuento3 = (txtDescuento3.Text == "") ? 0 : Convert.ToDecimal(txtDescuento3.Text.Replace(".", ","));
@@ -423,10 +419,49 @@ namespace lebrun.formularios.clientes
             cargarCombo();
             referenciaPrincipal = (Principal)this.MdiParent;
             condicion_pago = new CondicionPago();
-            cboCPFerle.DataSource = condicion_pago.lbxCondPag();
-            cboCPFerle.DisplayMember = "conp_descripcion";
-            cboCPFerle.ValueMember = "conp_codigo";
-            cboCPFerle.SelectedIndex = 14;
+            // un solo combo de condicion de pago para todas las empresas (el segundo, que era solo de Ferle, ya no se usa)
+            cboCPFerle.Visible = false;
+            cboCondicionPago.Enter += cboCondicionPago_Enter;
+            cargarCondiciones(CondicionPago.CodigoContado);
+        }
+
+        // Llena el combo con las condiciones de credito activas (mas la que ya tenga el cliente, aunque se haya desactivado) y la deja
+        // bloqueada: para cambiarla hace falta la clave de supervision.
+        private void cargarCondiciones(string codigoActual)
+        {
+            if (string.IsNullOrWhiteSpace(codigoActual))
+            {
+                codigoActual = CondicionPago.CodigoContado;
+            }
+            cboCondicionPago.DataSource = null;
+            cboCondicionPago.DisplayMember = "conp_descripcion";
+            cboCondicionPago.ValueMember = "conp_codigo";
+            cboCondicionPago.DataSource = condicion_pago.Condiciones(codigoActual);
+            cboCondicionPago.DropDownWidth = 230;
+            cboCondicionPago.SelectedValue = codigoActual;
+            if (cboCondicionPago.SelectedIndex < 0 && cboCondicionPago.Items.Count > 0)
+            {
+                cboCondicionPago.SelectedValue = CondicionPago.CodigoContado;
+            }
+            condicionBloqueada = true;
+            cboCondicionPago.TabStop = false;
+        }
+
+        private void cboCondicionPago_Enter(object sender, EventArgs e)
+        {
+            if (!condicionBloqueada)
+            {
+                return;
+            }
+            if (dlgClaveSupervision.Pedir(this, "Cambiar la condición de pago del cliente"))
+            {
+                condicionBloqueada = false;
+                cboCondicionPago.TabStop = true;
+            }
+            else
+            {
+                SelectNextControl(cboCondicionPago, true, true, true, true);
+            }
         }
 
         private void limpiarBasico() { 
@@ -460,12 +495,11 @@ namespace lebrun.formularios.clientes
                 txtNombreAuxiliar.Text = "Nombre Auxiliar";
                 cboLista.SelectedIndex = 0;
                 txtObservaciones.Clear();
-                cboCondicionPago.SelectedIndex = 0;
+                cargarCondiciones(CondicionPago.CodigoContado);
                 cboSituacion.SelectedIndex = 0;
                 cboTipoPersona.SelectedIndex = 0;
                 txtDescuentoVentas.Clear();
                 comboBox1.SelectedIndex = 0;
-                cboCPFerle.SelectedIndex = 14;
         }
 
 
@@ -677,17 +711,7 @@ namespace lebrun.formularios.clientes
                 //{
                 //    cboCondicionPago.SelectedIndex = cboCondicionPago.FindString(cli1.CondicionPago);
                 //}
-                if (cli1.CondicionPago != "")
-                {
-                    if (referenciaPrincipal.empresaActual.Rif.Equals("J003680290"))//rif ferle
-                    {
-                        cboCPFerle.SelectedValue = cli1.CondicionPago;
-                    }
-                    else
-                    {
-                        cboCondicionPago.SelectedValue = cli1.CondicionPago;
-                    }
-                }
+                cargarCondiciones(cli1.CondicionPago);
                 if (cli1.DescuentoEnventas != null)
                 {
                     txtDescuentoVentas.Text = "" + cli1.DescuentoEnventas;
@@ -766,8 +790,6 @@ namespace lebrun.formularios.clientes
 
 
         private void combosBasicos() {
-            cboCondicionPago.Items.Add("Contado");
-            cboCondicionPago.Items.Add("Crédito");
             cboSituacion.Items.Add("Activo");
             cboSituacion.Items.Add("Inactivo");
             cboSituacion.Items.Add("En Proceso");
@@ -776,7 +798,6 @@ namespace lebrun.formularios.clientes
             cboTipoPersona.Items.Add("Gubernamental");
             cboTipoPersona.Items.Add("Juridica");
 
-            cboCondicionPago.SelectedIndex = 0;
             cboSituacion.SelectedIndex = 0;
             cboTipoPersona.SelectedIndex = 0;
         }

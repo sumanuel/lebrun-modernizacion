@@ -291,7 +291,7 @@ namespace lebrun.formularios.importaciones
         public void cargarComboPago() {
             
             DataTable condicion = new DataTable();
-            condicion = database.fDataTable("SELECT * FROM admcondpago ORDER BY conp_codigo ASC");
+            condicion = database.fDataTable("SELECT * FROM admcondpago WHERE conp_tipo = 'C' ORDER BY conp_codigo ASC");
             cmbCond.DisplayMember = "conp_descripcion";
             cmbCond.ValueMember = "conp_cant_dias";
             cmbCond.DataSource = condicion;

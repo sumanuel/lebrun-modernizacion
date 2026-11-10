@@ -542,7 +542,7 @@ namespace lebrun.clases.compras
         public DataTable cargarCondicionPago()
         {
             StrSql = "";
-            StrSql = "select conp_codigo, conp_descripcion, conp_cant_dias, conp_status from admcondpago";
+            StrSql = "select conp_codigo, conp_descripcion, conp_cant_dias, conp_status from admcondpago where conp_tipo = 'C'";
             tabla = database.fDataTable(StrSql);
             database.cerrarConexion();
             return tabla;

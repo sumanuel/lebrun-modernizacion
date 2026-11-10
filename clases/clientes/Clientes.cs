@@ -633,14 +633,13 @@ namespace lebrun.clases.clientes
                     this.contribuyente = Txt(dr, "cli_contriespe").ToString();
                     this.limiteCredito = Dec(dr, "cli_lincredito");
                     //            sentenciaS = sentenciaS.Replace("$cli_lincredito", (this.limiteCredito.ToString().Replace(",", ".")));
+                    // lo guardado en el cliente es el codigo de la condicion; si no existe (o esta vacio) se usa Contado (07)
                     sentenciaS = null;
-                    sentenciaS = "SELECT conp_codigo FROM admcondpago WHERE conp_descripcion ='$1';";
-                    sentenciaS = sentenciaS.Replace("$1", this.condicionPago);
+                    sentenciaS = "SELECT conp_codigo FROM admcondpago WHERE conp_codigo ='$1';";
+                    sentenciaS = sentenciaS.Replace("$1", this.condicionPago.Replace("'", "''"));
                     dt = dataBaseConection.fDataTable(sentenciaS);
-                    if (dt.Rows.Count > 0)
-                    {
-                        this.codigoCondicionPago = dt.Rows[0][0].ToString();
-                    }
+                    this.codigoCondicionPago = dt.Rows.Count > 0 ? dt.Rows[0][0].ToString() : lebrun.clases.clientes.CondicionPago.CodigoContado;
+                    this.condicionPago = this.codigoCondicionPago;
                 }
             }
             dr.Close();
@@ -681,13 +680,20 @@ namespace lebrun.clases.clientes
         {
             DataTable dt;
             sentenciaS = null;
-            sentenciaS = "SELECT conp_codigo,conp_descripcion, conp_cant_dias FROM admcondpago WHERE conp_descripcion='$1';";
-            sentenciaS = sentenciaS.Replace("$1", this.condicionPago);
+            sentenciaS = "SELECT conp_codigo,conp_descripcion, conp_cant_dias FROM admcondpago WHERE conp_codigo='$1';";
+            sentenciaS = sentenciaS.Replace("$1", (this.condicionPago ?? "").Replace("'", "''"));
             dt = dataBaseConection.fDataTable(sentenciaS);
 
+            if (dt.Rows.Count == 0)
+            {
+                // el cliente no tiene una condicion valida: se usa Contado (07)
+                sentenciaS = "SELECT conp_codigo,conp_descripcion, conp_cant_dias FROM admcondpago WHERE conp_codigo='" + lebrun.clases.clientes.CondicionPago.CodigoContado + "';";
+                dt = dataBaseConection.fDataTable(sentenciaS);
+            }
             if (dt.Rows.Count > 0)
             {
                 this.condicionPago = dt.Rows[0]["conp_codigo"].ToString();
+                this.codigoCondicionPago = this.condicionPago;
             }
 
             return dt;
@@ -800,8 +806,8 @@ namespace lebrun.clases.clientes
                             "SELECT Datediff(curdate(),FechaEmision) AS DIFERENCIA,cli_codigo " +
                             "FROM admsalcli saldo  WHERE cli_codigo='$1' AND Status=0 AND tipodoc <> 'DEV' " +
                             "AND codvend <0000000080 AND Datediff(curdate(),FechaEmision)>(SELECT mora_fact1 FROM admcondpago " +
-                            "LEFT OUTER JOIN admclientes ON conp_descripcion=cli_condipag " +
-                            "WHERE conp_descripcion=cli_condipag AND cli_codigo='$1' " +
+                            "LEFT OUTER JOIN admclientes ON conp_codigo=cli_condipag " +
+                            "WHERE conp_codigo=cli_condipag AND cli_codigo='$1' " +
                             "AND mora_fact1>0)) lala  " +
                             "ON clientes.cli_codigo = lala.cli_codigo " +
                             "SET clientes.cli_situacion ='Suspendido' WHERE clientes.cli_codigo='$1'";

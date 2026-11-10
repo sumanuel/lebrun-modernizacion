@@ -1056,8 +1056,8 @@ namespace lebrun.clases.tesoreria
                             "SELECT Datediff(curdate(),FechaEmision) AS DIFERENCIA,cli_codigo " +
                             "FROM admsalcli saldo  WHERE cli_codigo='$1' AND Status=0 AND tipodoc <> 'DEV' " +
                             "AND codvend <0000000080 AND Datediff(curdate(),FechaEmision)>(SELECT mora_fact1 FROM admcondpago " +
-                            "LEFT OUTER JOIN admclientes ON conp_descripcion=cli_condipag " +
-                            "WHERE conp_descripcion=cli_condipag AND cli_codigo='$1' " +
+                            "LEFT OUTER JOIN admclientes ON conp_codigo=cli_condipag " +
+                            "WHERE conp_codigo=cli_condipag AND cli_codigo='$1' " +
                             "AND mora_fact1>0)) lala  " +
                             "ON clientes.cli_codigo = lala.cli_codigo " +
                             "SET clientes.cli_situacion ='Suspendido' WHERE clientes.cli_codigo='$1'";
