@@ -1493,19 +1493,36 @@ namespace lebrun.formularios.pedidos
             }
         }
 
-        private void llenarModoPago()
-        {
-            cboModoPago.Items.Add("Efectivo");
-            cboModoPago.Items.Add("Tarjeta de Debito");
-            cboModoPago.Items.Add("Tarjeta de Credito");
-            cboModoPago.Items.Add("Cheque");
+        private List<FormaPagoVenta> formasPago;
+
+        // Las formas de pago salen de la tabla admcondpago (tipo F): ya no estan escritas en el codigo.
+        private void llenarModoPago() {
+            formasPago = FormasPagoVenta.Cargar();
+            cboModoPago.DisplayMember = "Descripcion";
+            cboModoPago.ValueMember = "Codigo";
+            cboModoPago.DataSource = formasPago;
             cboModoPago.SelectedIndex = 0;
+        }
+
+        private FormaPagoVenta FormaActual() {
+            if (formasPago == null) {
+                formasPago = FormasPagoVenta.Cargar();
+            }
+            FormaPagoVenta forma = cboModoPago.SelectedItem as FormaPagoVenta;
+            return forma ?? formasPago[0];
+        }
+
+        // Suma lo cobrado en la casilla de su grupo: E = Efectivo, T = Tarjetas, C = Cheques.
+        private void AcumularMonto(char grupo, decimal monto) {
+            TextBox casilla = grupo == 'T' ? txtMontoTarjetas : (grupo == 'C' ? txtMontoCheques : txtEfectivo);
+            casilla.Text = Convert.ToString(Convert.ToDecimal(casilla.Text.Replace(".", ",")) + monto);
         }
 
         private void cmdAgregarPago_Click(object sender, EventArgs e)
         {
             string fechaMes = null;
-            if ((txtBanco.Text != "") && (txtNumeroT.Text != "") && (txtMontoAbonar.Text != "") && (!cboModoPago.Text.Equals("Efectivo")))
+            FormaPagoVenta forma = FormaActual();
+            if ((txtBanco.Text != "") && (txtNumeroT.Text != "") && (txtMontoAbonar.Text != "") && (forma.PideBanco))
             {
                 dataGridView2.Rows.Add();
                 int fila = dataGridView2.Rows.Count - 1;
@@ -1515,21 +1532,8 @@ namespace lebrun.formularios.pedidos
                 dataGridView2.Rows[fila].Cells["@movc_monto"].Value = txtMontoAbonar.Text;
 
 
-                if (cboModoPago.Text.Equals("Tarjeta de Debito"))
-                {
-                    dataGridView2.Rows[fila].Cells["@mocv_forpag"].Value = "TARJETA-D";
-                    dataGridView2.Rows[fila].Cells["@movc_tipoctaban"].Value = "DEBITO";
-                }
-                if (cboModoPago.Text.Equals("Tarjeta de Credito"))
-                {
-                    dataGridView2.Rows[fila].Cells["@mocv_forpag"].Value = "TARJETA-C";
-                    dataGridView2.Rows[fila].Cells["@movc_tipoctaban"].Value = "CREDITO";
-                }
-                if (cboModoPago.Text.Equals("Cheque"))
-                {
-                    dataGridView2.Rows[fila].Cells["@mocv_forpag"].Value = cboModoPago.Text.ToUpper();
-                    dataGridView2.Rows[fila].Cells["@movc_tipoctaban"].Value = "N/A";
-                }
+                dataGridView2.Rows[fila].Cells["@mocv_forpag"].Value = forma.Codigo;
+                dataGridView2.Rows[fila].Cells["@movc_tipoctaban"].Value = FormasPagoVenta.TipoCuentaBancaria(forma);
 
                 dataGridView2.Rows[fila].Cells["@movc_cuentacheq"].Value = txtNumeroT.Text;
                 dataGridView2.Rows[fila].Cells["@movc_numero"].Value = txtNumeroT.Text;
@@ -1574,13 +1578,12 @@ namespace lebrun.formularios.pedidos
 
                 dataGridView2.Rows[fila].Cells["@movc_memo"].Value = " ";
 
-                calcularPagar(cboModoPago.Text);
+                calcularPagar(forma);
                 limpiarCancelarBasico();
                 return;
             }
-            else
-            {
-                if (cboModoPago.Text.Equals("Efectivo"))
+            else {
+                if (!forma.PideBanco)
                 {
                     if (txtMontoAbonar.Text != "")
                     {
@@ -1589,9 +1592,8 @@ namespace lebrun.formularios.pedidos
                         dataGridView2.Rows[fila].Cells["codTipo"].Value = "N/A";
                         dataGridView2.Rows[fila].Cells["detalleTipo"].Value = "N/A";
                         dataGridView2.Rows[fila].Cells["codNum"].Value = "N/A";
-                        dataGridView2.Rows[fila].Cells["@mocv_forpag"].Value = cboModoPago.Text;
                         dataGridView2.Rows[fila].Cells["@movc_monto"].Value = txtMontoAbonar.Text;
-                        dataGridView2.Rows[fila].Cells["@mocv_forpag"].Value = "EFECTIVO";
+                        dataGridView2.Rows[fila].Cells["@mocv_forpag"].Value = forma.Codigo;
                         dataGridView2.Rows[fila].Cells["@movc_tipoctaban"].Value = "N/A";
                         dataGridView2.Rows[fila].Cells["@movc_codmaestr"].Value = client1.Codigo;
                         dataGridView2.Rows[fila].Cells["@movc_numdoc"].Value = fac1.CorrelativoInterno;
@@ -1606,10 +1608,10 @@ namespace lebrun.formularios.pedidos
                         {
                             fechaMes = "" + DateTime.Now.Month;
                         }
-                        dataGridView2.Rows[fila].Cells["@movc_fchemision"].Value = "" + DateTime.Now.Day + "/" + fechaMes + "" + "/" + DateTime.Now.Year;
+                        dataGridView2.Rows[fila].Cells["@movc_fchemision"].Value = DateTime.Now.ToString("dd/MM/yyyy");
                         dataGridView2.Rows[fila].Cells["@movc_hora"].Value = DateTime.Now.ToString("hh:mm:ss tt");
                         dataGridView2.Rows[fila].Cells["@movc_vendedor"].Value = client1.Vendedor;
-                        dataGridView2.Rows[fila].Cells["@movc_codcaja"].Value = "0002";
+                        dataGridView2.Rows[fila].Cells["@movc_codcaja"].Value = referenciaPrincipal.usuarioActual.NumeroCaja;
                         dataGridView2.Rows[fila].Cells["@movc_estatus"].Value = "Activo";
 
                         if (fac1.TipoDocumento.Equals("FAV"))
@@ -1636,7 +1638,7 @@ namespace lebrun.formularios.pedidos
 
                         dataGridView2.Rows[fila].Cells["@movc_memo"].Value = " ";
 
-                        calcularPagar(cboModoPago.Text);
+                        calcularPagar(forma);
                         limpiarCancelarBasico();
                         return;
                     }
@@ -1649,14 +1651,14 @@ namespace lebrun.formularios.pedidos
 
                 }
 
-                if ((txtBanco.Text == "") && (cboModoPago.Text.Equals("Tarjeta de Debito") || cboModoPago.Text.Equals("Tarjeta de Credito") || cboModoPago.Text.Equals("Cheque")))
+                if ((txtBanco.Text == "") && forma.PideBanco)
                 {
                     MessageBox.Show("Para el Modo de pago " + cboModoPago.Text + " el campo Banco no puede quedar Vacio!!", "Información", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     txtBanco.Focus();
                     return;
                 }
 
-                if ((txtNumeroT.Text == "") && (cboModoPago.Text.Equals("Tarjeta de Debito") || cboModoPago.Text.Equals("Tarjeta de Credito") || cboModoPago.Text.Equals("Cheque")))
+                if ((txtNumeroT.Text == "") && forma.PideBanco)
                 {
                     MessageBox.Show("El Nº para el  Modo de pago " + cboModoPago.Text + " no puede quedar Vacio!!", "Información", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     txtNumeroT.Focus();
@@ -1682,14 +1684,7 @@ namespace lebrun.formularios.pedidos
         private void cboModoPago_SelectedIndexChanged(object sender, EventArgs e)
         {
             limpiarCancelarBasico2();
-            if ((cboModoPago.Text.Equals("Efectivo")))
-            {
-                activarBancos(false);
-            }
-            else
-            {
-                activarBancos(true);
-            }
+            activarBancos(FormaActual().PideBanco);
         }
 
         public void actualizarCodBanco(string codBanco)
@@ -1750,50 +1745,28 @@ namespace lebrun.formularios.pedidos
             funtxt.txtOnlyDecimal(sender, e, this.txtMontoAbonar);
         }
 
-        private void calcularPagar(string metodoPago)
-        {
-            switch (metodoPago)
-            {
-                case ("Efectivo"):
-                    txtEfectivo.Text = Convert.ToString(Convert.ToDecimal(txtEfectivo.Text.Replace(".", ",")) + (Convert.ToDecimal(txtMontoAbonar.Text.Replace(".", ","))));
-                    break;
-                case ("Tarjeta de Debito"):
-                    txtMontoTarjetas.Text = Convert.ToString(Convert.ToDecimal(txtMontoTarjetas.Text.Replace(".", ",")) + (Convert.ToDecimal(txtMontoAbonar.Text.Replace(".", ","))));
-                    break;
-                case ("Tarjeta de Credito"):
-                    txtMontoTarjetas.Text = Convert.ToString(Convert.ToDecimal(txtMontoTarjetas.Text.Replace(".", ",")) + (Convert.ToDecimal(txtMontoAbonar.Text.Replace(".", ","))));
-                    break;
-                case ("Cheque"):
-                    txtMontoCheques.Text = Convert.ToString(Convert.ToDecimal(txtMontoCheques.Text.Replace(".", ",")) + (Convert.ToDecimal(txtMontoAbonar.Text.Replace(".", ","))));
-                    break;
-            };
+        private void calcularPagar(FormaPagoVenta forma) {
+            AcumularMonto(forma.Grupo, Convert.ToDecimal(txtMontoAbonar.Text.Replace(".", ",")));
             sumarCancelado();
             cambio();
         }
 
-
-        private void calcularPagar()
-        {
-            foreach (DataGridViewRow fila in dataGridView2.Rows)
-            {
-                switch (fila.Cells["@mocv_forpag"].Value.ToString())
-                {
-                    case ("EFECTIVO"):
-                        txtEfectivo.Text = Convert.ToString(Convert.ToDecimal(txtEfectivo.Text.Replace(".", ",")) + (Convert.ToDecimal(Convert.ToDecimal(fila.Cells["@movc_monto"].Value.ToString().Replace(".", ",")))));
-                        break;
-                    case ("TARJETA-D"):
-                        txtMontoTarjetas.Text = Convert.ToString(Convert.ToDecimal(txtMontoTarjetas.Text.Replace(".", ",")) + (Convert.ToDecimal(Convert.ToDecimal(fila.Cells["@movc_monto"].Value.ToString().Replace(".", ",")))));
-                        break;
-                    case ("TARJETA-C"):
-                        txtMontoTarjetas.Text = Convert.ToString(Convert.ToDecimal(txtMontoTarjetas.Text.Replace(".", ",")) + (Convert.ToDecimal(Convert.ToDecimal(fila.Cells["@movc_monto"].Value.ToString().Replace(".", ",")))));
-                        break;
-                    case ("CHEQUE"):
-                        txtMontoCheques.Text = Convert.ToString(Convert.ToDecimal(txtMontoCheques.Text.Replace(".", ",")) + (Convert.ToDecimal(Convert.ToDecimal(fila.Cells["@movc_monto"].Value.ToString().Replace(".", ",")))));
-                        break;
+        private void calcularPagar() {
+            foreach (DataGridViewRow fila in dataGridView2.Rows) {
+                string valor = fila.Cells["@mocv_forpag"].Value.ToString();
+                if (valor != FormasPagoVenta.Cambio) {
+                    AcumularMonto(FormasPagoVenta.Grupo(FormasPagoVentaLista(), valor), Convert.ToDecimal(fila.Cells["@movc_monto"].Value.ToString().Replace(".", ",")));
                 }
                 sumarCancelado();
             }
             cambio();
+        }
+
+        private List<FormaPagoVenta> FormasPagoVentaLista() {
+            if (formasPago == null) {
+                formasPago = FormasPagoVenta.Cargar();
+            }
+            return formasPago;
         }
 
         private void sumarCancelado()
@@ -1881,29 +1854,11 @@ namespace lebrun.formularios.pedidos
             }
         }
 
-        private void restarMontos(int fila)
-        {
-            string tipoPago = null;
-            tipoPago = dataGridView2.Rows[fila].Cells["@mocv_forpag"].Value.ToString();
-            switch (tipoPago)
-            {
-
-                case ("EFECTIVO"):
-                    txtEfectivo.Text = Convert.ToString(Convert.ToDecimal(txtEfectivo.Text.Replace(".", ",")) - (Convert.ToDecimal(dataGridView2.Rows[fila].Cells["@movc_monto"].Value.ToString().Replace(".", ","))));
-                    break;
-
-                case ("TARJETA-D"):
-                    txtMontoTarjetas.Text = Convert.ToString(Convert.ToDecimal(txtMontoTarjetas.Text.Replace(".", ",")) - (Convert.ToDecimal(dataGridView2.Rows[fila].Cells["@movc_monto"].Value.ToString().Replace(".", ","))));
-                    break;
-
-                case ("TARJETA-C"):
-                    txtMontoTarjetas.Text = Convert.ToString(Convert.ToDecimal(txtMontoTarjetas.Text.Replace(".", ",")) - (Convert.ToDecimal(dataGridView2.Rows[fila].Cells["@movc_monto"].Value.ToString().Replace(".", ","))));
-                    break;
-
-                case ("CHEQUE"):
-                    txtMontoCheques.Text = Convert.ToString(Convert.ToDecimal(txtMontoCheques.Text.Replace(".", ",")) - (Convert.ToDecimal(dataGridView2.Rows[fila].Cells["@movc_monto"].Value.ToString().Replace(".", ","))));
-                    break;
-            };
+        private void restarMontos(int fila){
+            string tipoPago = dataGridView2.Rows[fila].Cells["@mocv_forpag"].Value.ToString();
+            if (tipoPago != FormasPagoVenta.Cambio) {
+                AcumularMonto(FormasPagoVenta.Grupo(FormasPagoVentaLista(), tipoPago), -Convert.ToDecimal(dataGridView2.Rows[fila].Cells["@movc_monto"].Value.ToString().Replace(".", ",")));
+            }
             sumarCancelado();
             cambio();
         }
@@ -1926,7 +1881,7 @@ namespace lebrun.formularios.pedidos
             dataGridView2.Rows[fila].Cells["@movc_fchemision"].Value = "" + DateTime.Now.Day + "/" + DateTime.Now.Month + "" + "/" + DateTime.Now.Year;
             dataGridView2.Rows[fila].Cells["@movc_hora"].Value = DateTime.Now.ToString("hh:mm:ss tt");
             dataGridView2.Rows[fila].Cells["@movc_vendedor"].Value = client1.Vendedor;
-            dataGridView2.Rows[fila].Cells["@movc_codcaja"].Value = "0002";
+            dataGridView2.Rows[fila].Cells["@movc_codcaja"].Value = referenciaPrincipal.usuarioActual.NumeroCaja;
             dataGridView2.Rows[fila].Cells["@movc_estatus"].Value = "Activo";
 
             dataGridView2.Rows[fila].Cells["@movc_operacion"].Value = "D";

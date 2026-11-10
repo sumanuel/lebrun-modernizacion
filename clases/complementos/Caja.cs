@@ -11,8 +11,22 @@ using lebrun.clases.contabilidad;
 
 namespace lebrun.clases.complementos
 {
+    // Lo cobrado con una forma de pago en el cuadre de caja (facturas menos devoluciones).
+    public class TotalFormaPago
+    {
+        public string Codigo { get; set; }
+        public string Descripcion { get; set; }
+        public string Siglas { get; set; }
+        public decimal Neto { get; set; }
+    }
+
     public class Caja
     {
+        // Totales por forma de pago de las que tuvieron movimiento, en orden de codigo.
+        public List<TotalFormaPago> TotalesFormas = new List<TotalFormaPago>();
+        // Siglas de la forma o formas de pago de cada documento (EFE, TD, TD+EFE), para el detalle del reporte.
+        private Dictionary<string, string> siglasPorDocumento = new Dictionary<string, string>();
+
         private ConexionBD dataBaseConexion;
         private ConexionBD dataBaseSysconta;
         private string sentenciaSql;
@@ -403,6 +417,169 @@ namespace lebrun.clases.complementos
         }
 
 
+        // Calcula cuanto se cobro con cada forma de pago en los documentos pagados de la caja. Se parte de lo cobrado en cada movimiento
+        // (admmovcaja), de modo que una factura pagada con varias formas se reparte entre ellas; el vuelto (CAMBIO) se descuenta del efectivo.
+        // Si el documento se pago con una sola forma se usa el neto del documento. Un documento pagado sin movimientos se cuenta como efectivo.
+        private void calcularFormasPago(string codCaja, string codUsu)
+        {
+            TotalesFormas = new List<TotalFormaPago>();
+            siglasPorDocumento = new Dictionary<string, string>();
+            List<FormaPagoVenta> formas = FormasPagoVenta.Cargar();
+
+            string sql = "SELECT m.movc_numdoc AS numero, m.mocv_forpag AS forma, SUM(m.movc_monto) AS monto " +
+                         "FROM admmovcaja m INNER JOIN admdoccli2 d ON d.dcli_numero = m.movc_numdoc " +
+                         "WHERE d.dcli_caja='$dcli_caja' AND d.dcli_cerrado='0' AND d.dcli_usuario='$usuario' AND d.dcli_tipdoc IN('FAV','DEV') AND d.dcli_impreso='1' " +
+                         "GROUP BY m.movc_numdoc, m.mocv_forpag";
+            sql = sql.Replace("$dcli_caja", codCaja).Replace("$usuario", codUsu);
+            DataTable mov = dataBaseConexion.fDataTable(sql);
+            dataBaseConexion.cerrarConexion();
+
+            Dictionary<string, List<KeyValuePair<string, decimal>>> porDocumento = new Dictionary<string, List<KeyValuePair<string, decimal>>>();
+            foreach (DataRow r in mov.Rows)
+            {
+                string numero = Convert.ToString(r["numero"]).Trim();
+                if (!porDocumento.ContainsKey(numero))
+                {
+                    porDocumento[numero] = new List<KeyValuePair<string, decimal>>();
+                }
+                porDocumento[numero].Add(new KeyValuePair<string, decimal>(FormasPagoVenta.CodigoDeValorGuardado(Convert.ToString(r["forma"])),
+                                                                         r["monto"] == DBNull.Value ? 0m : Convert.ToDecimal(r["monto"])));
+            }
+
+            Dictionary<string, decimal> neto = new Dictionary<string, decimal>();
+            foreach (DataRow doc in admdocli_2.Rows)
+            {
+                string numero = Convert.ToString(doc["dcli_numero"]).Trim();
+                if (Convert.ToString(doc["dcli_expexp"]) == "Activo")
+                {
+                    siglasPorDocumento[numero] = "";  // a credito: no se cobro con ninguna forma
+                    continue;
+                }
+                decimal montoDoc = doc["dcli_neto"] == DBNull.Value ? 0m : Convert.ToDecimal(doc["dcli_neto"]);
+                decimal signo = Convert.ToString(doc["dcli_cxc"]) == "-1" ? -1m : 1m;
+
+                List<KeyValuePair<string, decimal>> pagos;
+                porDocumento.TryGetValue(numero, out pagos);
+                decimal cambio = 0m;
+                List<KeyValuePair<string, decimal>> cobros = new List<KeyValuePair<string, decimal>>();
+                if (pagos != null)
+                {
+                    foreach (KeyValuePair<string, decimal> pago in pagos)
+                    {
+                        if (string.Equals(pago.Key, FormasPagoVenta.Cambio, StringComparison.OrdinalIgnoreCase))
+                        {
+                            cambio += pago.Value;
+                        }
+                        else
+                        {
+                            cobros.Add(pago);
+                        }
+                    }
+                }
+                if (cobros.Count == 0)
+                {
+                    cobros.Add(new KeyValuePair<string, decimal>(FormasPagoVenta.Efectivo, montoDoc));
+                }
+                else if (cobros.Count == 1)
+                {
+                    cobros[0] = new KeyValuePair<string, decimal>(cobros[0].Key, montoDoc);
+                }
+                else if (cambio != 0m)
+                {
+                    int quien = 0;
+                    for (int i = 0; i < cobros.Count; i++)
+                    {
+                        if (FormasPagoVenta.Grupo(formas, cobros[i].Key) == 'E')
+                        {
+                            quien = i;
+                            if (cobros[i].Key == FormasPagoVenta.Efectivo)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    cobros[quien] = new KeyValuePair<string, decimal>(cobros[quien].Key, cobros[quien].Value - cambio);
+                }
+
+                List<string> siglas = new List<string>();
+                foreach (KeyValuePair<string, decimal> cobro in cobros)
+                {
+                    decimal previo;
+                    neto.TryGetValue(cobro.Key, out previo);
+                    neto[cobro.Key] = previo + signo * cobro.Value;
+                    FormaPagoVenta f = FormasPagoVenta.Buscar(formas, cobro.Key);
+                    string sigla = f != null && f.Siglas.Length > 0 ? f.Siglas : cobro.Key;
+                    if (!siglas.Contains(sigla))
+                    {
+                        siglas.Add(sigla);
+                    }
+                }
+                siglasPorDocumento[numero] = string.Join("+", siglas.ToArray());
+            }
+
+            // las cuatro formas de siempre salen siempre; las demas solo si tuvieron movimiento
+            List<string> codigos = new List<string> { FormasPagoVenta.Efectivo, FormasPagoVenta.Cheque, FormasPagoVenta.TarjetaDebito, FormasPagoVenta.TarjetaCredito };
+            List<string> otros = new List<string>();
+            foreach (string c in neto.Keys)
+            {
+                if (!codigos.Contains(c))
+                {
+                    otros.Add(c);
+                }
+            }
+            otros.Sort(StringComparer.OrdinalIgnoreCase);
+            codigos.AddRange(otros);
+            foreach (string c in codigos)
+            {
+                FormaPagoVenta f = FormasPagoVenta.Buscar(formas, c);
+                decimal valor;
+                neto.TryGetValue(c, out valor);
+                TotalesFormas.Add(new TotalFormaPago { Codigo = c, Descripcion = f != null ? f.Descripcion : c, Siglas = f != null ? f.Siglas : c, Neto = valor });
+            }
+        }
+
+        private decimal NetoForma(string codigo)
+        {
+            foreach (TotalFormaPago t in TotalesFormas)
+            {
+                if (t.Codigo == codigo)
+                {
+                    return t.Neto;
+                }
+            }
+            return 0m;
+        }
+
+        // Formas de pago distintas de las cuatro de siempre (Divisa $, Divisa Euro, Cachea, ...) que tuvieron movimiento.
+        public List<TotalFormaPago> FormasAdicionales
+        {
+            get
+            {
+                List<TotalFormaPago> lista = new List<TotalFormaPago>();
+                foreach (TotalFormaPago t in TotalesFormas)
+                {
+                    if (t.Codigo != FormasPagoVenta.Efectivo && t.Codigo != FormasPagoVenta.Cheque && t.Codigo != FormasPagoVenta.TarjetaDebito && t.Codigo != FormasPagoVenta.TarjetaCredito)
+                    {
+                        lista.Add(t);
+                    }
+                }
+                return lista;
+            }
+        }
+
+        public decimal TotalOtrasFormas
+        {
+            get
+            {
+                decimal total = 0m;
+                foreach (TotalFormaPago t in FormasAdicionales)
+                {
+                    total += t.Neto;
+                }
+                return total;
+            }
+        }
+
         public void datosPrincipal(string codCaja, string codUsu)
         {
 
@@ -422,6 +599,7 @@ namespace lebrun.clases.complementos
             sentenciaSql = sentenciaSql.Replace("$usuario", codUsu);
             admdocli_2 = dataBaseConexion.fDataTable(sentenciaSql);
             dataBaseConexion.cerrarConexion();
+            calcularFormasPago(codCaja, codUsu);
 
             dtReporte = new DataTable();
             dtReporte.TableName = "DataTable1";
@@ -444,7 +622,7 @@ namespace lebrun.clases.complementos
                  cli_telefono = fila2.Field<string>("cli_telefono"),
                  dcli_mtoiva = fila2.Field<decimal>("dcli_mtoiva"),
                  dcli_neto = fila2.Field<decimal>("dcli_neto"),
-                 mocv_forpag2 = fila2.Field<string>("mocv_forpag2"),
+                 mocv_forpag2 = siglasDelDocumento(fila2.Field<string>("dcli_numero")),
                  dcli_numfis = fila2.Field<string>("dcli_numfis"),
                  dcli_tipdoc = fila2.Field<string>("dcli_tipdoc"),
              }).Aggregate(dtReporte, (z, r) =>
@@ -531,12 +709,12 @@ namespace lebrun.clases.complementos
             this.totalFacturas = Convert.ToDecimal(resumen.Rows[0]["tFac"].ToString());
             this.totalDevolucion = Convert.ToDecimal(resumen.Rows[0]["tDev"].ToString());
             this.totalCuadre = Convert.ToDecimal(resumen.Rows[0]["tFac"].ToString()) - Convert.ToDecimal(resumen.Rows[0]["tDev"].ToString());
-            this.totalEfectivo = Convert.ToDecimal(resumen.Rows[0]["efectivo"].ToString()) - Convert.ToDecimal(resumen.Rows[0]["efectivo_dev"].ToString());
-            this.totalCheque = Convert.ToDecimal(resumen.Rows[0]["cheque"].ToString()) - Convert.ToDecimal(resumen.Rows[0]["cheque_dev"].ToString());
-            this.totalTDebito = Convert.ToDecimal(resumen.Rows[0]["tarjetaD"].ToString()) - Convert.ToDecimal(resumen.Rows[0]["tarjetaDDev"].ToString());
-            this.totalTCredito = Convert.ToDecimal(resumen.Rows[0]["tarjetaC"].ToString()) - Convert.ToDecimal(resumen.Rows[0]["tarjetaCDev"].ToString());
+            this.totalEfectivo = NetoForma(FormasPagoVenta.Efectivo);
+            this.totalCheque = NetoForma(FormasPagoVenta.Cheque);
+            this.totalTDebito = NetoForma(FormasPagoVenta.TarjetaDebito);
+            this.totalTCredito = NetoForma(FormasPagoVenta.TarjetaCredito);
             this.totalIva = Convert.ToDecimal(resumen.Rows[0]["ivaFav"].ToString()) - Convert.ToDecimal(resumen.Rows[0]["ivaDev"].ToString());
-            this.total1 = this.totalEfectivo + this.totalCheque + this.totalTCredito + this.totalTDebito;
+            this.total1 = this.totalEfectivo + this.totalCheque + this.totalTCredito + this.totalTDebito + this.TotalOtrasFormas;
             this.subTotalPV = ((Convert.ToDecimal(resumen.Rows[0]["tFacC"].ToString()) - Convert.ToDecimal(resumen.Rows[0]["tDevC"].ToString())) + (Convert.ToDecimal(resumen.Rows[0]["tFacF"].ToString()) - Convert.ToDecimal(resumen.Rows[0]["tDevF"].ToString()))) + this.totalCuadre;
             this.ifac = Convert.ToDecimal(resumen.Rows[0]["IFac"].ToString());
             this.ivaDev = Convert.ToDecimal(resumen.Rows[0]["IDev"].ToString());
@@ -550,6 +728,12 @@ namespace lebrun.clases.complementos
             this.cosFacNDev = Convert.ToDecimal(resumen.Rows[0]["cosfacNDev"].ToString());
             this.cosFacIFav = Convert.ToDecimal(resumen.Rows[0]["cosfacIFav"].ToString());
             this.cosFacIDev = Convert.ToDecimal(resumen.Rows[0]["cosfacIDev"].ToString());
+        }
+
+        private string siglasDelDocumento(string numero)
+        {
+            string siglas;
+            return siglasPorDocumento.TryGetValue((numero ?? "").Trim(), out siglas) ? siglas : "";
         }
 
         public bool facturasCierre(string caja, string codUsu)

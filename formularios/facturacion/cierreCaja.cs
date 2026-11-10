@@ -88,6 +88,7 @@ namespace lebrun.formularios.facturacion
                         txtCheque.Text = cajaCerrar.TotalCheque.ToString("n");
                         txtDebito.Text = cajaCerrar.TotalTDebito.ToString("n");
                         txtCredito.Text = cajaCerrar.TotalTCredito.ToString("n");
+                        MostrarOtrasFormas();
                         txtIva.Text = cajaCerrar.TotalIva.ToString("n");
                         txtTotal.Text = cajaCerrar.Total1.ToString("n");
 
@@ -128,6 +129,7 @@ namespace lebrun.formularios.facturacion
                         txtCheque.Text = cajaCerrar.TotalCheque.ToString("n");
                         txtDebito.Text = cajaCerrar.TotalTDebito.ToString("n");
                         txtCredito.Text = cajaCerrar.TotalTCredito.ToString("n");
+                        MostrarOtrasFormas();
                         txtIva.Text = cajaCerrar.TotalIva.ToString("n");
                         txtTotal.Text = cajaCerrar.Total1.ToString("n");
 
@@ -143,6 +145,19 @@ namespace lebrun.formularios.facturacion
                     }
                 }
             }
+        }
+
+        // "Otros Pagos" suma las formas de pago distintas de efectivo, cheque y tarjetas (Divisa $, Divisa Euro, Cachea, ...) que tuvieron
+        // movimiento; el detalle de cada una sale al pasar el cursor y en el reporte impreso.
+        private void MostrarOtrasFormas()
+        {
+            txtOtros.Text = cajaCerrar.TotalOtrasFormas.ToString("n");
+            System.Text.StringBuilder detalle = new System.Text.StringBuilder();
+            foreach (lebrun.clases.complementos.TotalFormaPago f in cajaCerrar.FormasAdicionales)
+            {
+                detalle.AppendLine(f.Descripcion + ": " + f.Neto.ToString("n"));
+            }
+            new ToolTip().SetToolTip(txtOtros, detalle.Length > 0 ? detalle.ToString() : "Sin otras formas de pago");
         }
 
         private void button4_Click(object sender, EventArgs e){}
@@ -180,6 +195,7 @@ namespace lebrun.formularios.facturacion
             txtCheque.Text = "0,00";
             txtDebito.Text = "0,00";
             txtCredito.Text = "0,00";
+            txtOtros.Text = "0,00";
             txtIva.Text = "0,00";
             txtTotal.Text = "0,00";
         }
