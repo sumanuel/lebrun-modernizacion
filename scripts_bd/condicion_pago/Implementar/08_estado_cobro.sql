@@ -8,7 +8,7 @@
 -- si MontoTotal - saldo es mayor que 0 = Parcial; si no, Pendiente.
 -- NO se tocan dcli_estado ni dcli_expexp (el cuadre de caja y las devoluciones dependen de ellos).
 -- Guarda copia de lo que cambia en bk_estatus_cobro. Se puede repetir sin problema. Tambien actualiza la copia de trabajo de la caja (admdoccli2).
--- Ejecutar DESPUES de 05_salcli_monto_cobrado.sql. Compatible con MySQL 5.5 y MariaDB. Revertir con 08_estado_cobro_revertir.sql.
+-- Ejecutar DESPUES de 05_salcli_monto_cobrado.sql. Compatible con MySQL 5.5 y MariaDB. Revertir con Revertir/08_estado_cobro_revertir.sql.
 USE sisadm;
 
 CREATE TABLE IF NOT EXISTS bk_estatus_cobro (

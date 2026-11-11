@@ -2,7 +2,7 @@
 -- Tenia dcli_estado = Pagado y dcli_expexp / dcli_estatus = Activo. Es una factura de contado (condicion 07), con registro de cuentas por cobrar
 -- cerrado (Status 1, saldo 0) y numero fiscal, asi que los tres campos pasan a Pagado. Solo se toca si todavia tiene el estado inconsistente.
 -- No se tocan los montos: tiene neto 0,00 y dcli_saldo 15.457.956,80, valores que el cliente debe revisar aparte.
--- Guarda copia de lo que tenia en bk_correccion_estados. Se puede repetir sin problema. Revertir con 09_corregir_factura_1496756_revertir.sql.
+-- Guarda copia de lo que tenia en bk_correccion_estados. Se puede repetir sin problema. Revertir con Revertir/09_corregir_factura_1496756_revertir.sql.
 USE sisadm;
 
 CREATE TABLE IF NOT EXISTS bk_correccion_estados (

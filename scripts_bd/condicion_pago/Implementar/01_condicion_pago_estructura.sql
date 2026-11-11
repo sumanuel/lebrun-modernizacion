@@ -4,7 +4,7 @@
 --   conp_siglas  siglas de 1 a 4 letras para los reportes (TD = Tarjeta de Debito). Las de abajo son sugeridas: se pueden cambiar
 --                desde la pantalla Condiciones y formas de pago.
 -- Se puede repetir sin problema (solo agrega lo que falta y solo pone siglas donde estan vacias).
--- Compatible con MySQL 5.5 y MariaDB. Revertir con 01_condicion_pago_estructura_revertir.sql.
+-- Compatible con MySQL 5.5 y MariaDB. Revertir con Revertir/01_condicion_pago_estructura_revertir.sql.
 USE sisadm;
 
 SET @existe = (SELECT COUNT(*) FROM information_schema.columns

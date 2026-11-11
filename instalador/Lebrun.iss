@@ -16,7 +16,7 @@
 #endif
 
 #define AppName "Sistema Lebrun"
-#define AppVersion "1.0.0"
+#define AppVersion "1.1.0"
 #define AppExe "lebrun.exe"
 #define CrMsi "CRRuntime_32bit_13_0_35.msi"
 

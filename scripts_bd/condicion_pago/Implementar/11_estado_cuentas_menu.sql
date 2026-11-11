@@ -1,7 +1,7 @@
 -- Estado de cobro, paso 3: pantalla Estado de Cuentas en el menu.
 -- Asigna la pantalla "Estado de cuentas" a la opcion Ventas > Informes > Estado de Cuentas, que estaba sin pantalla.
 -- Los perfiles que la ven son los que ya la tenian activa en el mapa de menu (sysconf.confmapamenu).
--- Se puede repetir: solo completa la ruta si esta vacia. Revertir con 11_estado_cuentas_menu_revertir.sql.
+-- Se puede repetir: solo completa la ruta si esta vacia. Revertir con Revertir/11_estado_cuentas_menu_revertir.sql.
 USE sysconf;
 
 UPDATE conf_menu SET menu_ruta = 'lebrun.formularios.facturacion.lbxEstadoCuentas'

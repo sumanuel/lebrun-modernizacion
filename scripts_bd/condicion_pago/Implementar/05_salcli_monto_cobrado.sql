@@ -4,7 +4,7 @@
 -- ingreso y las retenciones lo van subiendo a medida que bajan el saldo.
 -- Este script arregla los documentos que ya estaban abiertos (Status = 0, con saldo): MontoCob = MontoTotal - saldo.
 -- Guarda copia de lo que cambia en bk_salcli_montocob. Se puede repetir: solo toca los documentos que todavia tienen MontoCob = MontoTotal.
--- Compatible con MySQL 5.5 y MariaDB. Revertir con 05_salcli_monto_cobrado_revertir.sql.
+-- Compatible con MySQL 5.5 y MariaDB. Revertir con Revertir/05_salcli_monto_cobrado_revertir.sql.
 USE sisadm;
 
 CREATE TABLE IF NOT EXISTS bk_salcli_montocob (

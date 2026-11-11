@@ -5,7 +5,11 @@ Cambian la tabla sisadm.admcondpago para que sea la unica fuente de condiciones 
 formas de pago (Efectivo, Tarjeta, Divisa, ...), y pasan lo que estaba guardado como texto a codigos.
 Los scripts son para MySQL 5.5 y MariaDB. Se pueden ejecutar mas de una vez sin dañar nada.
 
-Orden de ejecucion (cada uno tiene su archivo _revertir; para revertir se va en el orden inverso: 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+Carpetas
+  Implementar/   los scripts que se ejecutan, en el orden de su numero (01 a 11).
+  Revertir/      el script que deshace cada uno (mismo numero, termina en _revertir.sql). Solo se usan si hay que volver atras.
+
+Orden de ejecucion (carpeta Implementar; cada uno tiene su archivo en la carpeta Revertir; para revertir se va en el orden inverso: 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
   01_condicion_pago_estructura.sql      agrega conp_tipo (C condicion / F forma de pago) y conp_siglas (hasta 4 letras) y pone siglas
                                         sugeridas a las condiciones que ya existen.
   02_condicion_pago_migracion.sql       clientes y documentos que tenian el texto "Contado" pasan al codigo 07, la mora de "Contado" pasa
@@ -29,18 +33,21 @@ Orden de ejecucion (cada uno tiene su archivo _revertir; para revertir se va en 
                                         admmovcaja, para guardar el monto original cuando se cobra en Divisa $ o Divisa Euro.
   11_estado_cuentas_menu.sql            (base sysconf) deja la pantalla Estado de cuentas en Ventas > Informes > Estado de Cuentas.
 
-Como se ejecutan (con cualquier cliente de MySQL; cada archivo ya indica la base con USE):
-    mysql -u usuario -p < 01_condicion_pago_estructura.sql
-    mysql -u usuario -p < 02_condicion_pago_migracion.sql
-    mysql -u usuario -p < 03_condicion_pago_menu.sql
-    mysql -u usuario -p < 04_formas_pago.sql
-    mysql -u usuario -p < 05_salcli_monto_cobrado.sql
-    mysql -u usuario -p < 06_origen_venta.sql
-    mysql -u usuario -p < 07_origen_venta_menu.sql
-    mysql -u usuario -p < 08_estado_cobro.sql
-    mysql -u usuario -p < 09_corregir_factura_1496756.sql
-    mysql -u usuario -p < 10_divisa_monto_original.sql
-    mysql -u usuario -p < 11_estado_cuentas_menu.sql
+Como se ejecutan (con cualquier cliente de MySQL, desde esta carpeta; cada archivo ya indica la base con USE):
+    mysql -u usuario -p < Implementar/01_condicion_pago_estructura.sql
+    mysql -u usuario -p < Implementar/02_condicion_pago_migracion.sql
+    mysql -u usuario -p < Implementar/03_condicion_pago_menu.sql
+    mysql -u usuario -p < Implementar/04_formas_pago.sql
+    mysql -u usuario -p < Implementar/05_salcli_monto_cobrado.sql
+    mysql -u usuario -p < Implementar/06_origen_venta.sql
+    mysql -u usuario -p < Implementar/07_origen_venta_menu.sql
+    mysql -u usuario -p < Implementar/08_estado_cobro.sql
+    mysql -u usuario -p < Implementar/09_corregir_factura_1496756.sql
+    mysql -u usuario -p < Implementar/10_divisa_monto_original.sql
+    mysql -u usuario -p < Implementar/11_estado_cuentas_menu.sql
+
+Para revertir, en el orden inverso y solo si hace falta (ejemplo del ultimo paso):
+    mysql -u usuario -p < Revertir/11_estado_cuentas_menu_revertir.sql
 
 Importante
 - Hacer respaldo de la base antes de ejecutar el paso 2.

@@ -1,7 +1,7 @@
 -- Origen de la venta, paso 2: opcion de menu Ventas > Fichero > Origen de la Venta.
 -- Crea la opcion en sysconf.conf_menu y la deja en el mapa de menu de cada perfil (sysconf.confmapamenu): activa solo para ADMINISTRADOR (00001);
 -- a los demas perfiles se les da acceso desde la pantalla de perfiles, como con cualquier otra opcion.
--- Se puede repetir: no duplica nada. Revertir con 07_origen_venta_menu_revertir.sql.
+-- Se puede repetir: no duplica nada. Revertir con Revertir/07_origen_venta_menu_revertir.sql.
 USE sysconf;
 
 INSERT INTO conf_menu (menu_padre, menu_subpadre, menu_hijo, menu_nombre, menu_ruta, menu_antiguo)

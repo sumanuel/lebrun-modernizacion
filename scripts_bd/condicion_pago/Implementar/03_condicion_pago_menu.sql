@@ -1,6 +1,6 @@
 -- Condicion de pago y forma de pago, paso 3: pantalla de mantenimiento en el menu.
 -- Asigna la pantalla "Condiciones y formas de pago" a la opcion Tesoreria > Fichero > Marcas Financieras, que estaba sin pantalla.
--- Se puede repetir: solo completa la ruta si esta vacia. Revertir con 03_condicion_pago_menu_revertir.sql.
+-- Se puede repetir: solo completa la ruta si esta vacia. Revertir con Revertir/03_condicion_pago_menu_revertir.sql.
 USE sysconf;
 
 UPDATE conf_menu SET menu_ruta = 'lebrun.formularios.tesoreria.lbxCondicionesPago'

@@ -4,7 +4,7 @@
 --   admdoccli.dcli_origenventa  codigo del origen de cada factura (NULL en las facturas anteriores a este cambio). No se usa dcli_origen porque
 --                               ese campo ya guarda 'Nacional' (origen de la mercancia).
 -- Se puede repetir sin problema (solo crea lo que falta y solo agrega los origenes que no existen).
--- Compatible con MySQL 5.5 y MariaDB. Revertir con 06_origen_venta_revertir.sql.
+-- Compatible con MySQL 5.5 y MariaDB. Revertir con Revertir/06_origen_venta_revertir.sql.
 USE sisadm;
 
 CREATE TABLE IF NOT EXISTS admorigenventa (

@@ -11,7 +11,7 @@
 --      automatica siga funcionando igual. Si el cliente decide otra cosa, se cambia desde la pantalla Condiciones y formas de pago.
 --   5. Se elimina la fila de codigo "Contado".
 -- Se puede repetir: las copias no se pisan y lo que ya esta migrado no vuelve a cambiar.
--- Requiere el paso 1 (conp_tipo, conp_siglas). Compatible con MySQL 5.5 y MariaDB. Revertir con 02_condicion_pago_migracion_revertir.sql.
+-- Requiere el paso 1 (conp_tipo, conp_siglas). Compatible con MySQL 5.5 y MariaDB. Revertir con Revertir/02_condicion_pago_migracion_revertir.sql.
 USE sisadm;
 
 CREATE TABLE IF NOT EXISTS bk_condpago_cambios (

@@ -6,7 +6,7 @@
 --   admmovcaja.movc_monedadivisa   USD o EUR.
 --   admmovcaja.movc_tasadivisa     tasa usada para convertir (bolivares por unidad de divisa).
 -- (movc_valcam NO es la tasa: guarda el vuelto del cliente, por eso se agregan columnas nuevas.)
--- Se puede repetir sin problema. Compatible con MySQL 5.5 y MariaDB. Revertir con 10_divisa_monto_original_revertir.sql.
+-- Se puede repetir sin problema. Compatible con MySQL 5.5 y MariaDB. Revertir con Revertir/10_divisa_monto_original_revertir.sql.
 USE sisadm;
 
 SET @existe = (SELECT COUNT(*) FROM information_schema.columns

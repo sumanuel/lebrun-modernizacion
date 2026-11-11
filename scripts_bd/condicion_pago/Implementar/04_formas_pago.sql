@@ -8,7 +8,7 @@
 -- Desde este paso, admmovcaja.mocv_forpag guarda el CODIGO de la forma de pago (F01, F02, ...) en los movimientos nuevos. Los valores
 -- antiguos (EFECTIVO, TARJETA-D, TARJETA-C, CHEQUE) no se tocan: el programa los reconoce como F01, F02, F03 y F04.
 -- Requiere el paso 1. Se puede repetir (no pisa lo que ya se haya modificado). Compatible con MySQL 5.5 y MariaDB.
--- Revertir con 04_formas_pago_revertir.sql.
+-- Revertir con Revertir/04_formas_pago_revertir.sql.
 USE sisadm;
 
 SET @existe = (SELECT COUNT(*) FROM information_schema.columns
