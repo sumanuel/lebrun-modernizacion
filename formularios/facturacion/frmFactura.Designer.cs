@@ -134,6 +134,8 @@
             this.label16 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label35 = new System.Windows.Forms.Label();
+            this.lblOrigenVenta = new System.Windows.Forms.Label();
+            this.cboOrigenVenta = new System.Windows.Forms.ComboBox();
             this.cmdSalir = new System.Windows.Forms.Button();
             this.cmdConfirmarDocumento = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -1115,6 +1117,8 @@
             // groupBox2
             // 
             this.groupBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(250)))));
+            this.groupBox2.Controls.Add(this.lblOrigenVenta);
+            this.groupBox2.Controls.Add(this.cboOrigenVenta);
             this.groupBox2.Controls.Add(this.label35);
             this.groupBox2.Controls.Add(this.cmdSalir);
             this.groupBox2.Controls.Add(this.cmdConfirmarDocumento);
@@ -1130,6 +1134,26 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Factura";
             this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
+            // 
+            // lblOrigenVenta
+            // 
+            this.lblOrigenVenta.AutoSize = true;
+            this.lblOrigenVenta.Location = new System.Drawing.Point(284, 20);
+            this.lblOrigenVenta.Name = "lblOrigenVenta";
+            this.lblOrigenVenta.Size = new System.Drawing.Size(38, 13);
+            this.lblOrigenVenta.TabIndex = 173;
+            this.lblOrigenVenta.Text = "Origen";
+            // 
+            // cboOrigenVenta
+            // 
+            this.cboOrigenVenta.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboOrigenVenta.DropDownWidth = 160;
+            this.cboOrigenVenta.FormattingEnabled = true;
+            this.cboOrigenVenta.Location = new System.Drawing.Point(328, 16);
+            this.cboOrigenVenta.Name = "cboOrigenVenta";
+            this.cboOrigenVenta.Size = new System.Drawing.Size(110, 21);
+            this.cboOrigenVenta.TabIndex = 174;
+            this.cboOrigenVenta.TabStop = false;
             // 
             // label35
             // 
@@ -2252,6 +2276,8 @@
         internal System.Windows.Forms.TextBox txtRif;
         private System.Windows.Forms.Label lblPrecio;
         internal System.Windows.Forms.Label label35;
+        private System.Windows.Forms.Label lblOrigenVenta;
+        private System.Windows.Forms.ComboBox cboOrigenVenta;
         private System.Windows.Forms.DataGridViewTextBoxColumn procedencia;
         private System.Windows.Forms.DataGridViewTextBoxColumn tipoIva;
         private System.Windows.Forms.DataGridViewTextBoxColumn colProducto;

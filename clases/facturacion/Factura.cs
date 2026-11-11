@@ -49,6 +49,7 @@ namespace lebrun.clases.facturacion
         private DataGridView dgvItems;
         private Clientes clienteFacturar;
         private Vendedor vendedorFactura;
+        private string origenVenta;
         private string numeroFiscal;
         private string modeloImpresora;
         private string serieImpresora;
@@ -224,6 +225,12 @@ namespace lebrun.clases.facturacion
         {
             get { return vendedorFactura; }
             set { vendedorFactura = value; }
+        }
+        // Origen de la venta (admorigenventa.orig_codigo) que se graba en admdoccli.dcli_origenventa; null si no se eligio.
+        public string OrigenVenta
+        {
+            get { return origenVenta; }
+            set { origenVenta = value; }
         }
         public string NumeroFiscal
         {
@@ -738,7 +745,7 @@ namespace lebrun.clases.facturacion
                                       "dcli_descdoc,dcli_subbase,doc_impo,dcli_cantproduc,dcli_aprob1, " +
                                       "dcli_aprob2, dcli_aprob3,dcli_impresora,dcli_caja, dcli_cerrado, " +
                                       "dcli_cosfac, dcli_cosfac_n,dcli_cosfac_i,dcli_base_n,dcli_base_i, " +
-                                      "dcli_saldo, dcli_facafe2,dcli_subtotal,dcli_ivaGN,dcli_ivaRD) VALUES (" +
+                                      "dcli_saldo, dcli_facafe2,dcli_subtotal,dcli_ivaGN,dcli_ivaRD,dcli_origenventa) VALUES (" +
                                       "'$dcli_cbtnum','$dcli_cencos','$dcli_codigo','$dcli_codmon','$dcli_sucursal', " +
                                       "'$dcli_transpo','$dcli_codven','$dcli_condic','$dcli_destino','$dcli_origen', " +
                                       "'$dcli_estado','$dcli_expexp','$dcli_facafe','$dcli_girnum','$dcli_hora', " +
@@ -752,7 +759,7 @@ namespace lebrun.clases.facturacion
                                       "'$dcli_descitem','$dcli_descdoc','$dcli_subbase','$doc_impo','$dcli_cantproduc', " +
                                       "'$dcli_aprob1','$dcli_aprob2','$dcli_aprob3','$dcli_impresora','$dcli_caja', " +
                                       "'$dcli_cerrado','$dcli_cosfac','$5dcli_cosfac_n','$3dcli_cosfac_i','$1dcli_base_n', " +
-                                      "'$2dcli_base_i','$dcli_saldo','$1dcli_facafe2',$@dcli_subtotal,$?dcli_ivaGN,$?dcli_ivaRD);";
+                                      "'$2dcli_base_i','$dcli_saldo','$1dcli_facafe2',$@dcli_subtotal,$?dcli_ivaGN,$?dcli_ivaRD,$ovta_origen);";
 
                 sentenciaSql = sentenciaSql.Replace("$dcli_cbtnum", " ");
                 sentenciaSql = sentenciaSql.Replace("$dcli_cencos", "0000000001");
@@ -764,6 +771,8 @@ namespace lebrun.clases.facturacion
                 sentenciaSql = sentenciaSql.Replace("$dcli_condic", clienteFactura.CodigoCondicionPago);
                 sentenciaSql = sentenciaSql.Replace("$dcli_destino", "Nacional");
                 sentenciaSql = sentenciaSql.Replace("$dcli_origen", "Nacional");
+                // origen de la venta (tienda fisica, Instagram, ...); NULL si la pantalla no eligio ninguno
+                sentenciaSql = sentenciaSql.Replace("$ovta_origen", lebrun.clases.complementos.OrigenVenta.ParaSql(this.origenVenta));
                 sentenciaSql = sentenciaSql.Replace("$dcli_estado", this.dcli_estado /*this.dcli_expexp*/);
                 sentenciaSql = sentenciaSql.Replace("$dcli_expexp", this.dcli_estado);
                 if (this.dcli_expexp != null)

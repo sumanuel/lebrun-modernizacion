@@ -122,6 +122,7 @@ namespace lebrun.formularios.facturacion
             fac1.obtenerMaximaCantidadItemsFAV();
             funtxt = new FuncionesTexbox();
             llenarModoPago();
+            CargarOrigenesVenta();
             bancoFac = new Banco();
             activarCancelarFactura(false);
             cajaCobrar = new Caja();
@@ -155,6 +156,7 @@ namespace lebrun.formularios.facturacion
             fac1.obtenerMaximaCantidadItemsFAV();
             funtxt = new FuncionesTexbox();
             llenarModoPago();
+            CargarOrigenesVenta();
             bancoFac = new Banco();
             activarCancelarFactura(false);
             cajaCobrar = new Caja();
@@ -1501,7 +1503,63 @@ namespace lebrun.formularios.facturacion
             txtPagado.Text = "0.00";
         }
 
-        private void limpiarDatos() { 
+        // Origen de la venta (tienda fisica, Instagram, WhatsApp, ...): combo con los origenes activos de admorigenventa. Siempre queda elegido uno
+        // (el predeterminado, Tienda fisica) y la cajera lo cambia si la venta llego por otro canal. Se graba en admdoccli.dcli_origenventa.
+        private void CargarOrigenesVenta()
+        {
+            try
+            {
+                System.Data.DataTable origenes = new lebrun.clases.complementos.OrigenVenta().Activos(lebrun.clases.complementos.OrigenVenta.CodigoPredeterminado);
+                cboOrigenVenta.DisplayMember = "orig_descripcion";
+                cboOrigenVenta.ValueMember = "orig_codigo";
+                cboOrigenVenta.DataSource = origenes;
+                ElegirOrigenPredeterminado();
+            }
+            catch (Exception ex)
+            {
+                lebrun.clasesData.RegistroErrores.Registrar(ex, "Cargar origenes de venta");
+            }
+        }
+
+        // Al ver una factura ya emitida el combo muestra el origen que quedo guardado (en blanco si la factura es anterior a este cambio) y no se puede cambiar.
+        private void MostrarOrigenGuardado(string numeroInterno)
+        {
+            try
+            {
+                lebrun.clases.complementos.OrigenVenta origenes = new lebrun.clases.complementos.OrigenVenta();
+                string guardado = origenes.DeFactura(numeroInterno);
+                cboOrigenVenta.DataSource = origenes.Activos(guardado);
+                if (guardado == null)
+                {
+                    cboOrigenVenta.SelectedIndex = -1;
+                }
+                else
+                {
+                    cboOrigenVenta.SelectedValue = guardado;
+                }
+                cboOrigenVenta.Enabled = false;
+            }
+            catch (Exception ex)
+            {
+                lebrun.clasesData.RegistroErrores.Registrar(ex, "Mostrar origen de la venta");
+            }
+        }
+
+        private void ElegirOrigenPredeterminado()
+        {
+            if (cboOrigenVenta.Items.Count > 0)
+            {
+                cboOrigenVenta.SelectedValue = lebrun.clases.complementos.OrigenVenta.CodigoPredeterminado;
+            }
+        }
+
+        private string CodigoOrigenVenta()
+        {
+            return cboOrigenVenta.SelectedValue == null ? null : Convert.ToString(cboOrigenVenta.SelectedValue);
+        }
+
+        private void limpiarDatos() {
+            ElegirOrigenPredeterminado(); 
             textBox5.Clear();
             txtCodCliente.Clear();
             txtNombreCli.Clear();
@@ -1951,6 +2009,7 @@ namespace lebrun.formularios.facturacion
             fac1.aumentarCorrelativo(fac1.TipoDocumento, fac1.CorrelativoInterno);
             actualizarCorrelativoGrid();
 
+            fac1.OrigenVenta = CodigoOrigenVenta();
             fac1.crearSentenciaCabecera(client1, vende1, referenciaPrincipal.empresaActual.BaseDatosActual, referenciaPrincipal.usuarioActual.Id, referenciaPrincipal.usuarioActual.NumeroCaja, txtCambio.Text,
                 txtPagado.Text, txtContado.Text);
             do
@@ -1963,6 +2022,7 @@ namespace lebrun.formularios.facturacion
                     asignarCorrelativo(fac1.TipoDocumento);
                     //agregado
                     fac1.aumentarCorrelativo(fac1.TipoDocumento, fac1.CorrelativoInterno);
+                    fac1.OrigenVenta = CodigoOrigenVenta();
                     fac1.crearSentenciaCabecera(client1, vende1, referenciaPrincipal.empresaActual.BaseDatosActual, referenciaPrincipal.usuarioActual.Id, referenciaPrincipal.usuarioActual.NumeroCaja, txtCambio.Text,
                         txtPagado.Text, txtContado.Text);
                     actualizarCorrelativoGrid();
@@ -1974,6 +2034,7 @@ namespace lebrun.formularios.facturacion
                     asignarCorrelativo(fac1.TipoDocumento);
                     //agregado
                     fac1.aumentarCorrelativo(fac1.TipoDocumento, fac1.CorrelativoInterno);
+                    fac1.OrigenVenta = CodigoOrigenVenta();
                     fac1.crearSentenciaCabecera(client1, vende1, referenciaPrincipal.empresaActual.BaseDatosActual, referenciaPrincipal.usuarioActual.Id, referenciaPrincipal.usuarioActual.NumeroCaja, txtCambio.Text,
                         txtPagado.Text, txtContado.Text);
                     actualizarCorrelativoGrid();
@@ -2043,6 +2104,7 @@ namespace lebrun.formularios.facturacion
             fac1.aumentarCorrelativo(fac1.TipoDocumento, fac1.CorrelativoInterno);
             actualizarCorrelativoGrid();
 
+            fac1.OrigenVenta = CodigoOrigenVenta();
             fac1.crearSentenciaCabecera(client1, vende1, referenciaPrincipal.empresaActual.BaseDatosActual, referenciaPrincipal.usuarioActual.Id, referenciaPrincipal.usuarioActual.NumeroCaja, txtCambio.Text,
                 txtPagado.Text, txtContado.Text);
             do
@@ -2055,6 +2117,7 @@ namespace lebrun.formularios.facturacion
                     asignarCorrelativo(fac1.TipoDocumento);
                     //agregado
                     fac1.aumentarCorrelativo(fac1.TipoDocumento, fac1.CorrelativoInterno);
+                    fac1.OrigenVenta = CodigoOrigenVenta();
                     fac1.crearSentenciaCabecera(client1, vende1, referenciaPrincipal.empresaActual.BaseDatosActual, referenciaPrincipal.usuarioActual.Id, referenciaPrincipal.usuarioActual.NumeroCaja, txtCambio.Text,
                         txtPagado.Text, txtContado.Text);
                     actualizarCorrelativoGrid();
@@ -2066,6 +2129,7 @@ namespace lebrun.formularios.facturacion
                     asignarCorrelativo(fac1.TipoDocumento);
                     //agregado
                     fac1.aumentarCorrelativo(fac1.TipoDocumento, fac1.CorrelativoInterno);
+                    fac1.OrigenVenta = CodigoOrigenVenta();
                     fac1.crearSentenciaCabecera(client1, vende1, referenciaPrincipal.empresaActual.BaseDatosActual, referenciaPrincipal.usuarioActual.Id, referenciaPrincipal.usuarioActual.NumeroCaja, txtCambio.Text,
                         txtPagado.Text, txtContado.Text);
                     actualizarCorrelativoGrid();
@@ -2522,6 +2586,7 @@ namespace lebrun.formularios.facturacion
         #endregion
 
         private void mostrarFactura(string cod) {
+            MostrarOrigenGuardado(cod);
 
             //cabecera de Factura
             fac1.CorrelativoInterno = cod;
