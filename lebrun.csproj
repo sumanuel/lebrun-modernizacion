@@ -119,6 +119,7 @@
     <Compile Include="clases\clientes\Clientes.cs" />
     <Compile Include="clases\clientes\CondicionPago.cs" />
     <Compile Include="clases\complementos\FormasPagoVenta.cs" />
+    <Compile Include="clases\complementos\TasaCambio.cs" />
     <Compile Include="clases\clientes\TipoNegocio.cs" />
     <Compile Include="clases\clientes\Transporte.cs" />
     <Compile Include="clases\complementos\Caja.cs" />

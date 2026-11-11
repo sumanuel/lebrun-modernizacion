@@ -734,7 +734,7 @@ namespace lebrun.clases.facturacion
                                       "dcli_fecha,dcli_anufis,dcli_crerecibo,dcli_impreso,dcli_invmon,  " +
                                       "dcli_estatus,dcli_baseneta,dcli_cxc,dcli_dcto,dcli_otroimp, " +
                                       "dcli_mtocomisio,dcli_mtoiva,dcli_neto,dcli_numpag,dcli_otros,dcli_plazo, " +
-                                      "dcli_recargo,dclli_valcamb,dcli_dctobs,dcli_totdivi,dcli_descitem, " +
+                                      "dcli_recargo,dclli_valcamb,dcli_valcamb,dcli_dctobs,dcli_totdivi,dcli_descitem, " +
                                       "dcli_descdoc,dcli_subbase,doc_impo,dcli_cantproduc,dcli_aprob1, " +
                                       "dcli_aprob2, dcli_aprob3,dcli_impresora,dcli_caja, dcli_cerrado, " +
                                       "dcli_cosfac, dcli_cosfac_n,dcli_cosfac_i,dcli_base_n,dcli_base_i, " +
@@ -748,7 +748,7 @@ namespace lebrun.clases.facturacion
                                       "'$dcli_fecha','$dcli_anufis','$dcli_crerecibo','$1dcli_impreso','$dcli_invmon', " +
                                       "'$dcli_estatus','$dcli_baseneta','$dcli_cxc','$1dcli_dcto','$dcli_otroimp', " +
                                       "'$dcli_mtocomisio','$dcli_mtoiva','$dcli_neto','$dcli_numpag','$dcli_otros', " +
-                                      "'$dcli_plazo','$dcli_recargo','$dclli_valcamb','$dcli_dctobs','$dcli_totdivi', " +
+                                      "'$dcli_plazo','$dcli_recargo','$dclli_valcamb',$dcli_valcamb,'$dcli_dctobs','$dcli_totdivi', " +
                                       "'$dcli_descitem','$dcli_descdoc','$dcli_subbase','$doc_impo','$dcli_cantproduc', " +
                                       "'$dcli_aprob1','$dcli_aprob2','$dcli_aprob3','$dcli_impresora','$dcli_caja', " +
                                       "'$dcli_cerrado','$dcli_cosfac','$5dcli_cosfac_n','$3dcli_cosfac_i','$1dcli_base_n', " +
@@ -840,6 +840,8 @@ namespace lebrun.clases.facturacion
                 sentenciaSql = sentenciaSql.Replace("$dcli_plazo", Convert.ToString(this.PlazoDias));
                 sentenciaSql = sentenciaSql.Replace("$dcli_recargo", "0");
                 sentenciaSql = sentenciaSql.Replace("$dclli_valcamb", "1");
+                // tasa del dia (bolivares por dolar) en dcli_valcamb; NULL si el historial de divisas no tiene ninguna
+                sentenciaSql = sentenciaSql.Replace("$dcli_valcamb", TasaCambio.ParaSql(DateTime.Today));
                 sentenciaSql = sentenciaSql.Replace("$dcli_dctobs", "0.00");
                 sentenciaSql = sentenciaSql.Replace("$dcli_totdivi", Convert.ToString(this.totalNeto).Replace(",", "."));
                 sentenciaSql = sentenciaSql.Replace("$dcli_descitem", Convert.ToString(this.DescuentoItems).Replace(",", "."));
