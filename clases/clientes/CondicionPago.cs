@@ -47,7 +47,8 @@ namespace lebrun.clases.clientes
         // Todas las filas (condiciones y formas de pago, activas o no), en orden de codigo.
         public DataTable lbxCondPag()
         {
-            return Ejecutar("select conp_codigo,conp_descripcion, conp_cant_dias from admcondpago order by conp_codigo;");
+            // solo las condiciones de credito activas: las formas de pago (Efectivo, Divisa $, ...) viven en la misma tabla pero no son condiciones
+            return Ejecutar("select conp_codigo,conp_descripcion, conp_cant_dias from admcondpago where conp_tipo = 'C' and conp_status = '1' order by conp_codigo;");
         }
 
         // Para el mantenimiento: todas las filas con sus siglas, tipo, dias, mora y estado.
