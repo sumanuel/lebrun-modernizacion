@@ -128,7 +128,8 @@ end;
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
   Result := True;
-  if CurPageID = ConexionPage.ID then
+  { En modo silencioso el servidor es opcional (sin /Servidor se conservan ip.txt y la configuracion existentes, por ejemplo al actualizar) }
+  if (CurPageID = ConexionPage.ID) and (not WizardSilent) then
   begin
     if Trim(ConexionPage.Values[0]) = '' then
     begin
