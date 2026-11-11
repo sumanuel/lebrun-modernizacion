@@ -86,6 +86,7 @@ namespace lebrun.clases.retenciones
             StrSql = StrSql.Replace("$3", estatus);
 
             database.ejecutarInsert(StrSql);
+            lebrun.clases.facturacion.EstadoCobro.Actualizar(numDocum);
         }
 
         public void IngresarRti(DataTable tabla) {

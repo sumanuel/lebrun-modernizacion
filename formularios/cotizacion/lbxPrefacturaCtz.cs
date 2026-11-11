@@ -50,6 +50,14 @@ namespace lebrun.formularios.cotizacion
 
         private void lbxPrefacturaCtz_Load(object sender, EventArgs e)
         {
+            // la columna del estado de cobro (Pagado, Parcial, Pendiente) llega al final de la consulta: se le pone titulo cada vez que se llena la grilla
+            dataGridView1.DataBindingComplete += delegate
+            {
+                if (dataGridView1.Columns.Contains("dcli_estatus"))
+                {
+                    dataGridView1.Columns["dcli_estatus"].HeaderText = "Cobro";
+                }
+            };
             dtFact = new DataTable();
             referenciaPrincipal = (Principal)this.MdiParent;
             serFis = new SerieFiscal(referenciaPrincipal.usuarioActual.IpPc);

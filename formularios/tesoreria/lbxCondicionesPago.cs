@@ -25,6 +25,7 @@ namespace lebrun.formularios.tesoreria
         private readonly CheckBox chkActiva = new CheckBox();
         private readonly CheckBox chkPideBanco = new CheckBox();
         private readonly ComboBox cboGrupo = new ComboBox();
+        private readonly ComboBox cboMoneda = new ComboBox();
         private readonly Button cmdNuevo = new Button();
         private readonly Button cmdGuardar = new Button();
         private readonly Button cmdCerrar = new Button();
@@ -139,15 +140,21 @@ namespace lebrun.formularios.tesoreria
             cboGrupo.Items.Add("Tarjetas");
             cboGrupo.Items.Add("Cheques");
             cboGrupo.SelectedIndex = 0;
+            // moneda en que se cobra la forma de pago: en Divisa $ y Divisa Euro el cajero escribe lo recibido en dolares o euros y se guarda el monto original
+            cboMoneda.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboMoneda.Items.Add("Bolívares");
+            cboMoneda.Items.Add("Dólares ($)");
+            cboMoneda.Items.Add("Euros (€)");
+            cboMoneda.SelectedIndex = 0;
 
             TableLayoutPanel t = new TableLayoutPanel();
             t.Dock = DockStyle.Fill;
             t.ColumnCount = 2;
             t.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 112));
             t.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            string[] etiquetas = { "Código", "Descripción", "Siglas (máx. 4)", "Tipo", "Días de crédito", "Días de mora", "Se suma en", "", "Observación", "" };
-            Control[] campos = { txtCodigo, txtDescripcion, txtSiglas, cboTipo, nudDias, nudMora, cboGrupo, chkPideBanco, txtObservacion, chkActiva };
-            int[] altos = { 30, 30, 30, 30, 30, 30, 30, 28, 58, 30 };
+            string[] etiquetas = { "Código", "Descripción", "Siglas (máx. 4)", "Tipo", "Días de crédito", "Días de mora", "Se suma en", "Moneda", "", "Observación", "" };
+            Control[] campos = { txtCodigo, txtDescripcion, txtSiglas, cboTipo, nudDias, nudMora, cboGrupo, cboMoneda, chkPideBanco, txtObservacion, chkActiva };
+            int[] altos = { 30, 30, 30, 30, 30, 30, 30, 30, 28, 58, 30 };
             t.RowCount = etiquetas.Length + 2;
             for (int i = 0; i < etiquetas.Length; i++)
             {
@@ -227,6 +234,7 @@ namespace lebrun.formularios.tesoreria
                 ColTexto(grilla, "conp_tipo", "Tipo", 16);
                 grilla.Columns["conp_req_banco"].Visible = false;
                 grilla.Columns["conp_grupo"].Visible = false;
+                grilla.Columns["conp_moneda"].Visible = false;
                 ColNumerica(grilla, "conp_cant_dias", "n0", 8);
                 ColNumerica(grilla, "mora_fact1", "n0", 7);
                 ColTexto(grilla, "conp_status", "Estado", 10);
@@ -330,6 +338,8 @@ namespace lebrun.formularios.tesoreria
             chkPideBanco.Checked = Convert.ToString(r["conp_req_banco"]) == "1";
             string grupo = Convert.ToString(r["conp_grupo"]);
             cboGrupo.SelectedIndex = grupo == "T" ? 1 : grupo == "C" ? 2 : 0;
+            string moneda = r["conp_moneda"] == DBNull.Value ? "" : Convert.ToString(r["conp_moneda"]).Trim().ToUpper();
+            cboMoneda.SelectedIndex = moneda == "USD" ? 1 : moneda == "EUR" ? 2 : 0;
             lblAviso.Text = "";
             AjustarSegunTipo();
         }
@@ -350,6 +360,7 @@ namespace lebrun.formularios.tesoreria
             chkActiva.Checked = true;
             chkPideBanco.Checked = false;
             cboGrupo.SelectedIndex = 0;
+            cboMoneda.SelectedIndex = 0;
             lblAviso.Text = "";
             AjustarSegunTipo();
             txtCodigo.Focus();
@@ -369,6 +380,11 @@ namespace lebrun.formularios.tesoreria
             nudMora.Enabled = condicion;
             cboGrupo.Enabled = !condicion;
             chkPideBanco.Enabled = !condicion;
+            cboMoneda.Enabled = !condicion;
+            if (condicion)
+            {
+                cboMoneda.SelectedIndex = 0;
+            }
             if (!condicion)
             {
                 nudDias.Value = 0;
@@ -426,7 +442,8 @@ namespace lebrun.formularios.tesoreria
                 }
                 string tipo = cboTipo.SelectedIndex == 1 ? CondicionPago.TipoFormaPago : CondicionPago.TipoCondicion;
                 if (datos.Guardar(esNueva, codigo, descripcion, siglas, tipo, nudDias.Value, (int)nudMora.Value, txtObservacion.Text.Trim(), chkActiva.Checked,
-                    chkPideBanco.Checked, cboGrupo.SelectedIndex == 1 ? "T" : cboGrupo.SelectedIndex == 2 ? "C" : "E"))
+                    chkPideBanco.Checked, cboGrupo.SelectedIndex == 1 ? "T" : cboGrupo.SelectedIndex == 2 ? "C" : "E",
+                    cboMoneda.SelectedIndex == 1 ? "USD" : cboMoneda.SelectedIndex == 2 ? "EUR" : ""))
                 {
                     Recargar(codigo);
                     Mensaje("Guardado.", false);

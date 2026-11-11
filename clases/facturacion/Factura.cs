@@ -366,7 +366,7 @@ namespace lebrun.clases.facturacion
 
             sentenciaSql = "SELECT " +
                                 "dcli_numero,dcli_codigo,cli_nombre,dcli_fecha,dcli_estado,dcli_neto, " +
-                                "dcli_tiptra,dcli_baseneta,dcli_numfis,dcli_impreso,dcli_tipdoc,dcli_codmon,dcli_facafe  " +
+                                "dcli_tiptra,dcli_baseneta,dcli_numfis,dcli_impreso,dcli_tipdoc,dcli_codmon,dcli_facafe,dcli_estatus  " +
                                 "FROM admdoccli2  " +
                                 "LEFT OUTER JOIN admclientes ON admclientes.cli_codigo=admdoccli2.dcli_codigo  " +
                                 "WHERE  dcli_tipdoc='FAV' AND dcli_caja='$numCaja' AND " +
@@ -386,7 +386,7 @@ namespace lebrun.clases.facturacion
             DataTable dt;
             sentenciaSql = "SELECT " +
                                 "dcli_numero,dcli_codigo,cli_nombre,dcli_fecha,dcli_estado,dcli_neto, " +
-                                "dcli_tiptra,dcli_baseneta,dcli_numfis,dcli_impreso,dcli_tipdoc,dcli_codmon,dcli_facafe  " +
+                                "dcli_tiptra,dcli_baseneta,dcli_numfis,dcli_impreso,dcli_tipdoc,dcli_codmon,dcli_facafe,dcli_estatus  " +
                                 "FROM admdoccli2  " +
                                 "LEFT OUTER JOIN admclientes ON admclientes.cli_codigo=admdoccli2.dcli_codigo  " +
                                 "WHERE  dcli_tipdoc= 'DEV' AND dcli_caja='$numCaja' AND " +
@@ -405,7 +405,7 @@ namespace lebrun.clases.facturacion
             sentenciaSql = null;
             sentenciaSql = "SELECT " +
                                   "dcli_numero,dcli_codigo,cli_nombre,dcli_fecha,dcli_estado,dcli_neto, " +
-                                  "dcli_tiptra,dcli_baseneta,dcli_numfis,dcli_impreso,dcli_tipdoc,dcli_codmon,dcli_facafe  " +
+                                  "dcli_tiptra,dcli_baseneta,dcli_numfis,dcli_impreso,dcli_tipdoc,dcli_codmon,dcli_facafe,dcli_estatus  " +
                                   "FROM admdoccli  "+
                                   "LEFT JOIN admclientes ON admclientes.cli_codigo=admdoccli.dcli_codigo  " +
                                   "WHERE  dcli_numero LIKE '%$1%'  OR dcli_numfis LIKE '%$1%' "+
@@ -423,7 +423,7 @@ namespace lebrun.clases.facturacion
             sentenciaSql = null;
             sentenciaSql = "SELECT " +
                                   "dcli_numero,dcli_codigo,cli_nombre,dcli_fecha,dcli_estado,dcli_neto, " +
-                                  "dcli_tiptra,dcli_baseneta,dcli_numfis,dcli_impreso,dcli_codmon,dcli_facafe  " +
+                                  "dcli_tiptra,dcli_baseneta,dcli_numfis,dcli_impreso,dcli_codmon,dcli_facafe,dcli_estatus  " +
                                   "FROM admdoccli  " +
                                   "LEFT JOIN admclientes ON admclientes.cli_codigo=admdoccli.dcli_codigo  " +
                                   "WHERE dcli_fecha BETWEEN '$fecha1' AND  '$fecha2' AND dcli_tipdoc='$t';";
@@ -829,7 +829,8 @@ namespace lebrun.clases.facturacion
                 sentenciaSql = sentenciaSql.Replace("$dcli_crerecibo", " ");
                 sentenciaSql = sentenciaSql.Replace("$1dcli_impreso", "0");//0 por defecto y se actualiza cuando se obtiene numero fiscal
                 sentenciaSql = sentenciaSql.Replace("$dcli_invmon", "Bs");
-                sentenciaSql = sentenciaSql.Replace("$dcli_estatus", this.dcli_estado);
+                // dcli_estatus = estado de cobro (Pagado, Parcial o Pendiente); dcli_estado y dcli_expexp siguen con Pagado/Activo
+                sentenciaSql = sentenciaSql.Replace("$dcli_estatus", EstadoCobro.Calcular(this.dcli_estado, Convert.ToDecimal(contado.Replace(".", ",")), Convert.ToDecimal(pagado.Replace(".", ","))));
                 sentenciaSql = sentenciaSql.Replace("$dcli_baseneta", Convert.ToString(this.TotalBase).Replace(",", "."));
                 if (this.tipoDocumento.Equals("FAV") || this.tipoDocumento.Equals("CTZ"))
                 {

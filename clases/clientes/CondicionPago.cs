@@ -53,7 +53,7 @@ namespace lebrun.clases.clientes
         // Para el mantenimiento: todas las filas con sus siglas, tipo, dias, mora y estado.
         public DataTable Todas()
         {
-            return Ejecutar("SELECT conp_codigo, conp_descripcion, conp_siglas, conp_tipo, conp_cant_dias, mora_fact1, conp_observ, conp_status, conp_req_banco, conp_grupo " +
+            return Ejecutar("SELECT conp_codigo, conp_descripcion, conp_siglas, conp_tipo, conp_cant_dias, mora_fact1, conp_observ, conp_status, conp_req_banco, conp_grupo, conp_moneda " +
                             "FROM admcondpago ORDER BY conp_tipo, conp_codigo");
         }
 
@@ -68,8 +68,15 @@ namespace lebrun.clases.clientes
         // Formas de pago activas (Efectivo, Tarjeta de Debito, ...) con si piden banco y numero y en que casilla de la factura se suman.
         public DataTable FormasPago()
         {
-            return Ejecutar("SELECT conp_codigo, conp_descripcion, conp_siglas, conp_req_banco, conp_grupo FROM admcondpago " +
+            return Ejecutar("SELECT conp_codigo, conp_descripcion, conp_siglas, conp_req_banco, conp_grupo, conp_moneda FROM admcondpago " +
                             "WHERE conp_tipo = 'F' AND conp_status = '1' ORDER BY conp_codigo");
+        }
+
+        // Moneda en que se cobra una forma de pago: USD o EUR; vacio = bolivares (se guarda NULL).
+        private static string MonedaSql(string moneda)
+        {
+            string m = (moneda ?? "").Trim().ToUpper();
+            return m == "USD" || m == "EUR" ? "'" + m + "'" : "NULL";
         }
 
         public bool ExisteCodigo(string codigo)
@@ -84,21 +91,21 @@ namespace lebrun.clases.clientes
         }
 
         // Crea o modifica una condicion o forma de pago. No se borran: se desactivan, porque los documentos antiguos las usan.
-        public bool Guardar(bool nueva, string codigo, string descripcion, string siglas, string tipo, decimal dias, int mora, string observacion, bool activa, bool pideBanco, string grupo)
+        public bool Guardar(bool nueva, string codigo, string descripcion, string siglas, string tipo, decimal dias, int mora, string observacion, bool activa, bool pideBanco, string grupo, string moneda)
         {
             string dec = dias.ToString("0.00", CultureInfo.InvariantCulture);
             string sql;
             if (nueva)
             {
-                sql = "INSERT INTO admcondpago (conp_codigo, conp_descripcion, conp_siglas, conp_tipo, conp_cant_dias, mora_fact1, conp_observ, conp_status, conp_req_banco, conp_grupo) VALUES ('" +
+                sql = "INSERT INTO admcondpago (conp_codigo, conp_descripcion, conp_siglas, conp_tipo, conp_cant_dias, mora_fact1, conp_observ, conp_status, conp_req_banco, conp_grupo, conp_moneda) VALUES ('" +
                       Texto(codigo) + "', '" + Texto(descripcion) + "', '" + Texto(siglas) + "', '" + Texto(tipo) + "', " + dec + ", " + mora + ", '" + Texto(observacion) + "', '" + (activa ? "1" : "0") +
-                      "', '" + (pideBanco ? "1" : "0") + "', '" + Texto(grupo) + "')";
+                      "', '" + (pideBanco ? "1" : "0") + "', '" + Texto(grupo) + "', " + MonedaSql(moneda) + ")";
             }
             else
             {
                 sql = "UPDATE admcondpago SET conp_descripcion = '" + Texto(descripcion) + "', conp_siglas = '" + Texto(siglas) + "', conp_tipo = '" + Texto(tipo) + "', conp_cant_dias = " + dec +
                       ", mora_fact1 = " + mora + ", conp_observ = '" + Texto(observacion) + "', conp_status = '" + (activa ? "1" : "0") + "', conp_req_banco = '" + (pideBanco ? "1" : "0") +
-                      "', conp_grupo = '" + Texto(grupo) + "' WHERE conp_codigo = '" + Texto(codigo) + "'";
+                      "', conp_grupo = '" + Texto(grupo) + "', conp_moneda = " + MonedaSql(moneda) + " WHERE conp_codigo = '" + Texto(codigo) + "'";
             }
             bool ok = sisadm.ejecutarInsert(sql);
             sisadm.cerrarConexion();

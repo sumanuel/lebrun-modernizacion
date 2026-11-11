@@ -16,6 +16,13 @@ namespace lebrun.clases.complementos
         public string Siglas { get; set; }
         public bool PideBanco { get; set; }
         public char Grupo { get; set; }
+        // USD o EUR si se cobra en divisa (Divisa $, Divisa Euro); null si se cobra en bolivares
+        public string Moneda { get; set; }
+
+        public bool EsDivisa
+        {
+            get { return !string.IsNullOrEmpty(Moneda); }
+        }
 
         public override string ToString()
         {
@@ -49,7 +56,8 @@ namespace lebrun.clases.complementos
                         Descripcion = Convert.ToString(r["conp_descripcion"]).Trim(),
                         Siglas = r["conp_siglas"] == DBNull.Value ? "" : Convert.ToString(r["conp_siglas"]).Trim(),
                         PideBanco = Convert.ToString(r["conp_req_banco"]) == "1",
-                        Grupo = Convert.ToString(r["conp_grupo"]).Length > 0 ? Convert.ToString(r["conp_grupo"])[0] : 'E'
+                        Grupo = Convert.ToString(r["conp_grupo"]).Length > 0 ? Convert.ToString(r["conp_grupo"])[0] : 'E',
+                        Moneda = r["conp_moneda"] == DBNull.Value || Convert.ToString(r["conp_moneda"]).Trim().Length == 0 ? null : Convert.ToString(r["conp_moneda"]).Trim().ToUpper()
                     });
                 }
             }
@@ -98,6 +106,77 @@ namespace lebrun.clases.complementos
         {
             FormaPagoVenta f = Buscar(formas, valorGuardado);
             return f == null ? 'E' : f.Grupo;
+        }
+
+        // Texto de la etiqueta del monto en la pantalla de cobro: en divisa el cajero escribe lo que recibio en dolares o euros.
+        public static string EtiquetaMonto(FormaPagoVenta forma)
+        {
+            return forma != null && forma.EsDivisa ? "Monto en " + TasaCambio.Simbolo(forma.Moneda) : "Monto Abonar";
+        }
+
+        // Pago en divisa: el cajero escribe el monto en la divisa, que se convierte a bolivares con la tasa del dia. Calcula los bolivares; devuelve false
+        // (y un mensaje) si el monto no es valido o no hay tasa cargada para hoy.
+        public static bool ConvertirADivisa(FormaPagoVenta forma, string textoMonto, out decimal original, out decimal tasa, out decimal bolivares, out string error)
+        {
+            original = 0m;
+            tasa = 0m;
+            bolivares = 0m;
+            error = null;
+            string moneda = TasaCambio.Nombre(forma.Moneda);
+            if (!decimal.TryParse((textoMonto ?? "").Trim().Replace(".", ","), out original) || original <= 0m)
+            {
+                error = "Escriba el monto recibido en " + (forma.Moneda == TasaCambio.Euro ? "euros" : "dolares") + ".";
+                return false;
+            }
+            decimal? vigente = TasaCambio.Vigente(DateTime.Today, forma.Moneda);
+            if (!vigente.HasValue)
+            {
+                error = "No hay tasa de cambio del " + moneda + " cargada. Cargue la tasa del dia antes de cobrar en " + (forma.Moneda == TasaCambio.Euro ? "euros" : "dolares") + ".";
+                return false;
+            }
+            tasa = vigente.Value;
+            bolivares = Math.Round(original * tasa, 2, MidpointRounding.AwayFromZero);
+            return true;
+        }
+
+        // Columnas de la grilla de pagos para el monto original en divisa: tres ocultas que se guardan en admmovcaja y una visible que muestra
+        // lo recibido (20,00 $). Se agregan por codigo para no tocar el diseno de cada formulario.
+        public static void AsegurarColumnasDivisa(System.Windows.Forms.DataGridView grilla)
+        {
+            AgregarColumna(grilla, "@movc_montodivisa", "", false, 0);
+            AgregarColumna(grilla, "@movc_monedadivisa", "", false, 0);
+            AgregarColumna(grilla, "@movc_tasadivisa", "", false, 0);
+            AgregarColumna(grilla, "divisaTexto", "Divisa", true, 70);
+        }
+
+        private static void AgregarColumna(System.Windows.Forms.DataGridView grilla, string nombre, string encabezado, bool visible, int ancho)
+        {
+            if (grilla.Columns.Contains(nombre))
+            {
+                return;
+            }
+            System.Windows.Forms.DataGridViewTextBoxColumn c = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            c.Name = nombre;
+            c.HeaderText = encabezado;
+            c.Visible = visible;
+            c.ReadOnly = true;
+            c.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            if (ancho > 0)
+            {
+                c.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+                c.Width = ancho;
+            }
+            grilla.Columns.Add(c);
+        }
+
+        // Anota en la fila de pago recien agregada lo recibido en divisa, la moneda y la tasa usada.
+        public static void AnotarDivisa(System.Windows.Forms.DataGridView grilla, System.Windows.Forms.DataGridViewRow fila, decimal original, string moneda, decimal tasa)
+        {
+            AsegurarColumnasDivisa(grilla);
+            fila.Cells["@movc_montodivisa"].Value = original.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+            fila.Cells["@movc_monedadivisa"].Value = moneda;
+            fila.Cells["@movc_tasadivisa"].Value = tasa.ToString("0.0000", System.Globalization.CultureInfo.InvariantCulture);
+            fila.Cells["divisaTexto"].Value = original.ToString("n2") + " " + TasaCambio.Simbolo(moneda);
         }
 
         // Valor que se guarda en admmovcaja.movc_tipoctaban, igual que antes: DEBITO, CREDITO, CHEQUE o N/A.

@@ -519,6 +519,14 @@ namespace lebrun.clases.tesoreria
             database.insertdataGridViewConNombre(tabla, parametros, StrSql);
             database.cerrarConexion();
 
+            // el estado de cobro de cada documento cobrado (Pagado, Parcial o Pendiente) se vuelve a calcular con su saldo
+            foreach (DataGridViewRow fila in tabla.Rows)
+            {
+                if (tabla.Columns.Contains("@NroDocum") && fila.Cells["@NroDocum"].Value != null)
+                {
+                    lebrun.clases.facturacion.EstadoCobro.Actualizar(Convert.ToString(fila.Cells["@NroDocum"].Value));
+                }
+            }
         }
 
         /// <summary>

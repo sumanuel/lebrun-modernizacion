@@ -144,6 +144,7 @@
     <Compile Include="clases\contabilidad\movimientoContable.cs" />
     <Compile Include="clases\contabilidad\PlanCuentas.cs" />
     <Compile Include="clases\facturacion\Factura.cs" />
+    <Compile Include="clases\facturacion\EstadoCobro.cs" />
     <Compile Include="clases\facturacion\FacturaFerle.cs" />
     <Compile Include="clases\facturacion\ImpresoraFiscal.cs" />
     <Compile Include="clases\facturacion\ImpresoraFiscalPNPDLL.cs" />
@@ -723,6 +724,9 @@
     </Compile>
     <Compile Include="formularios\tesoreria\frmRetIvaCli.Designer.cs">
       <DependentUpon>frmRetIvaCli.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formularios\facturacion\lbxEstadoCuentas.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="formularios\facturacion\lbxOrigenesVenta.cs">
       <SubType>Form</SubType>

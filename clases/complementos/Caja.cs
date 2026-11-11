@@ -369,9 +369,31 @@ namespace lebrun.clases.complementos
                  filaNueva.Cells.Add(celdaNueva);
                  filaNueva.Cells[19].Value = fila.Cells["@movc_memo"].Value;
 
+                 // Pago en divisa (Divisa $, Divisa Euro): ademas de los bolivares se guardan el monto original, la moneda y la tasa usada. Solo esas filas
+                 // usan las columnas nuevas, asi un pago normal se guarda igual que siempre.
+                 string sentenciaFila = sentenciaEnviar;
+                 string[] parametrosFila = parametros;
+                 if (datos.Columns.Contains("@movc_montodivisa") && fila.Cells["@movc_montodivisa"].Value != null && fila.Cells["@movc_montodivisa"].Value != DBNull.Value
+                     && Convert.ToString(fila.Cells["@movc_montodivisa"].Value).Length > 0)
+                 {
+                     sentenciaFila = sentenciaEnviar.Replace("movc_valcam,movc_memo)", "movc_valcam,movc_memo,movc_montodivisa,movc_monedadivisa,movc_tasadivisa)")
+                                                    .Replace("@movc_valcam,@movc_memo", "@movc_valcam,@movc_memo,@movc_montodivisa,@movc_monedadivisa,@movc_tasadivisa");
+                     parametrosFila = new string[23];
+                     parametros.CopyTo(parametrosFila, 0);
+                     parametrosFila[20] = "@movc_montodivisa";
+                     parametrosFila[21] = "@movc_monedadivisa";
+                     parametrosFila[22] = "@movc_tasadivisa";
+                     foreach (string columnaDivisa in new[] { "@movc_montodivisa", "@movc_monedadivisa", "@movc_tasadivisa" })
+                     {
+                         DataGridViewCell celdaDivisa = new DataGridViewTextBoxCell();
+                         filaNueva.Cells.Add(celdaDivisa);
+                         celdaDivisa.Value = fila.Cells[columnaDivisa].Value;
+                     }
+                 }
+
 
                  //solo si por cualquier cosa el correlativo de movcaja se duplica 0j0
-                 respuestaBD = dataBaseConexion.insertDataGridViewRow(filaNueva, parametros, sentenciaEnviar);
+                 respuestaBD = dataBaseConexion.insertDataGridViewRow(filaNueva, parametrosFila, sentenciaFila);
                  while (respuestaBD == -2147467259)
                  {
                      sentenciaSql = "Call correlativoMovcaja";
@@ -382,7 +404,7 @@ namespace lebrun.clases.complementos
                      }
                      filaNueva.Cells[0].Value = correlativo;
 
-                     respuestaBD = dataBaseConexion.insertDataGridViewRow(filaNueva, parametros, sentenciaEnviar);
+                     respuestaBD = dataBaseConexion.insertDataGridViewRow(filaNueva, parametrosFila, sentenciaFila);
                  }
              }
 
@@ -622,7 +644,7 @@ namespace lebrun.clases.complementos
                  cli_telefono = fila2.Field<string>("cli_telefono"),
                  dcli_mtoiva = fila2.Field<decimal>("dcli_mtoiva"),
                  dcli_neto = fila2.Field<decimal>("dcli_neto"),
-                 mocv_forpag2 = siglasDelDocumento(fila2.Field<string>("dcli_numero")),
+                 mocv_forpag2 = etiquetaDetalle(fila2),
                  dcli_numfis = fila2.Field<string>("dcli_numfis"),
                  dcli_tipdoc = fila2.Field<string>("dcli_tipdoc"),
              }).Aggregate(dtReporte, (z, r) =>
@@ -728,6 +750,19 @@ namespace lebrun.clases.complementos
             this.cosFacNDev = Convert.ToDecimal(resumen.Rows[0]["cosfacNDev"].ToString());
             this.cosFacIFav = Convert.ToDecimal(resumen.Rows[0]["cosfacIFav"].ToString());
             this.cosFacIDev = Convert.ToDecimal(resumen.Rows[0]["cosfacIDev"].ToString());
+        }
+
+        // Lo que sale en la columna de forma de pago del detalle del cuadre: las siglas de las formas con que se cobro; si el documento es a credito (no tiene
+        // formas) se muestra su estado de cobro: PEND (pendiente) o PARC (cobro parcial). Solo es informativo: los totales del cuadre no cambian.
+        private string etiquetaDetalle(DataRow fila)
+        {
+            string siglas = siglasDelDocumento(fila.Field<string>("dcli_numero"));
+            if (siglas.Length > 0 || !fila.Table.Columns.Contains("dcli_estatus"))
+            {
+                return siglas;
+            }
+            string estado = Convert.ToString(fila["dcli_estatus"]);
+            return estado == "Parcial" ? "PARC" : (estado == "Pendiente" ? "PEND" : "");
         }
 
         private string siglasDelDocumento(string numero)

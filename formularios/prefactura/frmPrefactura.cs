@@ -1518,6 +1518,7 @@ namespace lebrun.formularios.prefactura
 
         // Las formas de pago salen de la tabla admcondpago (tipo F): ya no estan escritas en el codigo.
         private void llenarModoPago() {
+            FormasPagoVenta.AsegurarColumnasDivisa(dataGridView2);
             formasPago = FormasPagoVenta.Cargar();
             cboModoPago.DisplayMember = "Descripcion";
             cboModoPago.ValueMember = "Codigo";
@@ -1539,7 +1540,45 @@ namespace lebrun.formularios.prefactura
             casilla.Text = Convert.ToString(Convert.ToDecimal(casilla.Text.Replace(".", ",")) + monto);
         }
 
+        // Los pagos en divisa se escriben en la divisa recibida (Monto en $ / Monto en euros): se convierten a bolivares con la tasa del dia y ademas se
+        // guardan el monto original, la moneda y la tasa (admmovcaja.movc_montodivisa, movc_monedadivisa, movc_tasadivisa). Los demas pagos siguen igual.
         private void cmdAgregarPago_Click(object sender, EventArgs e)
+        {
+            FormaPagoVenta forma = FormaActual();
+            if (!forma.EsDivisa)
+            {
+                AgregarPagoBase(sender, e);
+                return;
+            }
+            decimal original, tasa, bolivares;
+            string error;
+            if (!FormasPagoVenta.ConvertirADivisa(forma, txtMontoAbonar.Text, out original, out tasa, out bolivares, out error))
+            {
+                MessageBox.Show(error, "Información", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                txtMontoAbonar.Focus();
+                return;
+            }
+            string escrito = txtMontoAbonar.Text;
+            txtMontoAbonar.Text = bolivares.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+            int filasAntes = dataGridView2.Rows.Count;
+            AgregarPagoBase(sender, e);
+            if (dataGridView2.Rows.Count > filasAntes)
+            {
+                FormasPagoVenta.AnotarDivisa(dataGridView2, dataGridView2.Rows[dataGridView2.Rows.Count - 1], original, forma.Moneda, tasa);
+            }
+            else
+            {
+                txtMontoAbonar.Text = escrito;   // el pago no se agrego: se deja lo que escribio el cajero
+            }
+        }
+
+        // La etiqueta del monto dice en que moneda se escribe: Monto Abonar, Monto en $ o Monto en euros.
+        private void ActualizarEtiquetaMonto()
+        {
+            label18.Text = FormasPagoVenta.EtiquetaMonto(FormaActual());
+        }
+
+        private void AgregarPagoBase(object sender, EventArgs e)
         {
             string fechaMes = null;
             FormaPagoVenta forma = FormaActual();
@@ -1706,6 +1745,7 @@ namespace lebrun.formularios.prefactura
         {
             limpiarCancelarBasico2();
             activarBancos(FormaActual().PideBanco);
+            ActualizarEtiquetaMonto();
         }
 
         public void actualizarCodBanco(string codBanco)
