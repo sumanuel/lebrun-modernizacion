@@ -175,7 +175,7 @@ namespace lebrun.clases.complementos
             AsegurarColumnasDivisa(grilla);
             fila.Cells["@movc_montodivisa"].Value = original.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
             fila.Cells["@movc_monedadivisa"].Value = moneda;
-            fila.Cells["@movc_tasadivisa"].Value = tasa.ToString("0.0000", System.Globalization.CultureInfo.InvariantCulture);
+            fila.Cells["@movc_tasadivisa"].Value = TasaCambio.Texto(tasa);
             fila.Cells["divisaTexto"].Value = original.ToString("n2") + " " + TasaCambio.Simbolo(moneda);
         }
 

@@ -54,11 +54,20 @@ namespace lebrun.clases.complementos
             return Vigente(fecha, Dolar);
         }
 
+        // La tasa se guarda y se usa con todos sus decimales (el BCV publica 8): nunca se redondea a 2.
+        public const string FormatoTasa = "0.########";
+
+        // Texto de la tasa con punto decimal y hasta 8 decimales, sin ceros de relleno (36,5 -> "36.5").
+        public static string Texto(decimal tasa)
+        {
+            return tasa.ToString(FormatoTasa, CultureInfo.InvariantCulture);
+        }
+
         // Texto listo para ponerlo en una sentencia SQL: el numero con punto decimal, o NULL si no hay tasa.
         public static string ParaSql(DateTime fecha)
         {
             decimal? tasa = Vigente(fecha);
-            return tasa.HasValue ? tasa.Value.ToString("0.00", CultureInfo.InvariantCulture) : "NULL";
+            return tasa.HasValue ? Texto(tasa.Value) : "NULL";
         }
     }
 }

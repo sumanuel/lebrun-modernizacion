@@ -1,0 +1,29 @@
+SCRIPTS DE LA TASA DE CAMBIO CON 8 DECIMALES
+============================================
+
+El BCV publica la tasa con 8 decimales y el sistema solo guardaba 2. Son para MySQL 5.5 y MariaDB; se pueden ejecutar mas de una vez sin dañar nada.
+
+Carpetas
+  Implementar/   el script que se ejecuta.
+  Revertir/      el script que lo deshace (guarda copia exacta de las tasas en tablas bk_tasa_*, que no se borran). Solo si hay que volver atras.
+
+  01_tasa_cambio_decimales.sql   amplia a 8 decimales:
+                                   admhistodivi.histo_valor    (historial de tasas del dolar, euro, ...)   DECIMAL(10,2) -> DECIMAL(18,8)
+                                   admdoccli.dcli_valcamb      (tasa del dia que graba cada factura)       DECIMAL(50,2) -> DECIMAL(50,8)
+                                   admmovcaja.movc_tasadivisa  (tasa de los pagos en divisa; sale del script 10 de condicion_pago)  DECIMAL(19,4) -> DECIMAL(19,8)
+                                 Los valores existentes no cambian. No se tocan las tasas de compras (admdocpro.doc_valcamb), pagos (admcomppago.comp_valcam),
+                                 bancos (admmovban.movb_valcam), impuestos (admimppat.imp_tasa) ni importaciones (admcabeceradocumento.tasaCambio, que ya
+                                 admite 10 decimales).
+
+Como se ejecuta:
+    mysql -u usuario -p < Implementar/01_tasa_cambio_decimales.sql
+
+IMPORTANTE
+  - Cambiar el tipo de admdoccli y admmovcaja reconstruye esas tablas: hacerlo fuera del horario de trabajo (en la copia de produccion con unos
+    177.000 documentos es cuestion de segundos o pocos minutos).
+  - Se puede ejecutar antes o despues de instalar la version nueva del programa: la version nueva funciona con 2 o con 8 decimales (sin el script
+    la tasa queda en 2 decimales, como hasta ahora).
+  - Quien CARGA la tasa en admhistodivi (otro programa o a mano en la base) tambien debe escribirla con todos sus decimales; este programa no
+    escribe en esa tabla. Si ese programa la redondea a 2 decimales, hay que ajustarlo.
+  - Lo que se calcula con la tasa (precios en bolivares, conversion de pagos en divisa) usa los 8 decimales; los montos en bolivares se siguen
+    redondeando a 2 decimales.
