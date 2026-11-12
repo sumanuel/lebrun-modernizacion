@@ -245,6 +245,9 @@
     <Compile Include="formularios\complementos\frmClasificacionEconomica.designer.cs">
       <DependentUpon>frmClasificacionEconomica.cs</DependentUpon>
     </Compile>
+    <Compile Include="formularios\clientes\dlgDatosContactoCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="formularios\complementos\dlgClaveSupervision.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,0 +1,26 @@
+SCRIPTS DE DATOS DE CONTACTO DEL CLIENTE (correo y fecha de nacimiento)
+=======================================================================
+
+Para pedir en caja el correo y la fecha de nacimiento del cliente (promociones, felicitaciones de cumpleaños, filtrar ventas online).
+Son para MySQL 5.5 y MariaDB. Se pueden ejecutar mas de una vez sin dañar nada.
+
+Carpetas
+  Implementar/   el script que se ejecuta.
+  Revertir/      el script que lo deshace (mismo numero, termina en _revertir.sql). Solo si hay que volver atras.
+
+  01_cliente_fecha_nacimiento.sql       agrega admclientes.cli_fechanac (DATE, vacio si no se conoce). El correo ya existe
+                                        (admclientes.cli_correo) y no es obligatorio.
+
+Como se ejecuta:
+    mysql -u usuario -p < Implementar/01_cliente_fecha_nacimiento.sql
+
+IMPORTANTE: ejecutarlo ANTES de instalar la version nueva del programa; la version nueva lee cli_fechanac al cargar cada cliente y falla si la
+columna no existe.
+
+Como funciona en el programa
+  - Facturacion (frmFactura y frmFacturaVivienda): al elegir el cliente en una factura de venta, si le falta el correo o la fecha de nacimiento sale
+    un aviso para la cajera con los dos campos. «Guardar» los graba en el cliente; «Omitir» sigue con la factura. No es obligatorio y se vuelve a
+    preguntar en la siguiente factura mientras falte alguno. No se pide en las devoluciones.
+  - Pantalla de Clientes: el campo «F. Nacimiento» (casilla sin marcar = sin fecha) junto al E-mail, que ya existia.
+  - El correo se valida (nombre@dominio.com) y la fecha no puede ser futura ni de mas de 120 años.
+  - El cliente generico no se excluye: si no tiene datos, la cajera puede registrar un correo ficticio.

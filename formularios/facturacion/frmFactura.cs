@@ -225,6 +225,7 @@ namespace lebrun.formularios.facturacion
 
                         txtNombreCli.Text = client1.Nombre;
                         txtRif.Text = client1.Rif;
+                        SolicitarDatosContacto();
                         //se asigna divisa
                         cboDivisa.Items.Add(client1.DivisaCliente);
                         cboDivisa.SelectedIndex = 0;
@@ -334,6 +335,17 @@ namespace lebrun.formularios.facturacion
             }
         }
 
+
+        // En una factura de venta, si al cliente le falta el correo o la fecha de nacimiento se le avisa a la cajera para que los pida
+        // (no es obligatorio: "Omitir" sigue con la factura). En las devoluciones no se pide.
+        private void SolicitarDatosContacto()
+        {
+            if (!"FAV".Equals(fac1.TipoDocumento))
+            {
+                return;
+            }
+            lebrun.formularios.clientes.dlgDatosContactoCliente.Solicitar(this, client1);
+        }
 
         public void cargarCliVen(string codClie, string codVend)
         {

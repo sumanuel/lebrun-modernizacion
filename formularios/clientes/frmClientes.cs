@@ -106,6 +106,21 @@ namespace lebrun.formularios.clientes
                 return centinela;
             }
 
+            // el correo y la fecha de nacimiento no son obligatorios, pero si se escriben deben ser validos
+            if (!Clientes.CorreoValido(txtEmail.Text))
+            {
+                MessageBox.Show("El correo no tiene un formato válido (ejemplo: nombre@dominio.com).", "Error ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtEmail.Focus();
+                return false;
+            }
+
+            if (dtpFechaNac.Checked && !Clientes.FechaNacimientoValida(dtpFechaNac.Value))
+            {
+                MessageBox.Show("La fecha de nacimiento no es válida (no puede ser futura).", "Error ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                dtpFechaNac.Focus();
+                return false;
+            }
+
 
             if (txtVendedor.Text == "")
             {
@@ -385,7 +400,8 @@ namespace lebrun.formularios.clientes
             cli1.ZonaGeografica = (cboGeografica.Text == "") ? "" : cboGeografica.Text;
             cli1.ZonaPostal = (txtZonaPostal.Text == "") ? 0 : (Convert.ToInt32(txtZonaPostal.Text));
             cli1.Fax = (txtFax.Text == "") ? "" : txtFax.Text;
-            cli1.Email = (txtEmail.Text == "") ? "" : txtEmail.Text;
+            cli1.Email = (txtEmail.Text == "") ? "" : txtEmail.Text.Trim();
+            cli1.FechaNacimiento = dtpFechaNac.Checked ? (DateTime?)dtpFechaNac.Value.Date : null;
             cli1.TipoNegocio = cboTipoNegocio.SelectedValue.ToString();
             cli1.Transporte = (cboTransporte.Text == "") ? "" : cboTransporte.Text;
             cli1.ComisionVen = (txtComisionVen.Text == "") ? 0 : Convert.ToDecimal(txtComisionVen.Text);
@@ -478,6 +494,8 @@ namespace lebrun.formularios.clientes
                 txtTelefono.Clear();
                 txtFax.Clear();
                 txtEmail.Clear();
+                dtpFechaNac.Value = DateTime.Today;
+                dtpFechaNac.Checked = false;
                 txtVendedor.Clear();
                 txtNombreVendedor.Clear();
                 txtNombreVendedor.Text= "Nombre Vendedor";
@@ -654,6 +672,16 @@ namespace lebrun.formularios.clientes
                 txtTelefono.Text = cli1.Telefono;
                 txtFax.Text = cli1.Fax;
                 txtEmail.Text = cli1.Email;
+                if (cli1.FechaNacimiento.HasValue)
+                {
+                    dtpFechaNac.Value = cli1.FechaNacimiento.Value;
+                    dtpFechaNac.Checked = true;
+                }
+                else
+                {
+                    dtpFechaNac.Value = DateTime.Today;
+                    dtpFechaNac.Checked = false;
+                }
                 //cboTipoNegocio.Text = cli1.TipoNegocio;
                 //cboTransporte.Text = cli1.Transporte;
                 txtVendedor.Text = cli1.Vendedor;

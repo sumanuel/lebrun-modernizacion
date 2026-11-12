@@ -53,6 +53,8 @@
             this.label26 = new System.Windows.Forms.Label();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.label25 = new System.Windows.Forms.Label();
+            this.lblFechaNac = new System.Windows.Forms.Label();
+            this.dtpFechaNac = new System.Windows.Forms.DateTimePicker();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.txtNombreAuxiliar = new System.Windows.Forms.TextBox();
@@ -167,6 +169,8 @@
             this.groupBox1.Controls.Add(this.label26);
             this.groupBox1.Controls.Add(this.dateTimePicker1);
             this.groupBox1.Controls.Add(this.label25);
+            this.groupBox1.Controls.Add(this.lblFechaNac);
+            this.groupBox1.Controls.Add(this.dtpFechaNac);
             this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.txtNombreAuxiliar);
@@ -440,6 +444,25 @@
             this.label25.Size = new System.Drawing.Size(123, 13);
             this.label25.TabIndex = 183;
             this.label25.Text = "Fecha inicio Vacaciones";
+            //
+            // lblFechaNac
+            //
+            this.lblFechaNac.AutoSize = true;
+            this.lblFechaNac.Location = new System.Drawing.Point(522, 443);
+            this.lblFechaNac.Name = "lblFechaNac";
+            this.lblFechaNac.Size = new System.Drawing.Size(81, 13);
+            this.lblFechaNac.TabIndex = 190;
+            this.lblFechaNac.Text = "F. Nacimiento:";
+            //
+            // dtpFechaNac (opcional: sin marcar = sin fecha)
+            //
+            this.dtpFechaNac.Checked = false;
+            this.dtpFechaNac.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpFechaNac.Location = new System.Drawing.Point(608, 440);
+            this.dtpFechaNac.Name = "dtpFechaNac";
+            this.dtpFechaNac.ShowCheckBox = true;
+            this.dtpFechaNac.Size = new System.Drawing.Size(137, 20);
+            this.dtpFechaNac.TabIndex = 32;
             // 
             // button2
             // 
@@ -467,7 +490,7 @@
             this.txtNombreAuxiliar.Location = new System.Drawing.Point(263, 440);
             this.txtNombreAuxiliar.Name = "txtNombreAuxiliar";
             this.txtNombreAuxiliar.ReadOnly = true;
-            this.txtNombreAuxiliar.Size = new System.Drawing.Size(389, 20);
+            this.txtNombreAuxiliar.Size = new System.Drawing.Size(250, 20);
             this.txtNombreAuxiliar.TabIndex = 179;
             this.txtNombreAuxiliar.Text = "Nombre Auxiliar";
             // 
@@ -1096,6 +1119,8 @@
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
         private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label lblFechaNac;
+        private System.Windows.Forms.DateTimePicker dtpFechaNac;
         internal System.Windows.Forms.TextBox txtDiaCobro;
         private System.Windows.Forms.TextBox txtObservaciones;
         private System.Windows.Forms.Label label27;

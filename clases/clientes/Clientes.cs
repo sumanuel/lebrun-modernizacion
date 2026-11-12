@@ -181,6 +181,13 @@ namespace lebrun.clases.clientes
             get { return fechaFinVaca; }
             set { fechaFinVaca = value; }
         }
+        // Fecha de nacimiento (admclientes.cli_fechanac, opcional): para felicitar al cliente en su cumpleanos y enviarle promociones
+        private DateTime? fechaNacimiento;
+        public DateTime? FechaNacimiento
+        {
+            get { return fechaNacimiento; }
+            set { fechaNacimiento = value; }
+        }
         public string TipoPersona
         {
             get { return tipoPersona; }
@@ -318,7 +325,7 @@ namespace lebrun.clases.clientes
                                     " cli_actividadec, cli_capipaga, cli_capisuscri, cli_gacenun, cli_nonmbreg, cli_zona, cli_memo2, " +
                                     " cli_cobrador, cli_divisa, cli_condipag, cli_diacaja, cli_horacaj, cli_ultiprecio, Cli_lisprecio, " +
                                     " cli_descuento, cli_credito, cli_lincredito, cli_diasplazo, cli_linmonvenci, cli_lindiasven, " +
-                                    " cli_memo3, admAC_codigoCuenta, admAC_codigoAuxiliarContable,cli_inivaca, cli_finvaca )" +
+                                    " cli_memo3, admAC_codigoCuenta, admAC_codigoAuxiliarContable,cli_inivaca, cli_finvaca, cli_fechanac )" +
                                     "VALUES( '$cli_codigo','$cli_nombre','$cli_rif','$cli_vendedor','$cli_telefono','$cli_direc1', " +
                                     "'$cli_pais','$cli_region','$cli_estado','$cli_municipio','$cli_parroqia','$cli_direc2','$cli_direc3','$cli_codarea', " +
                                     "'$cli_telmaster','$cli_fax','$cli_celular','$cli_otrocel','$cli_correo','$cli_pagina','$cli_fechareg','$cli_reside', " +
@@ -326,7 +333,7 @@ namespace lebrun.clases.clientes
                                     "'$cli_actividadec','$cli_capipaga','$cli_capisuscri','$cli_gacenun','$cli_nonmbreg','$cli_zona','$cli_memo2', " +
                                     "'$cli_cobrador','$cli_divisa','$cli_condipag','$cli_diacaja','$cli_horacaj','$cli_ultiprecio','$Cli_lisprecio', " +
                                     "'$cli_descuento','$cli_credito','$cli_lincredito','$cli_diasplazo','$cli_linmonvenci','$cli_lindiasven', " +
-                                    "'$cli_memo3','$admAC_codigoCuenta','$admAC_codigoAuxiliarContable','$cli_inivaca','$cli_finvaca');";
+                                    "'$cli_memo3','$admAC_codigoCuenta','$admAC_codigoAuxiliarContable','$cli_inivaca','$cli_finvaca',$cli_fechanac);";
 
                 sentenciaS = sentenciaS.Replace("$cli_codigo", this.codigo);
                 sentenciaS = sentenciaS.Replace("$cli_nombre", this.nombre);
@@ -346,7 +353,7 @@ namespace lebrun.clases.clientes
                 sentenciaS = sentenciaS.Replace("$cli_fax", this.fax);
                 sentenciaS = sentenciaS.Replace("$cli_celular", "");
                 sentenciaS = sentenciaS.Replace("$cli_otrocel", "");
-                sentenciaS = sentenciaS.Replace("$cli_correo", this.email);
+                sentenciaS = sentenciaS.Replace("$cli_correo", EscaparSql(this.email));
                 sentenciaS = sentenciaS.Replace("$cli_pagina", "");
                 sentenciaS = sentenciaS.Replace("$cli_fechareg", "" + x.Year + "-" + x.Month + "-" + x.Day);
                 sentenciaS = sentenciaS.Replace("$cli_reside", "Sí");
@@ -382,6 +389,7 @@ namespace lebrun.clases.clientes
                 sentenciaS = sentenciaS.Replace("$admAC_codigoAuxiliarContable", (this.auxiliarC == null ? "" : this.auxiliarC));
                 sentenciaS = sentenciaS.Replace("$cli_inivaca", this.fechaInicioVaca);
                 sentenciaS = sentenciaS.Replace("$cli_finvaca", this.fechaFinVaca);
+                sentenciaS = sentenciaS.Replace("$cli_fechanac", FechaSql(this.fechaNacimiento));
                 dataBaseConection.ejecutarInsert(sentenciaS);
 
                 sentenciaS = null;
@@ -533,6 +541,72 @@ namespace lebrun.clases.clientes
 
         // Lecturas tolerantes a valores NULL: los datos antiguos tienen campos nulos y GetString/GetDecimal/GetInt32 lanzan
         // SqlNullValueException en ese caso.
+        // Fecha de una columna que puede ser NULL (o una fecha cero no valida): null si no hay fecha.
+        private static DateTime? FechaNula(MySqlDataReader dr, string col)
+        {
+            int i = dr.GetOrdinal(col);
+            if (dr.IsDBNull(i)) return null;
+            try { return dr.GetDateTime(i); }
+            catch (Exception) { return null; }
+        }
+
+        // Texto listo para ir entre comillas simples en una sentencia (un correo puede llevar apostrofe: o'brien@...).
+        private static string EscaparSql(string texto)
+        {
+            return (texto ?? "").Replace("\\", "\\\\").Replace("'", "''");
+        }
+
+        // 'yyyy-MM-dd' entre comillas, o NULL si no hay fecha.
+        private static string FechaSql(DateTime? fecha)
+        {
+            return fecha.HasValue ? "'" + fecha.Value.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) + "'" : "NULL";
+        }
+
+        // ---- Datos de contacto (correo y fecha de nacimiento) que se piden en caja ----
+
+        // El correo no es obligatorio; si se escribe debe tener forma de direccion de correo.
+        public static bool CorreoValido(string correo)
+        {
+            if (string.IsNullOrWhiteSpace(correo)) return true;
+            return System.Text.RegularExpressions.Regex.IsMatch(correo.Trim(), @"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$");
+        }
+
+        // Una fecha de nacimiento razonable: no futura y de una persona de hasta 120 anos.
+        public static bool FechaNacimientoValida(DateTime fecha)
+        {
+            return fecha.Date <= DateTime.Today && fecha.Date >= DateTime.Today.AddYears(-120);
+        }
+
+        // Al cliente le falta el correo o la fecha de nacimiento (hay que pedirlos en caja).
+        public bool FaltanDatosContacto()
+        {
+            return string.IsNullOrWhiteSpace(this.email) || !this.fechaNacimiento.HasValue;
+        }
+
+        // Guarda solo el correo y la fecha de nacimiento del cliente actual, sin tocar el resto de sus datos.
+        // correo "" = no cambiar el correo; fecha null = no cambiar la fecha.
+        public bool GuardarDatosContacto(string correo, DateTime? fecha)
+        {
+            string correoLimpio = (correo ?? "").Trim();
+            List<string> cambios = new List<string>();
+            if (correoLimpio != "")
+                cambios.Add("cli_correo='" + correoLimpio.Replace("\\", "\\\\").Replace("'", "''") + "'");
+            if (fecha.HasValue)
+                cambios.Add("cli_fechanac=" + FechaSql(fecha));
+            if (cambios.Count == 0) return true;
+
+            sentenciaS = "UPDATE admclientes SET " + string.Join(", ", cambios.ToArray()) +
+                         " WHERE cli_codigo='" + (this.codigo ?? "").Replace("\\", "\\\\").Replace("'", "''") + "'";
+            bool ok = dataBaseConection.ejecutarInsert(sentenciaS);
+            dataBaseConection.cerrarConexion();
+            if (ok)
+            {
+                if (correoLimpio != "") this.email = correoLimpio;
+                if (fecha.HasValue) this.fechaNacimiento = fecha;
+            }
+            return ok;
+        }
+
         private static string Txt(MySqlDataReader dr, string col)
         {
             int i = dr.GetOrdinal(col);
@@ -595,7 +669,7 @@ namespace lebrun.clases.clientes
                                     " cli_memo2, " +
                                     " cli_cobrador,  cli_diacaja,  Cli_lisprecio, " +
                                     " cli_inivaca, cli_finvaca,cli_contriespe  , cli_lincredito, admAC_codigoCuenta, admAC_codigoAuxiliarContable, " +
-                                    " cli_condipag, cli_situacion, cli_descuento, admAC_codigoCuenta, admAC_codigoAuxiliarContable  FROM admclientes WHERE cli_codigo='$1';";
+                                    " cli_condipag, cli_situacion, cli_descuento, admAC_codigoCuenta, admAC_codigoAuxiliarContable, cli_fechanac  FROM admclientes WHERE cli_codigo='$1';";
 
             sentenciaS = sentenciaS.Replace("$1", this.codigo);
             dr = dataBaseConection.ejecutarQueryDr(sentenciaS, 200);
@@ -621,6 +695,7 @@ namespace lebrun.clases.clientes
                     this.tipoLista = (Txt(dr, "Cli_lisprecio") == "") ? "" : Txt(dr, "Cli_lisprecio");
                     this.fechaInicioVaca = (Txt(dr, "cli_inivaca") == "") ? "" : Txt(dr, "cli_inivaca");
                     this.fechaFinVaca = (Txt(dr, "cli_finvaca") == "") ? "" : Txt(dr, "cli_finvaca");
+                    this.fechaNacimiento = FechaNula(dr, "cli_fechanac");
                     this.clientePlanC = (Txt(dr, "admAC_codigoCuenta") == "") ? "" : Txt(dr, "admAC_codigoCuenta");
                     this.clienteAuxiliar = (Txt(dr, "admAC_codigoAuxiliarContable") == "") ? "" : Txt(dr, "admAC_codigoAuxiliarContable");
                     this.condicionPago = (Txt(dr, "cli_condipag") == "" ? "" : Txt(dr, "cli_condipag"));
@@ -712,7 +787,7 @@ namespace lebrun.clases.clientes
                          " cli_tipoper='$cli_tipoper',  " +
                          " cli_memo2='$cli_memo2', " +
                          " cli_cobrador='$cli_cobrador', cli_diacaja='$cli_diacaja',  Cli_lisprecio='$Cli_lisprecio', " +
-                         " cli_inivaca='$cli_inivaca', cli_finvaca='$cli_finvaca',admAC_codigoCuenta='$admAC_codigoCuenta', admAC_codigoAuxiliarContable='$admAC_codigoAuxiliarContable', " +
+                         " cli_inivaca='$cli_inivaca', cli_finvaca='$cli_finvaca', cli_fechanac=$cli_fechanac, admAC_codigoCuenta='$admAC_codigoCuenta', admAC_codigoAuxiliarContable='$admAC_codigoAuxiliarContable', " +
                          " cli_condipag = '$cli_condipag', cli_situacion='$cli_situacion', cli_descuento ='$cli_descuento', cli_contriespe='$cli_contribuyen', " +
                          " cli_lincredito= '$cli_lincredito' " +
                          " WHERE cli_codigo='$1';";
@@ -727,7 +802,7 @@ namespace lebrun.clases.clientes
             sentenciaS = sentenciaS.Replace("$cli_direc3", this.direccionEnvio);
             sentenciaS = sentenciaS.Replace("$cli_fax", this.fax);
             sentenciaS = sentenciaS.Replace("$cli_otrocel", "");
-            sentenciaS = sentenciaS.Replace("$cli_correo", this.email);
+            sentenciaS = sentenciaS.Replace("$cli_correo", EscaparSql(this.email));
             sentenciaS = sentenciaS.Replace("$cli_tipoper", this.tipoPersona);
             sentenciaS = sentenciaS.Replace("$cli_memo2", this.observaciones);
             sentenciaS = sentenciaS.Replace("$cli_cobrador", this.cobrador);
@@ -735,6 +810,7 @@ namespace lebrun.clases.clientes
             sentenciaS = sentenciaS.Replace("$Cli_lisprecio", this.tipoLista);
             sentenciaS = sentenciaS.Replace("$cli_inivaca", this.fechaInicioVaca);
             sentenciaS = sentenciaS.Replace("$cli_finvaca", this.fechaFinVaca);
+            sentenciaS = sentenciaS.Replace("$cli_fechanac", FechaSql(this.fechaNacimiento));
             sentenciaS = sentenciaS.Replace("$admAC_codigoCuenta", this.clientePlanC);
             sentenciaS = sentenciaS.Replace("$admAC_codigoAuxiliarContable", this.clienteAuxiliar);
             sentenciaS = sentenciaS.Replace("$cli_condipag", this.condicionPago);
@@ -880,6 +956,7 @@ namespace lebrun.clases.clientes
             this.situacion = null;
             this.fechaInicioVaca = null;
             this.fechaFinVaca = null;
+            this.fechaNacimiento = null;
             this.tipoPersona = null;
             this.clientePlanC = null;
             this.clienteAuxiliar = null;
