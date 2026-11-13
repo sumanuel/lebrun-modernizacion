@@ -1,0 +1,23 @@
+ENTREGA DEL SISTEMA LEBRUN - VERSION {VERSION}
+==============================================
+
+Fecha de armado: {FECHA}
+Codigo fuente: commit {COMMIT} ({RAMA})
+
+CONTENIDO DE ESTA CARPETA
+{ARCHIVOS}
+
+COMO SE APLICA (en este orden)
+  1. Hacer un respaldo de la base de datos.
+  2. Ejecutar los scripts de Scripts_BD_{VERSION}.zip siguiendo LEEME_ORDEN.txt (dentro del zip). Van ANTES del instalador:
+     la version nueva usa columnas y tablas que crean los scripts.
+  3. Instalar Lebrun_Setup_{VERSION}_x86.exe en cada equipo (si ya hay una version instalada, se actualiza conservando el servidor y la configuracion).
+  4. Cerrar sesion y volver a entrar en el sistema para ver las opciones de menu nuevas.
+
+INSTALACION DESATENDIDA (opcional)
+  Lebrun_Setup_{VERSION}_x86.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+  Para instalar por primera vez en un equipo, agregar /Servidor=<ip> /Puerto=3306 /Usuario=<usuario> /Clave=<clave>.
+  Sin /Servidor, en modo silencioso no se toca ip.txt ni lebrun.exe.config.
+
+VERIFICACION DEL INSTALADOR (SHA-256)
+  {HASH}

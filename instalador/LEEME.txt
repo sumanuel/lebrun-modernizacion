@@ -21,6 +21,18 @@ Como generar el instalador
      Si "Instaladores" esta en otra ruta:   ISCC.exe /DComponentes=C:\ruta\Instaladores Lebrun.iss
   El resultado queda en Instaladores\05_Instalador\salida\.
 
+Carpeta de entrega al cliente
+  armar_entrega.ps1 junta en UNA carpeta todo lo que se entrega de la version vigente (la de Lebrun.iss):
+  el instalador, Scripts_BD_<version>.zip (armado desde scripts_bd\ con su LEEME_ORDEN.txt), los documentos y
+  un LEEME_ENTREGA.txt con el orden de aplicacion y el SHA-256. Queda en
+  Downloads\LEBRUN SILVANA\Entregas\Entrega_<version>\ . Se ejecuta despues de compilar el instalador:
+       powershell -ExecutionPolicy Bypass -File instalador\armar_entrega.ps1
+  generar_estado_avance.py genera el documento «Estado de avance» (el que armar_entrega.ps1 incluye por omision) en
+  Downloads\LEBRUN SILVANA\Informes\ ; el contenido esta escrito en ese archivo y se edita cuando cambia el estado.
+       python instalador\generar_estado_avance.py      (requiere pip install python-docx)
+  Parametros de armar_entrega.ps1: -Documentos (informes a incluir, por omision el estado de avance), -Informes, -Destino, -Componentes.
+  Avisa si hay cambios sin commit o si lebrun.exe es mas nuevo que el instalador.
+
 Instalacion desatendida (por ejemplo para varias PC)
   Lebrun_Setup_1.0.0_x86.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /Servidor=192.168.1.10 /Puerto=3306 /Usuario=root /Clave=xxxx
   Sin /Servidor, en modo silencioso no se toca ip.txt ni lebrun.exe.config.

@@ -1,0 +1,23 @@
+SCRIPTS DE BASE DE DATOS - SISTEMA LEBRUN {VERSION}
+===============================================
+
+Tres carpetas, cada una con sus scripts (Implementar), la reversa de cada uno (Revertir) y su LEEME con el detalle:
+
+  condicion_pago/    condicion de pago y forma de pago, origen de la venta, estado de cobro, divisa y Estado de cuentas (scripts 01 a 11)
+  clientes_contacto/ fecha de nacimiento del cliente (el correo ya existia)                                           (script 01)
+  tasa_cambio/       tasa de cambio con 8 decimales                                                                    (script 01)
+
+ORDEN DE EJECUCION
+  1. condicion_pago/Implementar   01 al 11, en ese orden (el 03, el 07 y el 11 son de la base sysconf; el resto de sisadm).
+  2. clientes_contacto/Implementar/01_cliente_fecha_nacimiento.sql
+  3. tasa_cambio/Implementar/01_tasa_cambio_decimales.sql
+  Se ejecutan con cualquier cliente de MySQL (cada archivo ya indica su base con USE), por ejemplo:
+      mysql -u usuario -p < condicion_pago/Implementar/01_condicion_pago_estructura.sql
+  Todos se pueden repetir sin dañar nada. Para deshacer, ejecutar el de la carpeta Revertir en el orden inverso.
+
+IMPORTANTE
+  - Hacer un respaldo de la base antes de empezar.
+  - Ejecutar los scripts ANTES de instalar Lebrun_Setup_{VERSION}_x86.exe: la version nueva usa columnas y tablas que crean estos scripts.
+  - tasa_cambio reconstruye las tablas admdoccli y admmovcaja: ejecutarlo fuera del horario de trabajo.
+  - Despues de los scripts de menu (03, 07 y 11) cerrar sesion y volver a entrar para ver las opciones nuevas.
+  - Los perfiles que no sean ADMINISTRADOR necesitan que se les active la opcion «Origen de la Venta» en la pantalla de perfiles.
