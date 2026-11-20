@@ -520,7 +520,7 @@ namespace lebrun.formularios.cotizacion
                                         productoFactura.precioRealProd(cboUnidad.Text, client1.TipoLista, cboDivisa.Text, productoFactura.CodigoProd, productoFactura.Iva);
                                         asignarCamposProd2();
                                         lblPrecio.Text = "" + productoFactura.mostrarTotalProd();
-                                        lblPrecio.Visible = true;
+                                        // lblPrecio ya no se muestra: era el precio mas 8% fijo, un monto que el cliente no entiende
                                         labelZ.Visible = true;
                                     }
                                     if (findRowDataGrid(txtCodProducto.Text, (txtPrecio.Text.Replace(",", ".")), cboUnidad.Text))
@@ -543,7 +543,7 @@ namespace lebrun.formularios.cotizacion
                                         productoFactura.precioRealProd(cboUnidad.Text, client1.TipoLista, cboDivisa.Text, productoFactura.CodigoProd, productoFactura.Iva);
                                         asignarCamposProd2();
                                         lblPrecio.Text = "" + productoFactura.mostrarTotalProd();
-                                        lblPrecio.Visible = true;
+                                        // lblPrecio ya no se muestra: era el precio mas 8% fijo, un monto que el cliente no entiende
                                         labelZ.Visible = true;
                                         cmdAgregarItem.Focus();
 
@@ -575,7 +575,7 @@ namespace lebrun.formularios.cotizacion
                                             //limpiarCamposProducto();
                                             //txtCodProducto.Focus();
                                             lblPrecio.Text = "" + productoFactura.mostrarTotalProd();
-                                            lblPrecio.Visible = true;
+                                            // lblPrecio ya no se muestra: era el precio mas 8% fijo, un monto que el cliente no entiende
                                             cetinela1VezCantidad = true;
                                             cmdAgregarItem.Focus();
                                         }
@@ -595,7 +595,7 @@ namespace lebrun.formularios.cotizacion
                                                 //limpiarCamposProducto();
                                                 //txtCodProducto.Focus();
                                                 lblPrecio.Text = "" + productoFactura.mostrarTotalProd();
-                                                lblPrecio.Visible = true;
+                                                // lblPrecio ya no se muestra: era el precio mas 8% fijo, un monto que el cliente no entiende
                                                 cetinela1VezCantidad = true;
                                                 cmdAgregarItem.Focus();
                                             }

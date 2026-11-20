@@ -147,6 +147,20 @@ namespace lebrun.clases.complementos
             AgregarColumna(grilla, "@movc_monedadivisa", "", false, 0);
             AgregarColumna(grilla, "@movc_tasadivisa", "", false, 0);
             AgregarColumna(grilla, "divisaTexto", "Divisa", true, 70);
+            // al enlazar los pagos de una factura ya emitida (modo Ver) la grilla reordena sus columnas y Divisa quedaba antes de Monto, dejandolo
+            // fuera de la vista: Divisa va siempre al final
+            grilla.DataBindingComplete -= DivisaAlFinal;
+            grilla.DataBindingComplete += DivisaAlFinal;
+            DivisaAlFinal(grilla, null);
+        }
+
+        private static void DivisaAlFinal(object sender, System.Windows.Forms.DataGridViewBindingCompleteEventArgs e)
+        {
+            System.Windows.Forms.DataGridView grilla = (System.Windows.Forms.DataGridView)sender;
+            if (grilla.Columns.Contains("divisaTexto"))
+            {
+                grilla.Columns["divisaTexto"].DisplayIndex = grilla.Columns.Count - 1;
+            }
         }
 
         private static void AgregarColumna(System.Windows.Forms.DataGridView grilla, string nombre, string encabezado, bool visible, int ancho)

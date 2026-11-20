@@ -618,7 +618,7 @@ namespace lebrun.formularios.facturacion
                                         productoFactura.precioRealProd(cboUnidad.Text, client1.TipoLista, cboDivisa.Text, productoFactura.CodigoProd, productoFactura.Iva);
                                         asignarCamposProd2();
                                         lblPrecio.Text = "" + productoFactura.mostrarTotalProd();
-                                        lblPrecio.Visible = true;
+                                        // lblPrecio ya no se muestra: era el precio mas 8% fijo, un monto que el cliente no entiende
                                         labelZ.Visible = true;
                                     }
                                     if (findRowDataGrid(txtCodProducto.Text, (txtPrecio.Text.Replace(",", ".")), cboUnidad.Text))
@@ -641,7 +641,7 @@ namespace lebrun.formularios.facturacion
                                         productoFactura.precioRealProd(cboUnidad.Text, client1.TipoLista, cboDivisa.Text, productoFactura.CodigoProd, productoFactura.Iva);
                                         asignarCamposProd2();
                                         lblPrecio.Text = "" + productoFactura.mostrarTotalProd();
-                                        lblPrecio.Visible = true;
+                                        // lblPrecio ya no se muestra: era el precio mas 8% fijo, un monto que el cliente no entiende
                                         labelZ.Visible = true;
                                         cmdAgregarItem.Focus();
 
@@ -673,7 +673,7 @@ namespace lebrun.formularios.facturacion
                                             //limpiarCamposProducto();
                                             //txtCodProducto.Focus();
                                             lblPrecio.Text = "" + productoFactura.mostrarTotalProd();
-                                            lblPrecio.Visible = true;
+                                            // lblPrecio ya no se muestra: era el precio mas 8% fijo, un monto que el cliente no entiende
                                             cetinela1VezCantidad = true;
                                             cmdAgregarItem.Focus();
                                         }
@@ -693,7 +693,7 @@ namespace lebrun.formularios.facturacion
                                                 //limpiarCamposProducto();
                                                 //txtCodProducto.Focus();
                                                 lblPrecio.Text = "" + productoFactura.mostrarTotalProd();
-                                                lblPrecio.Visible = true;
+                                                // lblPrecio ya no se muestra: era el precio mas 8% fijo, un monto que el cliente no entiende
                                                 cetinela1VezCantidad = true;
                                                 cmdAgregarItem.Focus();
                                             }
@@ -1496,6 +1496,10 @@ namespace lebrun.formularios.facturacion
         {
             try
             {
+                if (origenDeVista)
+                {
+                    return;   // se esta viendo una factura: el combo ya muestra el origen que quedo guardado y no se vuelve a cargar con el predeterminado
+                }
                 System.Data.DataTable origenes = new lebrun.clases.complementos.OrigenVenta().Activos(lebrun.clases.complementos.OrigenVenta.CodigoPredeterminado);
                 cboOrigenVenta.DisplayMember = "orig_descripcion";
                 cboOrigenVenta.ValueMember = "orig_codigo";
@@ -1525,12 +1529,16 @@ namespace lebrun.formularios.facturacion
                     cboOrigenVenta.SelectedValue = guardado;
                 }
                 cboOrigenVenta.Enabled = false;
+                // el Load del formulario corre despues de esto (al mostrarlo) y volveria a cargar el combo con "Tienda fisica": se lo impide
+                origenDeVista = true;
             }
             catch (Exception ex)
             {
                 lebrun.clasesData.RegistroErrores.Registrar(ex, "Mostrar origen de la venta");
             }
         }
+
+        private bool origenDeVista;   // true cuando la factura se abrio solo para verla (el combo de origen ya muestra el guardado)
 
         private void ElegirOrigenPredeterminado()
         {
