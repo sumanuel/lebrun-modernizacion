@@ -107,21 +107,23 @@ r.bold = True
 r.font.size = Pt(20)
 r.font.color.rgb = AZUL
 p("Condición de pago, forma de pago y mejoras en facturación — Sistema Lebrun", color=GRIS, tam=11)
-p("Fecha: 13/11/2026. Resume lo pedido en las observaciones del cliente del 10/11/2026 y en las respuestas posteriores (incluidos los puntos 15 y 16), lo que ya está hecho, lo que falta y lo que "
+p("Fecha: 23/11/2026. Resume lo pedido en las observaciones del cliente del 10/11/2026, en las respuestas posteriores (incluidos los puntos 15 y 16) y en el informe de pruebas del 20/11/2026, lo que ya está hecho, lo que falta y lo que "
   "necesita hacer o confirmar el cliente. Las pruebas se hicieron en una copia local de la base de datos (MariaDB) y en una copia de producción de solo lectura; "
   "no se probó con una impresora fiscal ni con el servidor de producción.", cursiva=True, color=GRIS, tam=9)
 
 # ---------------- resumen ----------------
 d.add_heading("1. Resumen", 1)
-p("Todo lo solicitado (observaciones 1 a 16) está programado, probado en el ambiente de pruebas e incluido en el instalador Lebrun_Setup_1.2.0_x86.exe. "
+p("Todo lo solicitado (observaciones 1 a 16 y lo pedido en las pruebas del 20/11) está programado, probado en el ambiente de pruebas e incluido en el instalador Lebrun_Setup_1.2.1_x86.exe. "
   "Lo que queda es aplicarlo en el ambiente del cliente (primero los scripts de base de datos y después el instalador). El cliente tiene que hacer pruebas que aquí no se pueden hacer: "
-  "cobrar en divisa y ver el aviso de datos de contacto desde la factura con una serie fiscal real, y ver el reporte del cuadre de caja en su equipo. "
+  "las facturas de contado con la corrección del cierre del programa, cobrar en divisa y ver el aviso de datos de contacto desde la factura con una serie fiscal real, y ver el reporte del cuadre de caja en su equipo. "
   "Además debe indicarnos cómo se carga la tasa en el historial de divisas (punto 15).")
 punto("Una sola tabla de condiciones y formas de pago, con siglas y pantalla de mantenimiento; Contado es el código 07.", "Condición y forma de pago:")
 punto("origen de la venta, tasa de cambio en cada factura, monto cobrado cuando el pago es parcial y estado de cobro (Pagado, Parcial, Pendiente).", "Observaciones 7 a 10:")
 punto("el monto original en dólares o euros se guarda junto con la tasa usada; y hay una pantalla nueva de Estado de cuentas.", "Además:")
 punto("la tasa de cambio se guarda con hasta 8 decimales, como la publica el BCV.", "Observación 15:")
 punto("en caja se piden el correo y la fecha de nacimiento del cliente (no son obligatorios), y la pantalla de Clientes tiene el campo nuevo de fecha de nacimiento.", "Observación 16:")
+punto("se corrigieron el monto extra junto al precio, el monto oculto al cancelar la factura y el origen al ver una factura; se corrigió la causa del cierre del programa con las facturas de contado; "
+      "el Estado de cuentas quedó como el del sistema anterior; y hay un Informe de Precios nuevo, en dólares y en bolívares por separado.", "Pruebas del 20/11:")
 
 # ---------------- lo solicitado ----------------
 d.add_heading("2. Lo solicitado y cómo quedó", 1)
@@ -156,7 +158,20 @@ tabla(
         ["Guardar el monto original en Divisa $ y Divisa €",
          "El cajero escribe lo recibido en dólares o euros; el programa lo convierte a bolívares con la tasa del día y guarda el monto original, la moneda y la tasa.", "Hecho"],
         ["Ventas > Informes > Estado de Cuentas (la opción del menú no tenía pantalla)",
-         "Pantalla nueva: documentos por cobrar por cliente con monto, cobrado, saldo y estado de cobro; filtros por cliente, fechas y «solo con saldo»; totales.", "Hecho"],
+         "Pantalla nueva, como la del sistema anterior. El campo del cliente funciona como el del producto en la Consulta Gerencial: se escribe el código (sirve también una parte del código, el nombre o el RIF) "
+         "y al dar Enter, si el cliente existe, se completa el código y aparece su nombre en verde; la lupa abre la lista de clientes para elegirlo (si el texto coincide con varios, sale una lista corta). Se ven sus datos aunque no tenga documentos pendientes. "
+         "Tiene dos pestañas: «Estado de cuenta», con los documentos pendientes (monto, cobrado, saldo, estado de cobro y lo que está en mora), y «Histórico de movimientos», con las facturas, devoluciones, "
+         "recibos de ingreso y retenciones de IVA del cliente aunque ya no estén pendientes, con el documento al que se aplican y el número fiscal; filtros por fechas y totales. "
+         "Los recibos salen con la fecha real del recibo (no con la de la factura). Sin elegir cliente, la primera pestaña lista los pendientes de todos los clientes.", "Hecho"],
+        ["Correcciones de las pruebas del 20/11: monto extra junto al precio del producto; monto oculto al cancelar la factura; origen que no se mostraba al ver una factura",
+         "Ya no sale el monto extra junto al precio (era un cálculo antiguo, precio más 8%). En la ventana de pago la columna Divisa pasó al final y el monto ya se ve. "
+         "Al abrir una factura ya emitida ahora se muestra el origen que se guardó (por ejemplo WhatsApp).", "Hecho"],
+        ["El programa se cierra con las facturas de contado (cuando se cancela toda la factura)",
+         "Windows registró un error de memoria al hablar con la librería de la impresora fiscal (PNPDLL.dll), que solo usa el contado. Se corrigió la forma de leer las respuestas de esa librería. "
+         "No se pudo reproducir el cierre en el ambiente de pruebas, así que falta que se pruebe una factura de contado con la versión nueva.", "Hecho"],
+        ["Reporte de precios en dólares y reporte de precios en bolívares, por separado (Inventario > Informes > Informe de Precios)",
+         "Pantalla nueva con los precios en dólares (el precio de cada producto en adminv2) o en bolívares (por lista de precio, con fecha, hora y usuario del último cambio). Filtros: proveedor, con precio / sin precio, "
+         "lista de precio, incluir inactivos y, en bolívares, cambiados desde una fecha y hora (para el cierre de la facturación). Se puede imprimir y guardar en un archivo que abre Excel.", "Hecho"],
         ["15. Tasa de cambio con más decimales (de 4 a 6, y si se puede 8 como el BCV)",
          "Es posible y quedó con 8 decimales: el historial de divisas (admhistodivi), la tasa que se graba en cada factura y la tasa de los pagos en divisa. Los valores que ya existían no cambian "
          "(36,50 pasa a 36,50000000). Los precios en bolívares y la conversión de los pagos en divisa usan los 8 decimales; los montos en bolívares se siguen redondeando a 2. "
@@ -181,6 +196,8 @@ tabla(
         ["Cobrar en divisa con una serie fiscal real", "En el ambiente de pruebas el botón «Agregar» de facturación no se habilita sin serie fiscal. Hay que probar el cobro en Divisa $ y Divisa € desde la pantalla (la conversión y el guardado sí se probaron).", "Pendiente"],
         ["Indicar cómo se carga la tasa en el historial de divisas", "Este programa no escribe en esa tabla: la tasa la carga otro programa o se escribe a mano en la base. Si ese programa la redondea a 2 decimales, hay que ajustarlo para que la escriba completa; si no, ampliar la tabla no sirve de nada.", "Pendiente"],
         ["Importaciones: ¿se quiere que la tasa se proponga desde el historial?", "Hoy la tasa se escribe a mano en la orden de compra de importaciones y en el proveedor solo se asigna el código de la moneda. No se cambió; si se quiere que el programa proponga la tasa del historial (editable), hay que pedirlo.", "Pendiente"],
+        ["Probar una factura de contado con la versión nueva", "Debe cancelarse toda la factura y confirmar que el programa ya no se cierra. Si se cerrara otra vez, se necesita el error de Windows (Visor de eventos) de esa hora.", "Pendiente"],
+        ["Probar el Estado de cuentas nuevo y el Informe de Precios", "Revisar que muestren lo que se espera (por ejemplo un cliente con facturas a crédito y recibos) y decir si hace falta el botón Imprimir en el Estado de cuentas, que tiene la pantalla del sistema anterior.", "Pendiente"],
         ["Probar el aviso de datos de contacto desde la factura", "El botón «Agregar» de facturación no se habilita sin serie fiscal en el ambiente de pruebas. El aviso se probó por separado con la ventana real y la pantalla de Clientes se revisó en el programa; falta verlo al elegir un cliente en una factura real.", "Pendiente"],
         ["Ver el reporte del cuadre de caja en su equipo", "El reporte se verificó exportándolo a PDF; el visor de reportes sale en blanco en el ambiente de pruebas (también con la versión instalada hoy).", "Pendiente"],
         ["Consulta de ventas por origen", "El origen ya se guarda en cada factura. Si se quiere una consulta o reporte por origen, hay que pedirla.", "Pendiente"],
@@ -198,9 +215,9 @@ punto("No se revisaron los reportes ni todas las pantallas que muestran la tasa;
 
 # ---------------- entrega ----------------
 d.add_heading("4. Entrega e instalación", 1)
-p("Las observaciones 1 a 16 están integradas en el programa principal y en el instalador. Se entregan dos archivos: el instalador Lebrun_Setup_1.2.0_x86.exe y el paquete de scripts Scripts_BD_1.2.0.zip. "
-  "Falta aplicarlos en el ambiente del cliente.")
-p("Scripts de base de datos (el paquete trae tres carpetas: condicion_pago, clientes_contacto y tasa_cambio; cada una tiene Implementar, con los scripts que se ejecutan, y Revertir, con el que deshace cada uno; "
+p("Todo lo anterior está integrado en el programa principal y en el instalador. Se entregan dos archivos: el instalador Lebrun_Setup_1.2.1_x86.exe y el paquete de scripts Scripts_BD_1.2.1.zip. "
+  "Falta aplicarlos en el ambiente del cliente. Si ya tiene instalada la versión 1.2.0, el instalador la actualiza conservando el servidor y la configuración.")
+p("Scripts de base de datos (el paquete trae cuatro carpetas: condicion_pago, clientes_contacto, tasa_cambio e informe_precios; cada una tiene Implementar, con los scripts que se ejecutan, y Revertir, con el que deshace cada uno; "
   "el archivo LEEME_ORDEN.txt indica el orden; se pueden ejecutar más de una vez). Los números 01 a 11 son de la carpeta condicion_pago:", negrita=True)
 tabla(
     ["N.º", "Para qué sirve"],
@@ -217,12 +234,13 @@ tabla(
         ["11", "Pone la pantalla de Estado de cuentas en el menú."],
         ["Contacto 01", "(carpeta clientes_contacto) Agrega la fecha de nacimiento del cliente (admclientes.cli_fechanac). Ejecutarlo ANTES de instalar la versión nueva: cada cliente que se carga lee ese campo."],
         ["Tasa 01", "(carpeta tasa_cambio) Amplía a 8 decimales la tasa del historial de divisas, de las facturas y de los pagos en divisa. Reconstruye las tablas admdoccli y admmovcaja: ejecutarlo fuera del horario de trabajo."],
+        ["Informe 01", "(carpeta informe_precios) Pone la pantalla Informe de Precios en el menú Inventario > Informes. No cambia tablas, solo el menú."],
     ],
     [2.6, 14.1],
 )
 punto("Ejecutar los scripts ANTES de instalar la versión nueva del programa: la versión nueva usa columnas y tablas que crean los scripts.")
-punto("Cerrar sesión y volver a entrar después de los scripts de menú (03, 07 y 11) para ver las opciones nuevas.")
-punto("Los perfiles que no sean ADMINISTRADOR necesitan que se les active la opción «Origen de la Venta» en la pantalla de perfiles; «Estado de Cuentas» la ven los perfiles que ya la tenían activa.")
+punto("Cerrar sesión y volver a entrar después de los scripts de menú (03, 07 y 11 de condicion_pago, y el de informe_precios) para ver las opciones nuevas.")
+punto("Los perfiles que no sean ADMINISTRADOR necesitan que se les active la opción «Origen de la Venta» en la pantalla de perfiles; «Estado de Cuentas» e «Informe de Precios» las ven los perfiles que ya las tenían activas.")
 punto("Para cobrar en divisa debe haber una tasa del dólar o del euro cargada; si no la hay, el programa no deja cobrar en esa divisa y lo avisa.")
 
 # ---------------- como se probo ----------------
@@ -234,8 +252,14 @@ punto("Puntos 15 y 16: los dos scripts se aplicaron, se repitieron, se revirtier
       "la tasa vigente y la conversión de pagos en divisa usan los 8 decimales. El alta, la carga y la modificación del cliente con y sin fecha de nacimiento, y el guardado del correo, se probaron con un programa de prueba; "
       "la ventana del aviso de caja se probó en el programa real (vacío y correo inválido se rechazan; uno válido guarda y cierra); los datos de prueba se borraron.")
 punto("La copia de producción (solo lectura) sirvió para validar las reglas con datos reales, por ejemplo el estado de cobro de los 177.722 documentos.")
-punto("Instalador 1.2.0: se probó como actualización silenciosa de una instalación 1.1.0 en una PC de pruebas (conserva el servidor y la configuración, registra la versión nueva, deja un solo desinstalador y los controles de la impresora fiscal registrados), "
-      "y el programa instalado abre con la pantalla de Clientes con el campo nuevo y el Estado de cuentas funcionando. No se probó en una PC limpia ni con el asistente visible.")
+punto("Pruebas del 20/11: el orden de las columnas de la ventana de pago se comprobó con el formulario real. El Estado de cuentas se probó en el programa real con los datos de un cliente de la copia de producción: "
+      "los movimientos coinciden con los del sistema anterior (por ejemplo una devolución con su número fiscal, su retención de IVA y el recibo de la factura). También se probaron un cliente sin pendientes, "
+      "varios clientes con el mismo nombre, un cliente que no existe y la búsqueda sin cliente. El Informe de Precios se probó en dólares y en bolívares, con filtro por proveedor, vista previa de impresión y archivo para Excel, "
+      "y sus consultas se validaron con los 19.768 productos activos de la copia de producción. Los datos de prueba se borraron.")
+punto("Cierre con facturas de contado: la causa se encontró con el error que envió el cliente (Windows registró corrupción de memoria al usar la librería de la impresora fiscal) y se comprobó que la librería devuelve las respuestas "
+      "de una forma que el programa no leía bien. En el ambiente de pruebas no se cierra ni antes ni después del cambio, por eso hace falta la prueba del cliente.")
+punto("Instalador 1.2.1: se probó como actualización silenciosa de una instalación 1.2.0 en una PC de pruebas (conserva el servidor y la configuración, registra la versión nueva, deja un solo desinstalador y los controles de la impresora fiscal registrados), "
+      "y el programa instalado abre con el Estado de cuentas y el Informe de Precios funcionando. No se probó en una PC limpia ni con el asistente visible.")
 punto("No se probó con MySQL 5.5 real ni con impresora fiscal.")
 
 d.save(RUTA)

@@ -47,9 +47,17 @@ if ((Test-Path $exe) -and ((Get-Item $exe).LastWriteTime -gt (Get-Item $instalad
     Write-Warning 'lebrun.exe del payload es mas nuevo que el instalador: recompile el instalador antes de entregar.'
 }
 
-# carpeta de la entrega (limpia)
+# carpeta de la entrega (limpia). Antes de borrar nada se comprueba que ningun archivo este abierto (por ejemplo el documento en Word):
+# si lo esta, se avisa y se detiene para no dejar la carpeta a medias con archivos viejos.
 $carpeta = Join-Path $Destino "Entrega_$version"
-if (Test-Path $carpeta) { Remove-Item $carpeta -Recurse -Force }
+if (Test-Path $carpeta) {
+    $abiertos = @()
+    foreach ($a in (Get-ChildItem $carpeta -File -Recurse)) {
+        try { $fs = [IO.File]::Open($a.FullName, 'Open', 'ReadWrite', 'None'); $fs.Close() } catch { $abiertos += $a.Name }
+    }
+    if ($abiertos.Count -gt 0) { throw ("Hay archivos abiertos en $carpeta : " + ($abiertos -join ', ') + ". Cierrelos (por ejemplo en Word) y vuelva a ejecutar; no se borro nada.") }
+    Remove-Item $carpeta -Recurse -Force
+}
 New-Item -ItemType Directory -Force $carpeta | Out-Null
 
 # 1) instalador
