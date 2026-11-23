@@ -11,79 +11,122 @@ namespace lebrun.clases.facturacion
     {
 
         #region DECLARACIÓN DE LAS FUNCIONES de PNPDLL.DLL
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFAbreNF();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFabrefiscal(String Razon, String RIF);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFtotal();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFrepz();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFrepx();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFrenglon(String Descripcion, String cantidad, String monto, String iva);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFabrepuerto(String numero);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFcierrapuerto();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFDisplay950(String edlinea);
+        // PNPDLL devuelve los textos como punteros a memoria que NO es del heap del proceso (cadenas fijas de la propia DLL). Declararlas con retorno
+        // "string" hace que .NET intente liberarlas con CoTaskMemFree y corrompa el heap (Windows cierra el programa con el codigo 0xc0000374 en ntdll.dll,
+        // sobre todo cuando la impresora no responde). Por eso se declaran como IntPtr y se leen sin liberar nada.
+        private static string TextoNativo(IntPtr puntero)
+        {
+            return puntero == IntPtr.Zero ? "" : (Marshal.PtrToStringAnsi(puntero) ?? "");
+        }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFAbreNF")]
+        private static extern IntPtr PFAbreNF_Nativo();
+        public static string PFAbreNF() { return TextoNativo(PFAbreNF_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFabrefiscal")]
+        private static extern IntPtr PFabrefiscal_Nativo(String Razon, String RIF);
+        public static string PFabrefiscal(String Razon, String RIF) { return TextoNativo(PFabrefiscal_Nativo(Razon, RIF)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFtotal")]
+        private static extern IntPtr PFtotal_Nativo();
+        public static string PFtotal() { return TextoNativo(PFtotal_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFrepz")]
+        private static extern IntPtr PFrepz_Nativo();
+        public static string PFrepz() { return TextoNativo(PFrepz_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFrepx")]
+        private static extern IntPtr PFrepx_Nativo();
+        public static string PFrepx() { return TextoNativo(PFrepx_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFrenglon")]
+        private static extern IntPtr PFrenglon_Nativo(String Descripcion, String cantidad, String monto, String iva);
+        public static string PFrenglon(String Descripcion, String cantidad, String monto, String iva) { return TextoNativo(PFrenglon_Nativo(Descripcion, cantidad, monto, iva)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFabrepuerto")]
+        private static extern IntPtr PFabrepuerto_Nativo(String numero);
+        public static string PFabrepuerto(String numero) { return TextoNativo(PFabrepuerto_Nativo(numero)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFcierrapuerto")]
+        private static extern IntPtr PFcierrapuerto_Nativo();
+        public static string PFcierrapuerto() { return TextoNativo(PFcierrapuerto_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFDisplay950")]
+        private static extern IntPtr PFDisplay950_Nativo(String edlinea);
+        public static string PFDisplay950(String edlinea) { return TextoNativo(PFDisplay950_Nativo(edlinea)); }
         
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFLineaNF(String edlinea);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFCierraNF();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFCortar();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFTfiscal(String edlinea);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFparcial();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFSerial();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFtoteconomico();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFCancelaDoc(String edlinea, String monto);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFGaveta();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFDevolucion(String razon, String rif, String comp, String maqui, String fecha, String hora);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFSlipON();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFSLIPOFF();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFestatus(String edlinea);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFreset();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFendoso(String campo1, String campo2, String campo3, String tipoendoso);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFvalida675(String campo1, String campo2, String campo3, String campo4);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFCheque2(String mon, String ben, String fec, String c1, String c2, String c3, String c4, String campo1, String campo2);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFcambiofecha(String edfecha, String edhora);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFcambiatasa(String t1, String t2, String t3);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFBarra(String edbarra);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFVoltea();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFLeereloj();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFrepMemNF(String desf, String hasf, String modmem);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFRepMemoriaNumero(String desn, String hasn, String modmem);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFCambtipoContrib(String tip);
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFultimo();
-        [DllImport("PNPDLL.dll")]
-        public static extern string PFTipoImp(String edtexto);
+        [DllImport("PNPDLL.dll", EntryPoint = "PFLineaNF")]
+        private static extern IntPtr PFLineaNF_Nativo(String edlinea);
+        public static string PFLineaNF(String edlinea) { return TextoNativo(PFLineaNF_Nativo(edlinea)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFCierraNF")]
+        private static extern IntPtr PFCierraNF_Nativo();
+        public static string PFCierraNF() { return TextoNativo(PFCierraNF_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFCortar")]
+        private static extern IntPtr PFCortar_Nativo();
+        public static string PFCortar() { return TextoNativo(PFCortar_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFTfiscal")]
+        private static extern IntPtr PFTfiscal_Nativo(String edlinea);
+        public static string PFTfiscal(String edlinea) { return TextoNativo(PFTfiscal_Nativo(edlinea)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFparcial")]
+        private static extern IntPtr PFparcial_Nativo();
+        public static string PFparcial() { return TextoNativo(PFparcial_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFSerial")]
+        private static extern IntPtr PFSerial_Nativo();
+        public static string PFSerial() { return TextoNativo(PFSerial_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFtoteconomico")]
+        private static extern IntPtr PFtoteconomico_Nativo();
+        public static string PFtoteconomico() { return TextoNativo(PFtoteconomico_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFCancelaDoc")]
+        private static extern IntPtr PFCancelaDoc_Nativo(String edlinea, String monto);
+        public static string PFCancelaDoc(String edlinea, String monto) { return TextoNativo(PFCancelaDoc_Nativo(edlinea, monto)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFGaveta")]
+        private static extern IntPtr PFGaveta_Nativo();
+        public static string PFGaveta() { return TextoNativo(PFGaveta_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFDevolucion")]
+        private static extern IntPtr PFDevolucion_Nativo(String razon, String rif, String comp, String maqui, String fecha, String hora);
+        public static string PFDevolucion(String razon, String rif, String comp, String maqui, String fecha, String hora) { return TextoNativo(PFDevolucion_Nativo(razon, rif, comp, maqui, fecha, hora)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFSlipON")]
+        private static extern IntPtr PFSlipON_Nativo();
+        public static string PFSlipON() { return TextoNativo(PFSlipON_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFSLIPOFF")]
+        private static extern IntPtr PFSLIPOFF_Nativo();
+        public static string PFSLIPOFF() { return TextoNativo(PFSLIPOFF_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFestatus")]
+        private static extern IntPtr PFestatus_Nativo(String edlinea);
+        public static string PFestatus(String edlinea) { return TextoNativo(PFestatus_Nativo(edlinea)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFreset")]
+        private static extern IntPtr PFreset_Nativo();
+        public static string PFreset() { return TextoNativo(PFreset_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFendoso")]
+        private static extern IntPtr PFendoso_Nativo(String campo1, String campo2, String campo3, String tipoendoso);
+        public static string PFendoso(String campo1, String campo2, String campo3, String tipoendoso) { return TextoNativo(PFendoso_Nativo(campo1, campo2, campo3, tipoendoso)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFvalida675")]
+        private static extern IntPtr PFvalida675_Nativo(String campo1, String campo2, String campo3, String campo4);
+        public static string PFvalida675(String campo1, String campo2, String campo3, String campo4) { return TextoNativo(PFvalida675_Nativo(campo1, campo2, campo3, campo4)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFCheque2")]
+        private static extern IntPtr PFCheque2_Nativo(String mon, String ben, String fec, String c1, String c2, String c3, String c4, String campo1, String campo2);
+        public static string PFCheque2(String mon, String ben, String fec, String c1, String c2, String c3, String c4, String campo1, String campo2) { return TextoNativo(PFCheque2_Nativo(mon, ben, fec, c1, c2, c3, c4, campo1, campo2)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFcambiofecha")]
+        private static extern IntPtr PFcambiofecha_Nativo(String edfecha, String edhora);
+        public static string PFcambiofecha(String edfecha, String edhora) { return TextoNativo(PFcambiofecha_Nativo(edfecha, edhora)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFcambiatasa")]
+        private static extern IntPtr PFcambiatasa_Nativo(String t1, String t2, String t3);
+        public static string PFcambiatasa(String t1, String t2, String t3) { return TextoNativo(PFcambiatasa_Nativo(t1, t2, t3)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFBarra")]
+        private static extern IntPtr PFBarra_Nativo(String edbarra);
+        public static string PFBarra(String edbarra) { return TextoNativo(PFBarra_Nativo(edbarra)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFVoltea")]
+        private static extern IntPtr PFVoltea_Nativo();
+        public static string PFVoltea() { return TextoNativo(PFVoltea_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFLeereloj")]
+        private static extern IntPtr PFLeereloj_Nativo();
+        public static string PFLeereloj() { return TextoNativo(PFLeereloj_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFrepMemNF")]
+        private static extern IntPtr PFrepMemNF_Nativo(String desf, String hasf, String modmem);
+        public static string PFrepMemNF(String desf, String hasf, String modmem) { return TextoNativo(PFrepMemNF_Nativo(desf, hasf, modmem)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFRepMemoriaNumero")]
+        private static extern IntPtr PFRepMemoriaNumero_Nativo(String desn, String hasn, String modmem);
+        public static string PFRepMemoriaNumero(String desn, String hasn, String modmem) { return TextoNativo(PFRepMemoriaNumero_Nativo(desn, hasn, modmem)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFCambtipoContrib")]
+        private static extern IntPtr PFCambtipoContrib_Nativo(String tip);
+        public static string PFCambtipoContrib(String tip) { return TextoNativo(PFCambtipoContrib_Nativo(tip)); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFultimo")]
+        private static extern IntPtr PFultimo_Nativo();
+        public static string PFultimo() { return TextoNativo(PFultimo_Nativo()); }
+        [DllImport("PNPDLL.dll", EntryPoint = "PFTipoImp")]
+        private static extern IntPtr PFTipoImp_Nativo(String edtexto);
+        public static string PFTipoImp(String edtexto) { return TextoNativo(PFTipoImp_Nativo(edtexto)); }
         #endregion
         
         private string respuesta;
