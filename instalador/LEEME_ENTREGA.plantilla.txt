@@ -9,8 +9,9 @@ CONTENIDO DE ESTA CARPETA
 
 COMO SE APLICA (en este orden)
   1. Hacer un respaldo de la base de datos.
-  2. Ejecutar los scripts de Scripts_BD_{VERSION}.zip siguiendo LEEME_ORDEN.txt (dentro del zip). Van ANTES del instalador:
-     la version nueva usa columnas y tablas que crean los scripts.
+  2. Ejecutar los scripts de Scripts_BD_{VERSION}.zip siguiendo LEEME_ORDEN.txt (dentro del zip; si es una entrega de ajustes solo trae los
+     scripts nuevos y esos son los unicos que hay que ejecutar). Van ANTES del instalador: la version nueva puede usar columnas, tablas o
+     opciones de menu que crean los scripts.
   3. Instalar Lebrun_Setup_{VERSION}_x86.exe en cada equipo (si ya hay una version instalada, se actualiza conservando el servidor y la configuracion).
   4. Cerrar sesion y volver a entrar en el sistema para ver las opciones de menu nuevas.
 

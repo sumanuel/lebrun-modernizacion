@@ -1,0 +1,17 @@
+SCRIPTS DE BASE DE DATOS - SISTEMA LEBRUN {VERSION} (SOLO LO NUEVO)
+===================================================================
+
+Este paquete trae SOLO los scripts nuevos o relacionados con los ajustes de la version {VERSION}. Los scripts de las versiones anteriores
+(hasta la {DESDE}) ya se entregaron y se supone ejecutados: no hay que volver a correrlos.
+
+ORDEN DE EJECUCION
+{LISTA}
+  Se ejecutan con cualquier cliente de MySQL (cada archivo ya indica su base con USE), por ejemplo:
+      mysql -u usuario -p < <carpeta>/Implementar/<archivo>.sql
+  Se pueden repetir sin dañar nada. Para deshacer, ejecutar el de la carpeta Revertir.
+
+IMPORTANTE
+  - Hacer un respaldo de la base antes de empezar.
+  - Ejecutar los scripts ANTES de instalar Lebrun_Setup_{VERSION}_x86.exe.
+  - Despues de un script de menu cerrar sesion y volver a entrar para ver la opcion nueva.
+  - Si es una instalacion nueva (o una base que no tiene los scripts de versiones anteriores) hay que pedir el paquete completo de scripts.

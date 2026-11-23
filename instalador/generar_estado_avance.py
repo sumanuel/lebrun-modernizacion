@@ -217,8 +217,9 @@ punto("No se revisaron los reportes ni todas las pantallas que muestran la tasa;
 d.add_heading("4. Entrega e instalación", 1)
 p("Todo lo anterior está integrado en el programa principal y en el instalador. Se entregan dos archivos: el instalador Lebrun_Setup_1.2.1_x86.exe y el paquete de scripts Scripts_BD_1.2.1.zip. "
   "Falta aplicarlos en el ambiente del cliente. Si ya tiene instalada la versión 1.2.0, el instalador la actualiza conservando el servidor y la configuración.")
-p("Scripts de base de datos (el paquete trae cuatro carpetas: condicion_pago, clientes_contacto, tasa_cambio e informe_precios; cada una tiene Implementar, con los scripts que se ejecutan, y Revertir, con el que deshace cada uno; "
-  "el archivo LEEME_ORDEN.txt indica el orden; se pueden ejecutar más de una vez). Los números 01 a 11 son de la carpeta condicion_pago:", negrita=True)
+p("Scripts de base de datos. En esta entrega el paquete Scripts_BD_1.2.1.zip trae SOLO el script nuevo de esta versión: informe_precios/01 (pone el Informe de Precios en el menú; no cambia tablas). "
+  "Las demás mejoras de esta entrega no necesitan scripts. Los scripts de las versiones anteriores ya se entregaron con la 1.2.0 y no hay que volver a ejecutarlos; la tabla siguiente los lista solo como referencia "
+  "(cada carpeta tiene Implementar, con lo que se ejecuta, y Revertir, con lo que lo deshace; se pueden ejecutar más de una vez). Los números 01 a 11 son de la carpeta condicion_pago:", negrita=True)
 tabla(
     ["N.º", "Para qué sirve"],
     [
@@ -238,7 +239,7 @@ tabla(
     ],
     [2.6, 14.1],
 )
-punto("Ejecutar los scripts ANTES de instalar la versión nueva del programa: la versión nueva usa columnas y tablas que crean los scripts.")
+punto("Ejecutar el script nuevo ANTES de instalar la versión nueva del programa. Si la base todavía no tiene los scripts de la 1.2.0 (por ejemplo una instalación nueva), hay que pedir el paquete completo.")
 punto("Cerrar sesión y volver a entrar después de los scripts de menú (03, 07 y 11 de condicion_pago, y el de informe_precios) para ver las opciones nuevas.")
 punto("Los perfiles que no sean ADMINISTRADOR necesitan que se les active la opción «Origen de la Venta» en la pantalla de perfiles; «Estado de Cuentas» e «Informe de Precios» las ven los perfiles que ya las tenían activas.")
 punto("Para cobrar en divisa debe haber una tasa del dólar o del euro cargada; si no la hay, el programa no deja cobrar en esa divisa y lo avisa.")

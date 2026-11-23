@@ -13,7 +13,8 @@ Trabajar en español. No guardar ni repetir contraseñas (ni la del usuario de p
 ## 0. Qué se entrega
 1. `git status` y `git log -3 main`: ver en qué rama se está, qué hay en `main` y qué commits no están en él (`git log --oneline main..<rama>`). La entrega sale de lo que está **integrado en `main`**; si falta algo, avisar y preguntar antes de seguir. `App.config` aparece siempre modificado (solo el servidor local de pruebas): nunca se commitea.
 2. Preguntar la **versión** si no se sabe. Si hubo cambios de código desde el último instalador, la versión sube en `instalador\Lebrun.iss` (`#define AppVersion "x.y.z"`); no pisar el instalador anterior. Si el usuario solo quiere reempaquetar, se reutiliza la versión actual.
-3. Revisar que los scripts de `scripts_bd\` nuevos o cambiados estén aplicados y probados en XAMPP (aplicar, repetir, revertir, reaplicar) y que `scripts_bd\LEEME_ORDEN.txt` los liste en el orden de ejecución (si se agregó una carpeta de scripts, actualizarlo). Los scripts se ejecutan ANTES de instalar el exe.
+3. Revisar que los scripts de `scripts_bd\` nuevos o cambiados estén aplicados y probados en XAMPP (aplicar, repetir, revertir, reaplicar) y que `scripts_bd\LEEME_ORDEN.txt` los liste en el orden de ejecución (si se agregó una carpeta de scripts, actualizarlo y agregarla a `$ordenCanonico` de `armar_entrega.ps1`). Los scripts se ejecutan ANTES de instalar el exe.
+   **Una entrega de ajustes NO repite todos los scripts: lleva solo los NUEVOS o los relacionados con los ajustes.** Para saber cuáles son: `git diff --stat <commit de la entrega anterior> HEAD -- scripts_bd` (y revisar qué ajustes tocan la base). Las carpetas de versiones anteriores ya se entregaron. Solo la primera instalación (o a pedido) lleva el paquete completo.
 
 ## 1. Compilar el programa (Release x86) en el payload
 Rutas: repositorio `D:\lebrun_20220627\lebrun_20220627\lebrun`; binarios en `D:\lebrun_20220627\lebrun_20220627\Instaladores`.
@@ -41,7 +42,8 @@ Sale `Instaladores\05_Instalador\salida\Lebrun_Setup_<v>_x86.exe`. Debe decir "S
 ```powershell
 powershell -ExecutionPolicy Bypass -File instalador\armar_entrega.ps1
 ```
-Lee la versión de `Lebrun.iss`, copia el instalador, arma `Scripts_BD_<v>.zip` desde `scripts_bd\` + `LEEME_ORDEN.txt`, copia los documentos (`-Documentos` para otros informes) y escribe `LEEME_ENTREGA.txt`. Atender sus ADVERTENCIAS: cambios sin commit, o `lebrun.exe` más nuevo que el instalador (recompilar el instalador).
+Lee la versión de `Lebrun.iss`, copia el instalador, arma `Scripts_BD_<v>.zip`, copia los documentos (`-Documentos` para otros informes) y escribe `LEEME_ENTREGA.txt`.
+Para una entrega de ajustes indicar solo los scripts nuevos: `-Scripts informe_precios -DesdeVersion 1.2.0` (el zip lleva esas carpetas y un `LEEME_ORDEN.txt` «solo lo nuevo» generado desde `scripts_bd\LEEME_ORDEN_AJUSTES.plantilla.txt`). Sin `-Scripts` lleva todas las carpetas (instalación completa). Antes de armar la carpeta, el documento de estado de avance (`generar_estado_avance.py`, sección 4) debe decir lo mismo que lleva el zip. Atender sus ADVERTENCIAS: cambios sin commit, o `lebrun.exe` más nuevo que el instalador (recompilar el instalador).
 Verificar: el zip tiene las carpetas esperadas con rutas con `/`, y el hash del instalador copiado coincide con el original.
 
 ## 5. Probar (si el usuario lo pide, o antes de dar la entrega por buena)

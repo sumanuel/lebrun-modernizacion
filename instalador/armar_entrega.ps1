@@ -17,7 +17,11 @@ param(
     [string]$Componentes = (Join-Path $PSScriptRoot '..\..\Instaladores'),
     [string]$Informes    = (Join-Path $env:USERPROFILE 'Downloads\LEBRUN SILVANA\Informes'),
     [string]$Destino     = (Join-Path $env:USERPROFILE 'Downloads\LEBRUN SILVANA\Entregas'),
-    [string[]]$Documentos = @('Estado_de_Avance_Condicion_y_Forma_de_Pago.docx')
+    [string[]]$Documentos = @('Estado_de_Avance_Condicion_y_Forma_de_Pago.docx'),
+    # Carpetas de scripts_bd que van en el zip. Vacio = todas (instalacion completa). En una entrega de ajustes se indican solo las NUEVAS o las
+    # relacionadas con los ajustes, por ejemplo:  -Scripts informe_precios -DesdeVersion 1.2.0
+    [string[]]$Scripts = @(),
+    [string]$DesdeVersion = ''
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.IO.Compression
@@ -67,11 +71,26 @@ Copy-Item $instalador $carpeta
 $zipPath = Join-Path $carpeta "Scripts_BD_$version.zip"
 $zip = [IO.Compression.ZipFile]::Open($zipPath, 'Create')
 try {
-    $orden = [IO.File]::ReadAllText((Join-Path $repo 'scripts_bd\LEEME_ORDEN.txt'), [Text.Encoding]::UTF8).Replace('{VERSION}', $version)
+    $baseScripts = Join-Path $repo 'scripts_bd'
+    # carpetas a incluir, en el orden de ejecucion (las conocidas primero)
+    $ordenCanonico = @('condicion_pago', 'clientes_contacto', 'tasa_cambio', 'informe_precios')
+    $existentes = @(Get-ChildItem $baseScripts -Directory | ForEach-Object { $_.Name })
+    foreach ($s in $Scripts) { if ($existentes -notcontains $s) { throw "No existe la carpeta scripts_bd\$s (carpetas: $($existentes -join ', '))" } }
+    $incluidas = @($ordenCanonico | Where-Object { $existentes -contains $_ }) + @($existentes | Where-Object { $ordenCanonico -notcontains $_ } | Sort-Object)
+    if ($Scripts.Count -gt 0) { $incluidas = @($incluidas | Where-Object { $Scripts -contains $_ }) }
+    if ($Scripts.Count -eq 0) {
+        # instalacion completa: LEEME_ORDEN.txt con todas las carpetas
+        $orden = [IO.File]::ReadAllText((Join-Path $baseScripts 'LEEME_ORDEN.txt'), [Text.Encoding]::UTF8).Replace('{VERSION}', $version)
+    } else {
+        # entrega de ajustes: LEEME_ORDEN.txt solo con lo nuevo
+        $n = 0
+        $lista = ($incluidas | ForEach-Object { $n++; "  $n. $_/Implementar   (el detalle esta en $_/LEEME.txt)" }) -join "`r`n"
+        $desde = if ($DesdeVersion) { $DesdeVersion } else { 'la anterior' }
+        $orden = [IO.File]::ReadAllText((Join-Path $baseScripts 'LEEME_ORDEN_AJUSTES.plantilla.txt'), [Text.Encoding]::UTF8).Replace('{VERSION}', $version).Replace('{DESDE}', $desde).Replace('{LISTA}', $lista)
+    }
     $e = $zip.CreateEntry('LEEME_ORDEN.txt')
     $w = New-Object IO.StreamWriter($e.Open(), $utf8Bom); $w.Write($orden); $w.Dispose()
-    $baseScripts = Join-Path $repo 'scripts_bd'
-    Get-ChildItem $baseScripts -Directory | ForEach-Object {
+    Get-ChildItem $baseScripts -Directory | Where-Object { $incluidas -contains $_.Name } | ForEach-Object {
         Get-ChildItem $_.FullName -Recurse -File | Where-Object { $_.Extension -in '.sql', '.txt' } | ForEach-Object {
             $rel = $_.FullName.Substring($baseScripts.Length + 1).Replace('\', '/')
             [void][IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $_.FullName, $rel)
