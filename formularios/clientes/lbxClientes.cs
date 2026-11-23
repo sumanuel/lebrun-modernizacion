@@ -30,7 +30,8 @@ namespace lebrun.formularios.facturacion
         private frmFacturaVivienda factVi;
         private frmPreFac preFC;
         private frmPedido referenPedido;
-        
+        private lbxEstadoCuentas estadoCuentas;
+
         public lbxClientes()
         {
             InitializeComponent();
@@ -265,6 +266,14 @@ namespace lebrun.formularios.facturacion
                 this.Close();
             }
 
+            if (fuente == 9 && estadoCuentas != null && dataGridView1.CurrentRow != null)
+            {
+                string codigoElegido = dataGridView1.CurrentRow.Cells["cli_codigo"].Value.ToString();
+                this.Close();
+                estadoCuentas.SeleccionarCliente(codigoElegido);
+                return;
+            }
+
             if (fuente == 5)
             {
                 retIvaCli.txtCodigo.Text = dataGridView1.CurrentRow.Cells["cli_codigo"].Value.ToString();
@@ -377,6 +386,13 @@ namespace lebrun.formularios.facturacion
             if (opc == 5)
             {
                 retIvaCli = (frmRetIvaCli)formulario;
+                fuente = opc;
+            }
+
+            // 9 = Estado de cuentas: devuelve el codigo del cliente elegido (cualquier cliente, activo o no)
+            if (opc == 9)
+            {
+                estadoCuentas = (lbxEstadoCuentas)formulario;
                 fuente = opc;
             }
         }

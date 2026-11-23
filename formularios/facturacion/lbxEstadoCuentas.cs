@@ -26,6 +26,9 @@ namespace lebrun.formularios.facturacion
         private readonly TabPage paginaPendientes = new TabPage("Estado de cuenta");
         private readonly TabPage paginaMovimientos = new TabPage("Histórico de movimientos");
         private readonly TextBox txtCliente = new TextBox();
+        private readonly Button cmdLupa = new Button();
+        private readonly Label lblNombreCliente = new Label();
+        private const string TextoAyuda = "Escriba un código y presione Enter (vacío = todos)";
         private readonly DateTimePicker dtpDesde = new DateTimePicker();
         private readonly DateTimePicker dtpHasta = new DateTimePicker();
         private readonly CheckBox chkConSaldo = new CheckBox();
@@ -38,8 +41,6 @@ namespace lebrun.formularios.facturacion
 
         // datos del cliente elegido
         private Control tarjetaCliente;
-        private readonly Label vCodigo = new Label();
-        private readonly Label vNombre = new Label();
         private readonly Label vRif = new Label();
         private readonly Label vTelefonos = new Label();
         private readonly Label vDireccion = new Label();
@@ -70,26 +71,23 @@ namespace lebrun.formularios.facturacion
             MinimumSize = new Size(960, 560);
             StartPosition = FormStartPosition.CenterParent;
 
-            TableLayoutPanel encabezado = new TableLayoutPanel();
-            encabezado.Dock = DockStyle.Fill;
-            encabezado.BackColor = Color.White;
-            encabezado.Margin = new Padding(0, 0, 0, 10);
-            encabezado.Padding = new Padding(14, 8, 14, 6);
-            encabezado.RowCount = 2;
-            encabezado.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
-            encabezado.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            ConBorde(encabezado);
-            Label titulo = new Label();
-            titulo.Text = "Estado de cuentas";
-            titulo.Dock = DockStyle.Fill;
-            titulo.Font = new Font(Fuente, 15F, FontStyle.Bold);
-            titulo.ForeColor = Azul;
-            Label descripcion = new Label();
-            descripcion.Text = "Elija un cliente para ver sus documentos pendientes y todos sus movimientos (facturas, devoluciones, recibos de ingreso y retenciones).";
-            descripcion.Dock = DockStyle.Fill;
-            descripcion.ForeColor = TextoSecundario;
-            encabezado.Controls.Add(titulo, 0, 0);
-            encabezado.Controls.Add(descripcion, 0, 1);
+            // El campo del cliente se maneja igual que el del producto en la Consulta Gerencial: se escribe el codigo y, al dar Enter, si el cliente existe
+            // se completa el codigo y aparece su nombre en verde; la lupa abre la lista de clientes para elegirlo. Sin cliente se ven los de todos.
+            txtCliente.MaxLength = 60;
+            txtCliente.KeyDown += delegate (object s, KeyEventArgs ev)
+            {
+                if (ev.KeyCode == Keys.Enter)
+                {
+                    ev.SuppressKeyPress = true;
+                    Buscar();
+                }
+            };
+            cmdLupa.Image = global::lebrun.Properties.Resources.Search_16x16;
+            cmdLupa.Click += delegate { AbrirListaClientes(); };
+            Label etiquetaCliente = new Label();
+            Control encabezado = EncabezadoProducto(etiquetaCliente, txtCliente, cmdLupa, lblNombreCliente);
+            etiquetaCliente.Text = "Código del cliente";
+            lblNombreCliente.Text = TextoAyuda;
 
             foreach (DataGridView g in new[] { grillaPendientes, grillaMovimientos })
             {
@@ -146,8 +144,8 @@ namespace lebrun.formularios.facturacion
             raiz.ColumnCount = 1;
             raiz.RowCount = 6;
             raiz.Padding = new Padding(12, 10, 12, 8);
-            raiz.RowStyles.Add(new RowStyle(SizeType.Absolute, 74));
-            raiz.RowStyles.Add(new RowStyle(SizeType.Absolute, 64));
+            raiz.RowStyles.Add(new RowStyle(SizeType.Absolute, 62));
+            raiz.RowStyles.Add(new RowStyle(SizeType.Absolute, 54));
             raiz.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             raiz.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             raiz.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
@@ -169,16 +167,6 @@ namespace lebrun.formularios.facturacion
 
         private Control ArmarFiltros()
         {
-            txtCliente.Width = 200;
-            txtCliente.MaxLength = 60;
-            txtCliente.KeyDown += delegate (object s, KeyEventArgs ev)
-            {
-                if (ev.KeyCode == Keys.Enter)
-                {
-                    ev.SuppressKeyPress = true;
-                    Buscar();
-                }
-            };
             foreach (DateTimePicker dtp in new[] { dtpDesde, dtpHasta })
             {
                 dtp.Format = DateTimePickerFormat.Short;
@@ -202,8 +190,6 @@ namespace lebrun.formularios.facturacion
             f.Margin = new Padding(0, 0, 0, 10);
             ConBorde(f);
             f.WrapContents = false;
-            f.Controls.Add(Alinear(EtiquetaNueva("Cliente (código, nombre o RIF)")));
-            f.Controls.Add(txtCliente);
             f.Controls.Add(Alinear(EtiquetaNueva("Desde")));
             f.Controls.Add(dtpDesde);
             f.Controls.Add(Alinear(EtiquetaNueva("hasta")));
@@ -227,22 +213,21 @@ namespace lebrun.formularios.facturacion
             t.Margin = new Padding(0, 0, 0, 8);
             t.Padding = new Padding(14, 10, 14, 6);
             t.ColumnCount = 4;
-            t.RowCount = 3;
+            t.RowCount = 2;
             t.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80));
             t.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
             t.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80));
             t.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 2; i++)
             {
                 t.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
             }
             ConBorde(t);
-            AgregarDato(t, 0, 0, "Código", vCodigo);
-            AgregarDato(t, 0, 2, "Nombre", vNombre);
-            AgregarDato(t, 1, 0, "RIF", vRif);
-            AgregarDato(t, 1, 2, "Teléfonos", vTelefonos);
-            AgregarDato(t, 2, 0, "Situación", vSituacion);
-            AgregarDato(t, 2, 2, "Dirección", vDireccion);
+            // el codigo y el nombre ya se ven arriba, en el campo del cliente
+            AgregarDato(t, 0, 0, "RIF", vRif);
+            AgregarDato(t, 0, 2, "Teléfonos", vTelefonos);
+            AgregarDato(t, 1, 0, "Situación", vSituacion);
+            AgregarDato(t, 1, 2, "Dirección", vDireccion);
             return t;
         }
 
@@ -315,6 +300,7 @@ namespace lebrun.formularios.facturacion
             chkConSaldo.Checked = true;
             clienteActual = null;
             tarjetaCliente.Visible = false;
+            NombreCliente(TextoAyuda, false);
             pendientes = null;
             movimientos = null;
             grillaPendientes.DataSource = null;
@@ -324,6 +310,37 @@ namespace lebrun.formularios.facturacion
             lblTotales.Text = "";
             TituloPestanas();
             txtCliente.Focus();
+        }
+
+        // Texto junto al codigo: el nombre del cliente en verde, o un aviso en rojo si no se encontro.
+        private void NombreCliente(string texto, bool error)
+        {
+            lblNombreCliente.Text = texto;
+            lblNombreCliente.ForeColor = error ? Negativo : Color.DarkGreen;
+        }
+
+        // La lupa abre la misma lista de clientes que usan las facturas y los recibos; al elegir uno vuelve aqui por SeleccionarCliente.
+        private void AbrirListaClientes()
+        {
+            lbxClientes lista = lbxClientes.DefInstance;
+            if (MdiParent != null)
+            {
+                lista.MdiParent = MdiParent;
+            }
+            lista.destino(this, 9);
+            lista.Show();
+            lista.BringToFront();
+        }
+
+        // Lo llama la lista de clientes al elegir uno: se pone el codigo y se consulta como si se hubiera escrito y dado Enter.
+        public void SeleccionarCliente(string codigo)
+        {
+            txtCliente.Text = codigo;
+            Buscar();
+            Activate();
+            txtCliente.Focus();
+            txtCliente.SelectionStart = 0;
+            txtCliente.SelectionLength = txtCliente.Text.Length;
         }
 
         // ---------------------------------------------------------------- busqueda
@@ -338,6 +355,7 @@ namespace lebrun.formularios.facturacion
                 {
                     clienteActual = null;
                     tarjetaCliente.Visible = false;
+                    NombreCliente("Todos los clientes", false);
                     CargarPendientes();
                     movimientos = null;
                     grillaMovimientos.DataSource = null;
@@ -354,7 +372,10 @@ namespace lebrun.formularios.facturacion
                     return;
                 }
                 clienteActual = Convert.ToString(cliente["cli_codigo"]);
+                // se completa el codigo y se deja seleccionado, como en el campo del producto
                 txtCliente.Text = clienteActual;
+                txtCliente.SelectionStart = 0;
+                txtCliente.SelectionLength = txtCliente.Text.Length;
                 MostrarCliente(clienteActual);
                 CargarPendientes();
                 CargarMovimientos();
@@ -383,10 +404,13 @@ namespace lebrun.formularios.facturacion
                 tarjetaCliente.Visible = false;
                 grillaPendientes.DataSource = null;
                 grillaMovimientos.DataSource = null;
+                pendientes = null;
+                movimientos = null;
                 TituloPestanas();
                 lblTotales.Text = "";
                 lblMora.Text = "";
-                lblAviso.Text = "No hay clientes con ese código, nombre o RIF.";
+                NombreCliente("El cliente no existe", true);
+                lblAviso.Text = "No hay clientes con ese código, nombre o RIF. Use la lupa para buscarlo en la lista.";
                 return null;
             }
             foreach (DataRow r in dt.Rows)
@@ -432,8 +456,7 @@ namespace lebrun.formularios.facturacion
                 return;
             }
             DataRow r = dt.Rows[0];
-            vCodigo.Text = Convert.ToString(r["cli_codigo"]);
-            vNombre.Text = Convert.ToString(r["cli_nombre"]);
+            NombreCliente(Convert.ToString(r["cli_nombre"]), false);
             vRif.Text = Convert.ToString(r["cli_rif"]);
             string tel = Convert.ToString(r["cli_telefono"]).Trim();
             foreach (string otro in new[] { Convert.ToString(r["cli_telmaster"]).Trim(), Convert.ToString(r["cli_celular"]).Trim() })
