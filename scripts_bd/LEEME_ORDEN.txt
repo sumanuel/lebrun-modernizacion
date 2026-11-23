@@ -21,5 +21,5 @@ IMPORTANTE
   - Hacer un respaldo de la base antes de empezar.
   - Ejecutar los scripts ANTES de instalar Lebrun_Setup_{VERSION}_x86.exe: la version nueva usa columnas y tablas que crean estos scripts.
   - tasa_cambio reconstruye las tablas admdoccli y admmovcaja: ejecutarlo fuera del horario de trabajo.
-  - Despues de los scripts de menu (03, 07 y 11 de condicion_pago y el de informe_precios) cerrar sesion y volver a entrar para ver las opciones nuevas.
+  - Las opciones de menu nuevas (03, 07 y 11 de condicion_pago y el de informe_precios) aparecen al iniciar sesion: al instalar la version nueva se cierra el sistema, asi que basta con abrirlo de nuevo (quien lo tenga abierto sin instalar debe cerrar sesion y volver a entrar).
   - Los perfiles que no sean ADMINISTRADOR necesitan que se les active la opcion «Origen de la Venta» en la pantalla de perfiles.

@@ -52,7 +52,7 @@ Para revertir, en el orden inverso y solo si hace falta (ejemplo del ultimo paso
 Importante
 - Hacer respaldo de la base antes de ejecutar el paso 2.
 - Ejecutar los scripts ANTES de instalar la version del programa que usa codigos: la version nueva busca la condicion por codigo.
-- La aplicacion lee el menu al iniciar sesion: despues de los pasos 3, 7 y 11 hay que cerrar sesion y volver a entrar.
+- La aplicacion lee el menu al iniciar sesion: las opciones de los pasos 3, 7 y 11 aparecen al abrir el sistema de nuevo (al instalar la version nueva ya se cierra; quien lo tenga abierto sin instalar debe cerrar sesion y volver a entrar).
 - El paso 6 tambien hay que ejecutarlo ANTES de instalar la version nueva: la factura nueva graba dcli_origenventa y, si la columna no existe, no guarda.
 - Las tablas bk_condpago_* quedan como respaldo; se pueden borrar a mano cuando ya no hagan falta.
 - Probados en la copia local (MariaDB 10.4): aplicar, revertir y aplicar otra vez.

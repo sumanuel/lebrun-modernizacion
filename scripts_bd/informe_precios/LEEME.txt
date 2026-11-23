@@ -13,5 +13,5 @@ Carpetas
 Como se ejecuta:
     mysql -u usuario -p < Implementar/01_informe_precios_menu.sql
 
-Cerrar sesion y volver a entrar para ver la opcion. La ven los perfiles que ya la tenian activa; a los demas se les activa desde la pantalla de perfiles.
+La opcion aparece al iniciar sesion: al instalar la version nueva se cierra el sistema, asi que basta con abrirlo de nuevo. La ven los perfiles que ya la tenian activa; a los demas se les activa desde la pantalla de perfiles.
 La pantalla no necesita cambios en las tablas: solo consulta.

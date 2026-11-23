@@ -13,7 +13,7 @@ COMO SE APLICA (en este orden)
      scripts nuevos y esos son los unicos que hay que ejecutar). Van ANTES del instalador: la version nueva puede usar columnas, tablas o
      opciones de menu que crean los scripts.
   3. Instalar Lebrun_Setup_{VERSION}_x86.exe en cada equipo (si ya hay una version instalada, se actualiza conservando el servidor y la configuracion).
-  4. Cerrar sesion y volver a entrar en el sistema para ver las opciones de menu nuevas.
+  4. Abrir el sistema: las opciones de menu nuevas aparecen al iniciar sesion (el instalador ya obliga a cerrar el sistema, asi que no hace falta nada mas).
 
 INSTALACION DESATENDIDA (opcional)
   Lebrun_Setup_{VERSION}_x86.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART

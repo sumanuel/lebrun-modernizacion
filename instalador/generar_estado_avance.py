@@ -240,7 +240,7 @@ tabla(
     [2.6, 14.1],
 )
 punto("Ejecutar el script nuevo ANTES de instalar la versión nueva del programa. Si la base todavía no tiene los scripts de la 1.2.0 (por ejemplo una instalación nueva), hay que pedir el paquete completo.")
-punto("Cerrar sesión y volver a entrar después de los scripts de menú (03, 07 y 11 de condicion_pago, y el de informe_precios) para ver las opciones nuevas.")
+punto("Las opciones de menú nuevas (scripts 03, 07 y 11 de condicion_pago, y el de informe_precios) aparecen al iniciar sesión: al instalar la versión nueva hay que cerrar el sistema, así que basta con abrirlo de nuevo.")
 punto("Los perfiles que no sean ADMINISTRADOR necesitan que se les active la opción «Origen de la Venta» en la pantalla de perfiles; «Estado de Cuentas» e «Informe de Precios» las ven los perfiles que ya las tenían activas.")
 punto("Para cobrar en divisa debe haber una tasa del dólar o del euro cargada; si no la hay, el programa no deja cobrar en esa divisa y lo avisa.")
 
