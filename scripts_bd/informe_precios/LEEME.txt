@@ -1,0 +1,17 @@
+SCRIPT DEL INFORME DE PRECIOS
+=============================
+
+Pone la pantalla nueva «Informe de Precios» en el menu (Inventario > Informes > Informe de Precios). Es de la base sysconf y se puede
+ejecutar mas de una vez sin dañar nada. Para MySQL 5.5 y MariaDB.
+
+Carpetas
+  Implementar/   el script que se ejecuta.
+  Revertir/      el script que lo deshace (la opcion vuelve a quedar sin pantalla). Solo si hay que volver atras.
+
+  01_informe_precios_menu.sql    asigna la pantalla a la opcion Inventario > Informes > Informe de Precios.
+
+Como se ejecuta:
+    mysql -u usuario -p < Implementar/01_informe_precios_menu.sql
+
+Cerrar sesion y volver a entrar para ver la opcion. La ven los perfiles que ya la tenian activa; a los demas se les activa desde la pantalla de perfiles.
+La pantalla no necesita cambios en las tablas: solo consulta.

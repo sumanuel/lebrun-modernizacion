@@ -731,6 +731,9 @@
     <Compile Include="formularios\facturacion\lbxEstadoCuentas.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="formularios\productos\lbxInformePrecios.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="formularios\facturacion\lbxOrigenesVenta.cs">
       <SubType>Form</SubType>
     </Compile>
