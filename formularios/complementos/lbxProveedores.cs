@@ -180,9 +180,14 @@ namespace lebrun.formularios.complementos
             dataGridView1.Columns[7].Visible = false;
             if (frmProduct != "Producto")
             {
-                SistemaUsuario = (Principal)this.MdiParent;
-                IdMaq = Convert.ToString(SistemaUsuario.usuarioActual.Id);
-                ipMaq = Convert.ToString(SistemaUsuario.usuarioActual.IpPc);
+                // desde una ventana que no esta dentro de la principal (la orden de compra) no hay MdiParent: se toma la principal abierta
+                Principal principal = (this.MdiParent as Principal) ?? Application.OpenForms.OfType<Principal>().FirstOrDefault();
+                if (principal != null)
+                {
+                    SistemaUsuario = principal;
+                    IdMaq = Convert.ToString(SistemaUsuario.usuarioActual.Id);
+                    ipMaq = Convert.ToString(SistemaUsuario.usuarioActual.IpPc);
+                }
             }
             
         }

@@ -497,6 +497,37 @@ namespace lebrun.clasesData
 
 
 
+        // Ejecuta varias sentencias en una sola transaccion: o se guardan todas o no cambia nada (solo vale para tablas InnoDB). Si algo falla se
+        // deshace y el error sigue hacia quien llamo, para que avise y no de la operacion por hecha.
+        public void ejecutarTransaccion(Action<MySqlConnection, MySqlTransaction> trabajo)
+        {
+            using (MySqlConnection conexion = new MySqlConnection(strConnectionString))
+            {
+                conexion.Open();
+                using (MySqlTransaction transaccion = conexion.BeginTransaction())
+                {
+                    try
+                    {
+                        trabajo(conexion, transaccion);
+                        transaccion.Commit();
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            transaccion.Rollback();
+                        }
+                        catch (Exception ex)
+                        {
+                            // si se perdio la conexion no hay nada que deshacer desde aqui (el servidor descarta la transaccion)
+                            RegistroErrores.Registrar(ex, "Deshacer una transaccion");
+                        }
+                        throw;
+                    }
+                }
+            }
+        }
+
         public bool ejecutarInsert(string sentenciaSql, int timeOut) {
             mySqlConnection = new MySqlConnection(strConnectionString);
             Boolean centinela = true;

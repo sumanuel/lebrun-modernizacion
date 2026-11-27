@@ -117,49 +117,46 @@ namespace lebrun.clases.importaciones
         }
 
 
-        public void guardarDetallesOrdenDeCompra(DataGridView grid) {
-           
-            StrSql = null;
-            string[] parametros = new string[20];
+        // columnas de adminvmov_temp y la columna de la grilla de la orden de donde sale cada una
+        private static readonly string[] Columnas = { "mov_item", "mov_codigo", "mov_memo", "mov_undmed", "mov_cant", "mov_costo", "mov_desc", "mov_desc2",
+            "mov_desc3", "mov_total", "mov_codcta", "mov_docume", "mov_sufijo", "mov_hora", "mov_fecha", "mov_fechven", "mov_tipdoc", "mov_costoorig",
+            "mov_precio", "mov_totalmon", "mov_arancel" };
+        private static readonly int[] Celdas = { 0, 1, 2, 3, 4, 17, 6, 7, 8, 18, 10, 11, 12, 13, 14, 15, 16, 5, 17, 18, 19 };
+        private static readonly List<int> CeldasNumericas = new List<int> { 4, 5, 6, 7, 8, 17, 18, 19 };
 
-            StrSql = "INSERT INTO adminvmov_temp (mov_item,mov_codigo,mov_memo,mov_undmed,mov_cant,mov_costo, " +
-                    "mov_desc,mov_desc2,mov_desc3,mov_total,mov_codcta,mov_docume,mov_sufijo, " +
-                    "mov_hora,mov_fecha,mov_fechven,mov_tipdoc," +
-                    "mov_costoorig,mov_precio,mov_totalmon,mov_arancel) " +
-                    "VALUES " +
-                    "(@Items,@Codigo,@Producto,@Unidad,@Cant,@CostoDes,@Des1, " +
-                    "@Des2,@Des3,@TotalDes,@Proveedor,@Documento,@Sufijo, " +
-                    "@Hora,@FechaCarga,@FechaRecep,@TipoDoc,@Costo,@CostoDes,@TotalDes,@PorcArancel);";
-
-
-            parametros[0] = "@Items";
-            parametros[1] = "@Codigo";
-            parametros[2] = "@Producto";
-            parametros[3] = "@Unidad";
-            parametros[4] = "@Cant";
-            parametros[5] = "@Costo";
-            parametros[6] = "@Des1";
-            parametros[7] = "@Des2";
-            parametros[8] = "@Des3";
-            parametros[9] = "@Total";
-            parametros[10] = "@Proveedor";
-            parametros[11] = "@Documento";
-            parametros[12] = "@Sufijo";
-            parametros[13] = "@hora";
-            parametros[14] = "@FechaCarga";
-            parametros[15] = "@FechaRecep";
-            parametros[16] = "@TipoDoc";
-            parametros[17] = "@CostoDes";
-            parametros[18] = "@TotalDes";
-            parametros[19] = "@PorcArancel";
-            database.insertdataGridView(grid, parametros, StrSql);
-            database.cerrarConexion();
-
+        // Graba las lineas dentro de la transaccion de la orden. Los numeros se pasan con punto decimal sin cambiar lo que se ve en la grilla.
+        internal static void insertar(MySqlConnection conexion, MySqlTransaction transaccion, DataGridView grilla)
+        {
+            List<string> parametros = new List<string>();
+            for (int i = 0; i < Columnas.Length; i++)
+            {
+                parametros.Add("@p" + i);
+            }
+            string sql = "INSERT INTO adminvmov_temp (" + string.Join(",", Columnas) + ") VALUES (" + string.Join(",", parametros.ToArray()) + ")";
+            foreach (DataGridViewRow fila in grilla.Rows)
+            {
+                if (fila.IsNewRow)
+                {
+                    continue;
+                }
+                MySqlCommand c = new MySqlCommand(sql, conexion, transaccion);
+                for (int i = 0; i < Columnas.Length; i++)
+                {
+                    object valor = fila.Cells[Celdas[i]].Value;
+                    if (CeldasNumericas.Contains(Celdas[i]))
+                    {
+                        string numero = Convert.ToString(valor).Trim().Replace(",", ".");
+                        valor = numero.Length > 0 ? numero : "0";
+                    }
+                    c.Parameters.AddWithValue("@p" + i, valor);
+                }
+                c.ExecuteNonQuery();
+            }
         }
 
         public DataTable detalleOrdenCompra() {
 
-            StrSql = "SELECT * FROM adminvmov_temp WHERE mov_docume='$1' ORDER BY length(mov_item), mov_item";
+            StrSql = "SELECT * FROM adminvmov_temp WHERE mov_docume='$1' AND mov_tipdoc='30' ORDER BY length(mov_item), mov_item";
 
             StrSql = StrSql.Replace("$1",this.documento);
             return database.fDataTable(StrSql);
@@ -189,15 +186,6 @@ namespace lebrun.clases.importaciones
 
             return database.fDataTable(StrSql);
             //database.cerrarConexion();
-        }
-
-        public void eliminarDetallesOrdenCompra()
-        {
-            StrSql = "DELETE FROM adminvmov_temp WHERE mov_docume='$1';";
-            StrSql = StrSql.Replace("$1", this.documento);
-            database.ejecutarInsert(StrSql);
-            database.cerrarConexion();
-
         }
 
         public DataTable arancelArticuloEspecifico(string articulo){

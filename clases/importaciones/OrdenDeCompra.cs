@@ -302,67 +302,117 @@ namespace lebrun.clases.importaciones
         database = new ConexionBD(); //sisadm
     }
 
-    public void guardarOrdenCompra() {
-
-        StrSql = "INSERT INTO admOrdenCompra (ord_correlativo,ord_tipdoc,ord_ordencompra,ord_concep,ord_cencost,ord_sucus, " +
-        " ord_moneda,ord_codtra,ord_condic,ord_usuario,ord_tiptra,ord_codigo,ord_origen,ord_estadodoc,ord_status, " +
-        " ord_fechCarg,ord_hora,ord_cbtnum,ord_docorg,ord_cbtpre,ord_pagnum,ord_cxp,ord_plazo,ord_valcamb, " +
-        " ord_totaldivisa,ord_prod,ord_ditem,ord_documento,ord_sufijo,ord_subtot,ord_total,ord_usuarioUdp,ord_fechaRecep,ord_fechaSistema,ord_fechaUltMod) VALUES('$1','$2','$3','$4','$5','$6','$7','$8','$9','$usuario','$tiptra', " +
-        " '$codigo','$origen','$estadodoc','$status','$fechCarg','$hora','$cbtnum','$docorg','$cbtpre','$pagnum','$cxp','$plazo','$valcamb', " +
-        " '$totaldivisa','$prod','$ord','$documento','$sufijo','$subtotal','$total','$updUsuario','$fechaRecep','$fSistema','$ultMod');";
-
-        StrSql = StrSql.Replace("$1", this.correlativo); 
-        StrSql = StrSql.Replace("$2", this.tipdoc);
-        StrSql = StrSql.Replace("$3", this.correlativo);
-        StrSql = StrSql.Replace("$4", this.concep);
-        StrSql = StrSql.Replace("$5", this.cencost);
-        StrSql = StrSql.Replace("$6", this.sucus);
-        StrSql = StrSql.Replace("$7", this.moneda);
-        StrSql = StrSql.Replace("$8", this.codtra);
-        StrSql = StrSql.Replace("$9", this.condic);
-        StrSql = StrSql.Replace("$usuario", this.usuario);
-        StrSql = StrSql.Replace("$tiptra", this.tiptra);
-        StrSql = StrSql.Replace("$codigo", this.codigo);
-        StrSql = StrSql.Replace("$origen", this.origen);
-        StrSql = StrSql.Replace("$estadodoc", this.estadodoc);
-        StrSql = StrSql.Replace("$status", this.status);
-        StrSql = StrSql.Replace("$fechCarg", this.FechaCarga);
-        StrSql = StrSql.Replace("$hora", ""+DateTime.Now.Hour +":"+ DateTime.Now.Minute +":"+ DateTime.Now.Second);
-        StrSql = StrSql.Replace("$cbtnum", this.cbtnum);
-        StrSql = StrSql.Replace("$docorg", this.docorg);
-        StrSql = StrSql.Replace("$cbtpre", this.cbtpre);
-        StrSql = StrSql.Replace("$pagnum", this.pagnum);
-        StrSql = StrSql.Replace("$cxp", this.cxp);
-        StrSql = StrSql.Replace("$plazo", this.plazo);
-        StrSql = StrSql.Replace("$valcamb", this.valcamb);
-        StrSql = StrSql.Replace("$totaldivisa", this.totaldivisa);
-        StrSql = StrSql.Replace("$prod", this.prod);
-        StrSql = StrSql.Replace("$ord", this.ditem);
-        StrSql = StrSql.Replace("$documento",this.documento);
-        StrSql = StrSql.Replace("$sufijo",this.sufijo);
-        StrSql = StrSql.Replace("$subtotal",""+this.subTotal);
-        StrSql = StrSql.Replace("$total", ""+this.total);
-        StrSql = StrSql.Replace("$usuario",this.usuario);
-        StrSql = StrSql.Replace("$fechaRecep", this.fechaRecep);
-        StrSql = StrSql.Replace("$updUsuario", this.updUsuario);
-        StrSql = StrSql.Replace("$ultMod", this.fechaUltMod);
-
-        if (fechaSistema!= null)
+    // Graba la orden completa (numero, cabecera y lineas) en una sola transaccion: si algo falla no cambia nada. Antes, al modificar, se borraba la
+    // orden y despues se grababa la nueva; si esa grabacion fallaba (bastaba un apostrofo en las observaciones) la orden se perdia.
+    // numeroExistente es null para una orden nueva. prepararDatos llena esta cabecera y las lineas, y se llama cuando Correlativo ya tiene su numero.
+    public void grabar(string numeroExistente, Action prepararDatos, DataGridView lineas)
+    {
+        string numeroAnterior = this.correlativo;
+        try
         {
-            StrSql = StrSql.Replace("$fSistema", "" + Convert.ToDateTime(this.fechaSistema).Year + "-" + Convert.ToDateTime(this.fechaSistema).Month + "-" + Convert.ToDateTime(this.fechaSistema).Day);
+            database.ejecutarTransaccion(delegate (MySqlConnection conexion, MySqlTransaction transaccion)
+            {
+                if (string.IsNullOrEmpty(numeroExistente))
+                {
+                    this.correlativo = siguienteCorrelativo(conexion, transaccion);
+                }
+                else
+                {
+                    this.correlativo = numeroExistente;
+                    borrar(conexion, transaccion, numeroExistente);
+                }
+                prepararDatos();
+                insertarCabecera(conexion, transaccion);
+                DetallesOrdenDeCompra.insertar(conexion, transaccion, lineas);
+            });
         }
-        else
+        catch
         {
-            StrSql = StrSql.Replace("$fSistema", "" + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day);
+            this.correlativo = numeroAnterior;
+            throw;
         }
+    }
 
-        database.ejecutarInsert(StrSql);
-        database.cerrarConexion();
+    private static MySqlCommand comando(MySqlConnection conexion, MySqlTransaction transaccion, string sql)
+    {
+        return new MySqlCommand(sql, conexion, transaccion);
+    }
+
+    // El numero que sigue al ultimo usado (admtipdocpro, tipo 30). Se saltan los que ya tengan cabecera o lineas, para no chocar con ellos.
+    private static string siguienteCorrelativo(MySqlConnection conexion, MySqlTransaction transaccion)
+    {
+        object ultimo = comando(conexion, transaccion, "SELECT tdc_correlativo FROM admtipdocpro WHERE tdc_codigo='30' FOR UPDATE").ExecuteScalar();
+        if (ultimo == null || ultimo == DBNull.Value)
+        {
+            throw new InvalidOperationException("No está configurado el correlativo de las órdenes de compra (admtipdocpro, tipo 30).");
+        }
+        double numero = Convert.ToDouble(ultimo.ToString());
+        string candidato;
+        bool ocupado;
+        do
+        {
+            numero++;
+            candidato = String.Format("{0:0000000000}", numero);
+            MySqlCommand buscar = comando(conexion, transaccion, "SELECT (SELECT COUNT(*) FROM admordencompra WHERE ord_correlativo=@numero) + " +
+                                                                 "(SELECT COUNT(*) FROM adminvmov_temp WHERE mov_docume=@numero AND mov_tipdoc='30')");
+            buscar.Parameters.AddWithValue("@numero", candidato);
+            ocupado = Convert.ToInt64(buscar.ExecuteScalar()) > 0;
+        } while (ocupado);
+        MySqlCommand actualizar = comando(conexion, transaccion, "UPDATE admtipdocpro SET tdc_correlativo=@numero WHERE tdc_codigo='30'");
+        actualizar.Parameters.AddWithValue("@numero", candidato);
+        actualizar.ExecuteNonQuery();
+        return candidato;
+    }
+
+    private static void borrar(MySqlConnection conexion, MySqlTransaction transaccion, string numero)
+    {
+        // en las lineas se filtra por el tipo: la tabla tambien guarda documentos de otros tipos, que pueden repetir el numero
+        foreach (string sql in new[] { "DELETE FROM admordencompra WHERE ord_correlativo=@numero",
+                                       "DELETE FROM adminvmov_temp WHERE mov_docume=@numero AND mov_tipdoc='30'" })
+        {
+            MySqlCommand c = comando(conexion, transaccion, sql);
+            c.Parameters.AddWithValue("@numero", numero);
+            c.ExecuteNonQuery();
+        }
+    }
+
+    private void insertarCabecera(MySqlConnection conexion, MySqlTransaction transaccion)
+    {
+        string hoy = "" + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day;
+        string sistema = hoy;
+        if (fechaSistema != null)
+        {
+            DateTime f = Convert.ToDateTime(this.fechaSistema);
+            sistema = "" + f.Year + "-" + f.Month + "-" + f.Day;
+        }
+        // columna y valor; los datos van como parametros, asi un apostrofo o cualquier otro signo se guarda tal cual
+        string[,] datos =
+        {
+            { "ord_correlativo", correlativo }, { "ord_tipdoc", tipdoc }, { "ord_ordencompra", correlativo }, { "ord_concep", concep },
+            { "ord_cencost", cencost }, { "ord_sucus", sucus }, { "ord_moneda", moneda }, { "ord_codtra", codtra }, { "ord_condic", condic },
+            { "ord_usuario", usuario }, { "ord_tiptra", tiptra }, { "ord_codigo", codigo }, { "ord_origen", origen }, { "ord_estadodoc", estadodoc },
+            { "ord_status", status }, { "ord_fechCarg", fechaCarga }, { "ord_hora", "" + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second },
+            { "ord_cbtnum", cbtnum }, { "ord_docorg", docorg }, { "ord_cbtpre", cbtpre }, { "ord_pagnum", pagnum }, { "ord_cxp", cxp },
+            { "ord_plazo", plazo }, { "ord_valcamb", valcamb }, { "ord_totaldivisa", totaldivisa }, { "ord_prod", prod }, { "ord_ditem", ditem },
+            { "ord_documento", documento }, { "ord_sufijo", sufijo }, { "ord_subtot", subTotal }, { "ord_total", total },
+            { "ord_usuarioUdp", updUsuario }, { "ord_fechaRecep", fechaRecep }, { "ord_fechaSistema", sistema }, { "ord_fechaUltMod", fechaUltMod }
+        };
+        StringBuilder columnas = new StringBuilder();
+        StringBuilder valores = new StringBuilder();
+        MySqlCommand c = comando(conexion, transaccion, "");
+        for (int i = 0; i < datos.GetLength(0); i++)
+        {
+            columnas.Append((i > 0 ? "," : "") + datos[i, 0]);
+            valores.Append((i > 0 ? "," : "") + "@p" + i);
+            c.Parameters.AddWithValue("@p" + i, datos[i, 1] ?? "");
+        }
+        c.CommandText = "INSERT INTO admordencompra (" + columnas + ") VALUES (" + valores + ")";
+        c.ExecuteNonQuery();
     }
 
     public void buscarOrdenCompra() {
 
-        StrSql = "SELECT * FROM admOrdenCompra LEFT OUTER JOIN admproveedor ON pro_codigo = ord_codigo WHERE ord_correlativo='$1';";
+        StrSql = "SELECT * FROM admordencompra LEFT OUTER JOIN admproveedor ON pro_codigo = ord_codigo WHERE ord_correlativo='$1';";
         StrSql = StrSql.Replace("$1", this.correlativo);
 
         dr = database.ejecutarQueryDr(StrSql);
@@ -402,84 +452,41 @@ namespace lebrun.clases.importaciones
 
         StrSql = "SELECT ord_correlativo 'Correlativo', ord_tipdoc 'Tipo Doc', ord_ordencompra 'Orden Compra', ord_documento 'Documento'," +
                     "ord_sufijo 'Sufijo',ord_concep 'Concepto', ord_codigo 'Cod Proveedor', pro_nombre 'Nombre Proveedor'" +
-                    "FROM admOrdenCompra LEFT OUTER JOIN admproveedor ON ord_codigo=pro_codigo";
+                    " FROM admordencompra LEFT OUTER JOIN admproveedor ON ord_codigo=pro_codigo";
         
         return database.fDataTable(StrSql);
         //database.cerrarConexion();
 
     }
 
-    public void eliminarCabeceraOrdenCompra() {
-        StrSql = "DELETE FROM admordencompra WHERE ord_correlativo='$1';";
-        StrSql = StrSql.Replace("$1",this.correlativo);
-        database.ejecutarInsert(StrSql);
-        database.cerrarConexion();
-    }
-
-    public void asignarCorrelativo(){
-
-        ds = database.ejecutarQueryDs("SELECT tdc_correlativo FROM admtipdocpro WHERE tdc_codigo='30'");
-        if (ds.Tables[0].Rows.Count != 0) {
-            this.correlativo = String.Format("{0:0000000000}", Convert.ToDouble(ds.Tables[0].Rows[0][0].ToString()) + 1);
-
-            database.ejecutarInsert("UPDATE admtipdocpro SET tdc_correlativo='" + this.correlativo + "' WHERE tdc_codigo='30'");
-        
+    // Busca por codigo de proveedor (ese codigo, escrito con o sin los ceros de la izquierda), por parte del nombre o por el comienzo del documento.
+    // Sin texto devuelve todas las ordenes.
+    public DataTable buscarOrdenCompra(int option, string value)
+    {
+        string texto = (value ?? "").Trim().Replace("\\", "\\\\").Replace("'", "''");
+        if (texto.Length == 0)
+        {
+            return armarLbxOrdenCompra();
         }
-        database.cerrarConexion();
-      
-    }
-
-    public DataTable buscarOrdenCompra(int option, string value) {
-
-  
-            if (option == 0)
-            {
-
-                StrSql = "SELECT ord_correlativo 'Correlativo', ord_tipdoc 'Tipo Doc', ord_ordencompra 'Orden Compra', ord_documento 'Documento'," +
-                    "ord_sufijo 'Sufijo',ord_concep 'Concepto', ord_codigo 'Cod Proveedor', pro_nombre 'Nombre Proveedor'" +
-                    "FROM admOrdenCompra LEFT OUTER JOIN admproveedor ON ord_codigo=pro_codigo WHERE ord_codigo >='$1'";
-
-                StrSql = StrSql.Replace("$1", value);
-            }
-
-            if (option == 1)
-            {
-
-                StrSql = "SELECT ord_correlativo 'Correlativo', ord_tipdoc 'Tipo Doc', ord_ordencompra 'Orden Compra', ord_documento 'Documento'," +
-                   "ord_sufijo 'Sufijo',ord_concep 'Concepto', ord_codigo 'Cod Proveedor', pro_nombre 'Nombre Proveedor'" +
-                   "FROM admOrdenCompra LEFT OUTER JOIN admproveedor ON ord_codigo=pro_codigo WHERE pro_nombre LIKE '%$1%'";
-                
-                StrSql = StrSql.Replace("$1", value);
-            }
-
-            if (option == 2)
-            {
-
-                StrSql = "SELECT ord_correlativo 'Correlativo', ord_tipdoc 'Tipo Doc', ord_ordencompra 'Orden Compra', ord_documento 'Documento'," +
-                   "ord_sufijo 'Sufijo', ord_concep 'Concepto',ord_codigo 'Cod Proveedor', pro_nombre 'Nombre Proveedor'" +
-                   "FROM admOrdenCompra LEFT OUTER JOIN admproveedor ON ord_codigo=pro_codigo WHERE ord_documento LIKE '$1%'";
-                StrSql = StrSql.Replace("$1", value);
-            }
-
+        string parecido = texto.Replace("%", "\\%").Replace("_", "\\_");
+        string filtro;
+        if (option == 0)
+        {
+            filtro = "ord_codigo = '" + texto + "' OR TRIM(LEADING '0' FROM ord_codigo) = TRIM(LEADING '0' FROM '" + texto + "')";
+        }
+        else if (option == 1)
+        {
+            filtro = "pro_nombre LIKE '%" + parecido + "%'";
+        }
+        else
+        {
+            filtro = "ord_documento LIKE '" + parecido + "%'";
+        }
+        StrSql = "SELECT ord_correlativo 'Correlativo', ord_tipdoc 'Tipo Doc', ord_ordencompra 'Orden Compra', ord_documento 'Documento'," +
+                 "ord_sufijo 'Sufijo',ord_concep 'Concepto', ord_codigo 'Cod Proveedor', pro_nombre 'Nombre Proveedor' " +
+                 "FROM admordencompra LEFT OUTER JOIN admproveedor ON ord_codigo=pro_codigo WHERE " + filtro;
         return database.fDataTable(StrSql);
-       
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     }//fin clase
 }

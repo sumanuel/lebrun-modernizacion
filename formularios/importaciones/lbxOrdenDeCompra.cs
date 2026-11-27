@@ -62,44 +62,86 @@ namespace lebrun.formularios.importaciones
 
         private void button1_Click(object sender, EventArgs e)
         {
-            frmOrdenCompar = frmOrdenCompra.DefInstance;
-            //frmOrdenCompar.MdiParent = (Principal)this.MdiParent;
-            frmOrdenCompar.modificarUsu(Principal.usuarioActual.Id);
-            frmOrdenCompar.Show();
-            
-            
+            abrirOrden(null, false);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.RowCount > 1)
+            string orden = ordenSeleccionada("modificar");
+            if (orden != null)
             {
-                frmOrdenCompar = frmOrdenCompra.DefInstance;
-                //frmOrdenCompar.MdiParent = this.MdiParent;
-                frmOrdenCompar.cargarModificar(dataGridView1.CurrentRow.Cells[0].Value.ToString());
-                frmOrdenCompar.modificarUsu(Principal.usuarioActual.Id);
-                frmOrdenCompar.Show();
+                abrirOrden(orden, false);
             }
-            else { MessageBox.Show("No existe ningun elemento para modificar", "Algo no esta bien ", MessageBoxButtons.OK, MessageBoxIcon.Information); }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.RowCount > 1)
+            string orden = ordenSeleccionada("ver");
+            if (orden != null)
             {
-                frmOrdenCompar = frmOrdenCompra.DefInstance;
+                abrirOrden(orden, true);
+            }
+        }
+
+        // El numero de la orden elegida en la lista; null (con un aviso) si no hay ninguna, por ejemplo en la fila vacia del final.
+        private string ordenSeleccionada(string paraQue)
+        {
+            DataGridViewRow fila = dataGridView1.CurrentRow;
+            string orden = fila == null || fila.IsNewRow ? "" : Convert.ToString(fila.Cells[0].Value);
+            if (orden.Length == 0)
+            {
+                MessageBox.Show("Seleccione en la lista la orden que quiere " + paraQue + ".", "Ordenes de compra", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return null;
+            }
+            return orden;
+        }
+
+        // Abre la ventana de la orden: nueva (numero null), para modificar o solo para verla.
+        private void abrirOrden(string numero, bool soloVer)
+        {
+            frmOrdenCompra abierta = frmOrdenCompra.VentanaAbierta;
+            if (abierta != null)
+            {
+                MessageBox.Show("Ya hay una orden de compra abierta. Ciérrela antes de abrir otra.", "Ordenes de compra", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (abierta.WindowState == FormWindowState.Minimized)
+                {
+                    abierta.WindowState = FormWindowState.Normal;
+                }
+                abierta.BringToFront();
+                abierta.Activate();
+                return;
+            }
+            frmOrdenCompar = frmOrdenCompra.DefInstance;
+            if (soloVer)
+            {
                 frmOrdenCompar.MdiParent = this.MdiParent;
-                frmOrdenCompar.cargarModificar(dataGridView1.CurrentRow.Cells[0].Value.ToString());
-                //frmOrdenCompar.groupBox1.Enabled = false;
-                //frmOrdenCompar.groupBox2.Enabled = false;
-                //frmOrdenCompar.button3.Enabled = false;
+            }
+            if (numero != null)
+            {
+                frmOrdenCompar.cargarModificar(numero);
+            }
+            if (soloVer)
+            {
                 frmOrdenCompar.button5.Enabled = false;
                 frmOrdenCompar.button3.Enabled = false;
                 frmOrdenCompar.btnAddProduct.Enabled = false;
-
-                frmOrdenCompar.Show();
             }
-            else { MessageBox.Show("No existe ningun elemento para ver", "Algo no esta bien ", MessageBoxButtons.OK, MessageBoxIcon.Information); }
+            else
+            {
+                frmOrdenCompar.modificarUsu(Principal.usuarioActual.Id);
+            }
+            frmOrdenCompar.FormClosed -= ordenCerrada;
+            frmOrdenCompar.FormClosed += ordenCerrada;
+            frmOrdenCompar.Show();
+        }
+
+        // Al cerrar una orden que se grabo, la lista se actualiza.
+        private void ordenCerrada(object sender, FormClosedEventArgs e)
+        {
+            if (((frmOrdenCompra)sender).Grabada && !IsDisposed)
+            {
+                cargarOrdenesCompra();
+            }
         }
 
         private void txtBusqueda_KeyPress(object sender, KeyPressEventArgs e)
@@ -193,6 +235,10 @@ namespace lebrun.formularios.importaciones
 
         private void btnImpNacional_Click(object sender, EventArgs e)
         {
+            if (ordenSeleccionada("imprimir") == null)
+            {
+                return;
+            }
             contenedorOrden = new frmContenedorOrden(
                 dataGridView1.CurrentRow.Cells[0].Value.ToString(),
                 dataGridView1.CurrentRow.Cells[4].Value.ToString(),

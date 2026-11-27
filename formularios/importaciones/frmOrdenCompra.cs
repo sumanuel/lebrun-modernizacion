@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -37,6 +38,15 @@ namespace lebrun.formularios.importaciones
         //private Principal Principal;
         private string usuarioOrigen;
         private string usuaLogin;
+        private string ordenPorCargar;               // numero de la orden que hay que mostrar cuando la ventana termine de abrirse
+        private bool lista;                          // la ventana ya cargo sus datos
+        public bool Grabada { get; private set; }    // se grabo la orden: la lista debe actualizarse
+
+        // La ventana de la orden que esta abierta, o null. Solo se trabaja una a la vez: abrir otra sobre la misma ventana mezclaba sus lineas.
+        public static frmOrdenCompra VentanaAbierta
+        {
+            get { return m_FormDefInstance != null && !m_FormDefInstance.IsDisposed && m_FormDefInstance.Visible ? m_FormDefInstance : null; }
+        }
 
        
 
@@ -175,7 +185,12 @@ namespace lebrun.formularios.importaciones
                 this.cargarComboPago();
                 this.ordenCompra = new OrdenDeCompra();
                 this.detalleOrdenCompra = new DetallesOrdenDeCompra();
-
+                lista = true;
+                // la orden se carga despues de llenar las listas: antes se cargaba primero y al abrir la ventana la condicion volvia a la primera
+                if (ordenPorCargar != null)
+                {
+                    cargarOrden(ordenPorCargar);
+                }
 
 
 
@@ -739,21 +754,29 @@ namespace lebrun.formularios.importaciones
             }
         }
 
+        // Convierte el texto de un campo o una celda en numero, con coma o punto decimal (los numeros no llevan separador de miles).
+        private static decimal numero(object valor)
+        {
+            decimal n;
+            return decimal.TryParse(Convert.ToString(valor).Trim().Replace(",", "."), NumberStyles.Number, CultureInfo.InvariantCulture, out n) ? n : 0m;
+        }
+
+        // Si el producto ya esta en la orden con la misma unidad, costo y descuentos, se suma la cantidad en esa linea. Se comparan los numeros y no
+        // los textos: antes se comparaban formatos distintos del mismo costo y siempre se agregaba otra linea.
         private bool mismoArticulo() {
 
             for (int i = 0; i < gridProductos.Rows.Count; i++)
             {
-                if ((gridProductos.Rows[i].Cells[1].Value.ToString() == txtProducto.Text) && (gridProductos.Rows[i].Cells[3].Value.ToString() == txtUnidad.Text) && (gridProductos.Rows[i].Cells[6].Value.ToString()) == string.Format("{0:###,#####0.00##}",Decimal.Parse(txtDes1.Text)) && (gridProductos.Rows[i].Cells[7].Value.ToString()) == string.Format("{0:###,#####0.00##}",Decimal.Parse(txtDes2.Text)) && (gridProductos.Rows[i].Cells[8].Value.ToString()) == string.Format("{0:###,#####0.00##}",Decimal.Parse(txtDes2.Text)) && (gridProductos.Rows[i].Cells[5].Value.ToString()==string.Format("{0:###,#####0.00##}",Decimal.Parse(txtCosto.Text))))
+                DataGridViewCellCollection celdas = gridProductos.Rows[i].Cells;
+                if (Convert.ToString(celdas[1].Value) == txtProducto.Text && Convert.ToString(celdas[3].Value) == txtUnidad.Text &&
+                    numero(celdas[5].Value) == numero(txtCosto.Text) && numero(celdas[6].Value) == numero(txtDes1.Text) &&
+                    numero(celdas[7].Value) == numero(txtDes2.Text) && numero(celdas[8].Value) == numero(txtDes3.Text))
                 {
-
-                    //gridProductos.Rows[i].Cells[4].Value = (Convert.ToInt32(gridProductos.Rows[i].Cells[4].Value.ToString()))+(Convert.ToInt32(txtCant.Text));
-                    gridProductos.Rows[i].Cells[4].Value = (Convert.ToDecimal(gridProductos.Rows[i].Cells[4].Value.ToString())) + (Convert.ToDecimal(txtCant.Text));
-                    gridProductos.Rows[i].Cells[9].Value = "" + Convert.ToString(Convert.ToDecimal(txtCosto.Text.Replace(".", ",")) * Convert.ToDecimal(gridProductos.Rows[i].Cells[4].Value.ToString().Replace(".", ","))).Replace(",", ".");
-
-                    gridProductos.Rows[i].Cells[18].Value = (Convert.ToDecimal(gridProductos.Rows[i].Cells[17].Value.ToString().Replace(".", ","))) * (Convert.ToDecimal(gridProductos.Rows[i].Cells[4].Value.ToString().Replace(".", ",")));
-
+                    decimal cantidad = numero(celdas[4].Value) + numero(txtCant.Text);
+                    celdas[4].Value = string.Format("{0:0.00}", cantidad);
+                    celdas[9].Value = (numero(celdas[5].Value) * cantidad).ToString(CultureInfo.InvariantCulture);
+                    celdas[18].Value = numero(celdas[17].Value) * cantidad;
                     return true;
-                    
                 }
             }
             return false;
@@ -778,8 +801,18 @@ namespace lebrun.formularios.importaciones
             }
         }
 
-        public void cargarModificar(string correlativo){
+        public void cargarModificar(string correlativo)
+        {
+            ordenPorCargar = correlativo;
+            if (lista)
+            {
+                cargarOrden(correlativo);
+            }
+        }
 
+        private void cargarOrden(string correlativo)
+        {
+            gridProductos.Rows.Clear();
             ordenCompra = new OrdenDeCompra();
             ordenCompra.Correlativo = correlativo;
             ordenCompra.buscarOrdenCompra();
@@ -797,6 +830,7 @@ namespace lebrun.formularios.importaciones
             txtSufijo.Text = ordenCompra.Sufijo;
             txtValCamb.Text = ordenCompra.Valcamb;
             txtConcepto.Text = ordenCompra.Concep;
+            seleccionarCondicion(ordenCompra.Condic);
             txtCodProvee.Text = ordenCompra.Codigo;
             cmbMoneda.Text = ordenCompra.Moneda;
             lblNombreProvee.Text = ordenCompra.ProNombre;
@@ -812,6 +846,29 @@ namespace lebrun.formularios.importaciones
             usuarioOrigen = ordenCompra.Usuario;
             
 
+        }
+
+        // Deja elegida la condicion de pago con que se grabo la orden. Si ya no esta en el maestro (un texto antiguo) se agrega a la lista, para que
+        // al aceptar no se cambie por otra.
+        private void seleccionarCondicion(string condicion)
+        {
+            if (string.IsNullOrWhiteSpace(condicion))
+            {
+                return;
+            }
+            int posicion = cmbCond.FindStringExact(condicion.Trim());
+            if (posicion < 0)
+            {
+                DataTable condiciones = (DataTable)cmbCond.DataSource;
+                DataRow fila = condiciones.NewRow();
+                fila["conp_descripcion"] = condicion.Trim();
+                condiciones.Rows.Add(fila);
+                posicion = cmbCond.FindStringExact(condicion.Trim());
+            }
+            if (posicion >= 0)
+            {
+                cmbCond.SelectedIndex = posicion;
+            }
         }
 
         public void mostrarDetalleOrden()
@@ -883,26 +940,6 @@ namespace lebrun.formularios.importaciones
             }
         }
 
-        private void reemplazar() 
-        {
-
-            for (int i = 0; i < gridProductos.Rows.Count; i++)
-            {
-                gridProductos.Rows[i].Cells[4].Value = gridProductos.Rows[i].Cells[4].Value.ToString().Replace(",",".");
-                gridProductos.Rows[i].Cells[5].Value = gridProductos.Rows[i].Cells[5].Value.ToString().Replace(",", ".");
-                gridProductos.Rows[i].Cells[6].Value = gridProductos.Rows[i].Cells[6].Value.ToString().Replace(",", ".");
-                gridProductos.Rows[i].Cells[7].Value = gridProductos.Rows[i].Cells[7].Value.ToString().Replace(",", ".");
-                gridProductos.Rows[i].Cells[8].Value = gridProductos.Rows[i].Cells[8].Value.ToString().Replace(",", ".");
-                gridProductos.Rows[i].Cells[9].Value = gridProductos.Rows[i].Cells[9].Value.ToString().Replace(",", ".");
-                gridProductos.Rows[i].Cells[17].Value = gridProductos.Rows[i].Cells[17].Value.ToString().Replace(",", ".");
-                gridProductos.Rows[i].Cells[18].Value = gridProductos.Rows[i].Cells[18].Value.ToString().Replace(",", ".");
-
-                
-            }
-
-        }
-
-
         public void modificarUsu(string idUsuario) {
             //this.usuarioNuevo.Id = idUsuario;
             usuaLogin = idUsuario;
@@ -926,23 +963,19 @@ namespace lebrun.formularios.importaciones
         {
             if (gridProductos.Rows.Count > 0)
             {
-
-                if (txtOrdenNum.Text == "")
+                try
                 {
-                    ordenCompra.asignarCorrelativo();
+                    ordenCompra.grabar(txtOrdenNum.Text == "" ? null : txtOrdenNum.Text, asignandoValores, gridProductos);
                 }
-                else
+                catch (Exception ex)
                 {
-                    ordenCompra.Correlativo = txtOrdenNum.Text;
-                    detalleOrdenCompra.Documento = txtOrdenNum.Text;
-                    ordenCompra.eliminarCabeceraOrdenCompra();
-                    detalleOrdenCompra.eliminarDetallesOrdenCompra();
+                    RegistroErrores.Registrar(ex, "Orden de compra: grabar");
+                    calcularTotales();
+                    MessageBox.Show("No se pudo grabar la orden de compra y no se cambió nada. Los datos siguen en pantalla para intentarlo de nuevo.\n\n" + ex.Message,
+                                    "Orden de compra", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
-                asignandoValores();
-                ordenCompra.guardarOrdenCompra();
-                reemplazar();
-                detalleOrdenCompra.guardarDetallesOrdenDeCompra(gridProductos);
-
+                Grabada = true;
                 this.Close();
             }
             else {
