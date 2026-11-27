@@ -40,6 +40,7 @@ namespace lebrun.formularios.productos
         private readonly Label lblResumen = new Label();
         private readonly Label lblAviso = new Label();
 
+        private bool desdeMarcado;
         private DataTable resultado;
         private bool resultadoEnDolares;
         private string subtituloInforme = "";
@@ -172,6 +173,16 @@ namespace lebrun.formularios.productos
             dtpDesde.ShowCheckBox = true;
             dtpDesde.Checked = false;
             dtpDesde.Width = 190;
+            // al marcar la casilla se propone desde el comienzo del dia: con la hora actual no saldria nada de lo cambiado hasta ese momento
+            dtpDesde.ValueChanged += delegate
+            {
+                bool recienMarcada = dtpDesde.Checked && !desdeMarcado;
+                desdeMarcado = dtpDesde.Checked;
+                if (recienMarcada)
+                {
+                    dtpDesde.Value = dtpDesde.Value.Date;
+                }
+            };
 
             EstiloBoton(cmdBuscar, "Buscar", true);
             EstiloBoton(cmdLimpiar, "Limpiar", false);
@@ -277,6 +288,7 @@ namespace lebrun.formularios.productos
             if (EnDolares)
             {
                 dtpDesde.Checked = false;
+                desdeMarcado = false;
             }
         }
 
@@ -313,6 +325,7 @@ namespace lebrun.formularios.productos
             cboMostrar.SelectedIndex = 0;
             chkInactivos.Checked = false;
             dtpDesde.Checked = false;
+            desdeMarcado = false;
             grilla.DataSource = null;
             resultado = null;
             lblResumen.Text = "";
@@ -382,8 +395,8 @@ namespace lebrun.formularios.productos
             }
             if (dtpDesde.Checked)
             {
-                // fecha y hora del cambio (la hora esta guardada como texto: 09:57:18 a.m.)
-                filtro += " AND TIMESTAMP(a.pre_fecha, IFNULL(TIME(STR_TO_DATE(REPLACE(REPLACE(a.pre_hora, 'a.m.', 'AM'), 'p.m.', 'PM'), '%h:%i:%s %p')), '00:00:00')) >= '" +
+                // fecha y hora del cambio
+                filtro += " AND TIMESTAMP(a.pre_fecha, " + lebrun.clases.complementos.HoraGuardada.Sql("a.pre_hora") + ") >= '" +
                           dtpDesde.Value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) + "'";
             }
             return "SELECT i.inv_codigo AS codigo, i.inv_descri AS descripcion, a.pre_lista AS lista, a.pre_undmed AS unidad, IFNULL(p.pro_nombre, '') AS proveedor, " +

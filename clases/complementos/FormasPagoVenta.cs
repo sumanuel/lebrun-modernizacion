@@ -41,6 +41,9 @@ namespace lebrun.clases.complementos
         // el vuelto que se le da al cliente se guarda como un renglon mas de la factura, pero no es una forma de pago
         public const string Cambio = "CAMBIO";
 
+        // la ultima lista leida, para no consultar la base cada vez que se dibuja una celda de la grilla de pagos
+        private static List<FormaPagoVenta> ultimasCargadas;
+
         // Las formas de pago activas. Si la tabla aun no tiene formas (no se ejecuto el script 04_formas_pago.sql) se usan las cuatro de siempre.
         public static List<FormaPagoVenta> Cargar()
         {
@@ -72,6 +75,7 @@ namespace lebrun.clases.complementos
                 lista.Add(new FormaPagoVenta { Codigo = TarjetaCredito, Descripcion = "Tarjeta de Credito", Siglas = "TC", PideBanco = true, Grupo = 'T' });
                 lista.Add(new FormaPagoVenta { Codigo = Cheque, Descripcion = "Cheque", Siglas = "CHQ", PideBanco = true, Grupo = 'C' });
             }
+            ultimasCargadas = lista;
             return lista;
         }
 
@@ -152,6 +156,25 @@ namespace lebrun.clases.complementos
             grilla.DataBindingComplete -= DivisaAlFinal;
             grilla.DataBindingComplete += DivisaAlFinal;
             DivisaAlFinal(grilla, null);
+            grilla.CellFormatting -= MostrarSigla;
+            grilla.CellFormatting += MostrarSigla;
+        }
+
+        // La columna Modo Pago muestra la sigla de la forma de pago en vez de su codigo. Es solo lo que se ve: el valor de la celda, que es el que se
+        // guarda en admmovcaja, sigue siendo el codigo.
+        private static void MostrarSigla(object sender, System.Windows.Forms.DataGridViewCellFormattingEventArgs e)
+        {
+            System.Windows.Forms.DataGridView grilla = (System.Windows.Forms.DataGridView)sender;
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 || e.Value == null || grilla.Columns[e.ColumnIndex].Name != "@mocv_forpag")
+            {
+                return;
+            }
+            FormaPagoVenta forma = Buscar(ultimasCargadas ?? Cargar(), Convert.ToString(e.Value));
+            if (forma != null && forma.Siglas.Length > 0)
+            {
+                e.Value = forma.Siglas;
+                e.FormattingApplied = true;
+            }
         }
 
         private static void DivisaAlFinal(object sender, System.Windows.Forms.DataGridViewBindingCompleteEventArgs e)

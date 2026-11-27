@@ -5,6 +5,22 @@ using lebrun.clasesData;
 
 namespace lebrun.clases.complementos
 {
+    // Las horas de los cambios (admprecios.pre_hora, admhistodivi.histo_hora) estan guardadas como texto y su forma depende de la configuracion de Windows
+    // del equipo que las grabo: "11:25:19 a. m." (con cualquier tipo de espacio), "05:15:35 p.m.", "03:36:38 PM" o "16:40:28".
+    public static class HoraGuardada
+    {
+        // Expresion SQL (MySQL 5.5 y MariaDB) que convierte la columna a un TIME: toma los numeros separados por ':' y mira solo si el texto dice 'p' o 'a'.
+        public static string Sql(string columna)
+        {
+            string texto = "LOWER(IFNULL(" + columna + ", ''))";
+            string hora = "CAST(SUBSTRING_INDEX(" + texto + ", ':', 1) AS UNSIGNED)";
+            string minuto = "CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(" + texto + ", ':', 2), ':', -1) AS UNSIGNED)";
+            string segundo = "IF(LENGTH(" + texto + ") - LENGTH(REPLACE(" + texto + ", ':', '')) > 1, CAST(SUBSTRING_INDEX(" + texto + ", ':', -1) AS UNSIGNED), 0)";
+            string hora24 = "CASE WHEN " + texto + " LIKE '%p%' THEN MOD(" + hora + ", 12) + 12 WHEN " + texto + " LIKE '%a%' THEN MOD(" + hora + ", 12) ELSE " + hora + " END";
+            return "SEC_TO_TIME((" + hora24 + ") * 3600 + " + minuto + " * 60 + " + segundo + ")";
+        }
+    }
+
     // Tasa de cambio del dia: cuantos bolivares vale una unidad de divisa. Sale del historial de divisas (admhistodivi). Las monedas son USD (dolar BCV, moneda $8)
     // y EUR (euro, moneda del euro con el 8). Se usa para grabar la tasa en cada factura (admdoccli.dcli_valcamb) y para convertir a bolivares lo que el cliente
     // paga en divisa. Si el dia tiene varias tasas se usa la ultima por hora.
@@ -38,7 +54,7 @@ namespace lebrun.clases.complementos
             ConexionBD baseDatos = new ConexionBD();
             DataTable dt = baseDatos.fDataTable("SELECT histo_valor FROM admhistodivi WHERE BINARY histo_moneda = " + CodigoHistorial(moneda) + " AND histo_fecha <= '" +
                                                 fecha.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) + "' ORDER BY histo_fecha DESC, " +
-                                                "STR_TO_DATE(REPLACE(REPLACE(histo_hora, 'a.m.', 'AM'), 'p.m.', 'PM'), '%h:%i:%s %p') DESC, histo_hora DESC LIMIT 1");
+                                                HoraGuardada.Sql("histo_hora") + " DESC, histo_hora DESC LIMIT 1");
             baseDatos.cerrarConexion();
             if (dt.Rows.Count == 0 || dt.Rows[0][0] == DBNull.Value)
             {

@@ -239,8 +239,8 @@ namespace lebrun.formularios.facturacion
                frmReporteCierreCaja temp = (frmReporteCierreCaja)e.Argument;
                // usuSystem.nombreCodUsu(usuSystem.Id);
                 referenciaPrincipal.usuarioActual.Nombre= referenciaPrincipal.usuarioActual.nombreCodUsu(referenciaPrincipal.usuarioActual.Id,2);
-                reporteCierre = temp.armarReporte(cajaCerrar, tempt, usuSystem.Id, usuSystem.Nombre,
-                   referenciaPrincipal.usuarioActual.Nombre, cajaCerrar.FacturasNoImpresas);
+                // El reporte se arma en backgroundWorker1_RunWorkerCompleted (hilo de la pantalla): armado desde aqui el visor quedaba en blanco.
+                e.Result = temp;
                return;
             }
 
@@ -268,6 +268,34 @@ namespace lebrun.formularios.facturacion
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            // Si el trabajo fallo se avisa y se detiene: antes el error se perdia y el cierre se volvia a intentar sin fin.
+            if (e.Error != null)
+            {
+                RegistroErrores.Registrar(e.Error, "Cierre de caja");
+                this.pictureBox1.Visible = false;
+                this.Enabled = true;
+                proceso = false;
+                proceso2 = false;
+                MessageBox.Show("No se pudo completar el cierre de caja: " + e.Error.Message + "\n\nRevise el cierre antes de repetirlo; el detalle quedó en el registro de errores.",
+                                "Cuadre de Caja", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            frmReporteCierreCaja porArmar = e.Result as frmReporteCierreCaja;
+            if (porArmar != null)
+            {
+                try
+                {
+                    reporteCierre = porArmar.armarReporte(cajaCerrar, tempt, usuSystem.Id, usuSystem.Nombre,
+                        referenciaPrincipal.usuarioActual.Nombre, cajaCerrar.FacturasNoImpresas);
+                }
+                catch (Exception ex)
+                {
+                    RegistroErrores.Registrar(ex, "Reporte de cierre de caja");
+                    MessageBox.Show("No se pudo generar el reporte del cuadre de caja: " + ex.Message, "Cuadre de Caja", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
             if ((reporteCierre != null) && !(proceso)){
                 reporteCierre.Show();
                 this.pictureBox1.Visible = false;
