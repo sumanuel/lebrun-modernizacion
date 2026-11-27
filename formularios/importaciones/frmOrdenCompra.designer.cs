@@ -316,7 +316,7 @@
             this.txtValCamb.Location = new System.Drawing.Point(102, 131);
             this.txtValCamb.Name = "txtValCamb";
             this.txtValCamb.ReadOnly = true;
-            this.txtValCamb.Size = new System.Drawing.Size(68, 20);
+            this.txtValCamb.Size = new System.Drawing.Size(119, 20);
             this.txtValCamb.TabIndex = 7;
             this.txtValCamb.Text = "0";
             this.txtValCamb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;

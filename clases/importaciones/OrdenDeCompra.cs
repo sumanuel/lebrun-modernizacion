@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+using System.Globalization;
+using lebrun.clases.complementos;
 using lebrun.clasesData;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
@@ -60,6 +62,52 @@ namespace lebrun.clases.importaciones
         private string login;
         private string updLogin;
         private string fechaUltMod;
+        // porcentajes de descuento de la orden; al leer una orden anterior a estas columnas quedan en null
+        public decimal? Descuento1 { get; set; }
+        public decimal? Descuento2 { get; set; }
+        public decimal? Descuento3 { get; set; }
+
+        // El total de la orden: los descuentos se aplican en cascada (cada uno sobre lo que queda del anterior), como en el sistema anterior
+        // (ModelSoft) y en la Consulta Gerencial. 1.295,80 con 10 % y 5 % = 1.107,91.
+        public static decimal TotalConDescuentos(decimal subtotal, params decimal[] porcentajes)
+        {
+            decimal total = subtotal;
+            foreach (decimal porcentaje in porcentajes)
+            {
+                total -= total * porcentaje / 100m;
+            }
+            return Math.Round(total, 2, MidpointRounding.AwayFromZero);
+        }
+
+        // Bolivares por unidad de la moneda a la fecha de la orden. Los proveedores tienen la moneda "$" o el euro, cuyo historial propio dejo de
+        // cargarse en 2022: se usa la tasa del BCV (dolar o euro), la misma de las ventas. null = no hay tasa cargada.
+        public static decimal? TasaDeMoneda(string moneda, DateTime fecha)
+        {
+            string m = (moneda ?? "").Trim();
+            if (m.Length == 0 || m.StartsWith("Bs", StringComparison.OrdinalIgnoreCase))
+            {
+                return 1m;
+            }
+            if (m == "$" || m == "$8")
+            {
+                return TasaCambio.Vigente(fecha, TasaCambio.Dolar);
+            }
+            // el euro puede llegar como el signo o como el byte 0x80 sin convertir
+            bool euro = m[0] == '€' || m[0] == '';
+            if (euro && (m.Length == 1 || m.Substring(1) == "8"))
+            {
+                return TasaCambio.Vigente(fecha, TasaCambio.Euro);
+            }
+            // otras monedas (por ejemplo $2 o la de aduana): la ultima de su propio historial hasta esa fecha
+            DataTable dt = new ConexionBD().fDataTable("SELECT histo_valor FROM admhistodivi WHERE histo_moneda = '" + m.Replace("\\", "\\\\").Replace("'", "''") +
+                                                       "' AND histo_fecha <= '" + fecha.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) +
+                                                       "' ORDER BY histo_fecha DESC, " + HoraGuardada.Sql("histo_hora") + " DESC LIMIT 1");
+            if (dt.Rows.Count == 0 || dt.Rows[0][0] == DBNull.Value || Convert.ToDecimal(dt.Rows[0][0]) <= 0m)
+            {
+                return null;
+            }
+            return Convert.ToDecimal(dt.Rows[0][0]);
+        }
 
 
 
@@ -376,6 +424,17 @@ namespace lebrun.clases.importaciones
         }
     }
 
+    private static string porcentajeSql(decimal? porcentaje)
+    {
+        return (porcentaje ?? 0m).ToString(CultureInfo.InvariantCulture);
+    }
+
+    private static decimal? leerPorcentaje(MySqlDataReader lector, string columna)
+    {
+        int i = lector.GetOrdinal(columna);
+        return lector.IsDBNull(i) ? (decimal?)null : lector.GetDecimal(i);
+    }
+
     private void insertarCabecera(MySqlConnection conexion, MySqlTransaction transaccion)
     {
         string hoy = "" + DateTime.Now.Year + "-" + DateTime.Now.Month + "-" + DateTime.Now.Day;
@@ -395,7 +454,8 @@ namespace lebrun.clases.importaciones
             { "ord_cbtnum", cbtnum }, { "ord_docorg", docorg }, { "ord_cbtpre", cbtpre }, { "ord_pagnum", pagnum }, { "ord_cxp", cxp },
             { "ord_plazo", plazo }, { "ord_valcamb", valcamb }, { "ord_totaldivisa", totaldivisa }, { "ord_prod", prod }, { "ord_ditem", ditem },
             { "ord_documento", documento }, { "ord_sufijo", sufijo }, { "ord_subtot", subTotal }, { "ord_total", total },
-            { "ord_usuarioUdp", updUsuario }, { "ord_fechaRecep", fechaRecep }, { "ord_fechaSistema", sistema }, { "ord_fechaUltMod", fechaUltMod }
+            { "ord_usuarioUdp", updUsuario }, { "ord_fechaRecep", fechaRecep }, { "ord_fechaSistema", sistema }, { "ord_fechaUltMod", fechaUltMod },
+            { "ord_desc1", porcentajeSql(Descuento1) }, { "ord_desc2", porcentajeSql(Descuento2) }, { "ord_desc3", porcentajeSql(Descuento3) }
         };
         StringBuilder columnas = new StringBuilder();
         StringBuilder valores = new StringBuilder();
@@ -441,6 +501,9 @@ namespace lebrun.clases.importaciones
             this.fechaSistema = Convert.ToString(dr.GetString("ord_fechaSistema"));
             this.usuario = dr.GetString("ord_usuario");
             this.updUsuario = dr.GetString("ord_usuarioUdp");
+            this.Descuento1 = leerPorcentaje(dr, "ord_desc1");
+            this.Descuento2 = leerPorcentaje(dr, "ord_desc2");
+            this.Descuento3 = leerPorcentaje(dr, "ord_desc3");
         }
 
         database.cerrarConexion();

@@ -105,7 +105,7 @@ namespace lebrun.Reportes.facturacion
             }
         }
 
-        private static void AgregarTexto(ReportObjectController controlador, Ras.Section seccion, Ras.ReportObject modelo, string nombre, int izquierda, int arriba, int ancho,
+        internal static void AgregarTexto(ReportObjectController controlador, Ras.Section seccion, Ras.ReportObject modelo, string nombre, int izquierda, int arriba, int ancho,
                                          string texto, Ras.CrAlignmentEnum alineacion, decimal tamano)
         {
             Ras.TextObject t = (Ras.TextObject)modelo.Clone(true);

@@ -34,6 +34,11 @@ namespace lebrun.formularios.importaciones
         private int centinelaFila = -1;
         //private decimal costoDes;
         private decimal desc;
+        private decimal subtotalLineas;              // suma de las lineas ya con sus descuentos
+        private decimal totalOrden;                  // despues de los descuentos del proveedor
+        // proveedor cuyos descuentos, moneda y tasa estan en pantalla: mientras no cambie no se vuelven a leer de su ficha
+        private string proveedorCargado;
+        private bool cargandoMoneda;
         private string fechaSistema;
         //private Principal Principal;
         private string usuarioOrigen;
@@ -81,6 +86,8 @@ namespace lebrun.formularios.importaciones
 
         private void asignandoValores() {
 
+            calcularTotales();
+
             ordenCompra.Documento = txtDocumento.Text;
             ordenCompra.Sufijo = txtSufijo.Text;
             ordenCompra.Cbtnum = null;
@@ -109,8 +116,6 @@ namespace lebrun.formularios.importaciones
             ordenCompra.Valcamb = txtValCamb.Text.Replace(",",".");
             ordenCompra.Totaldivisa = txtTotalCambio.Text.Replace(",",".");
             ordenCompra.Ord = txtOrd.Text.Replace(",",".");
-            //ordenCompra.Total = txtTotal1.Text.Replace(",", ".");
-            ordenCompra.SubTotal = txtTotal.Text.Replace(",", ".");
             ordenCompra.FechaCarga = ""+dateTimePicker1.Value.Year + "-" + dateTimePicker1.Value.Month + "-" + dateTimePicker1.Value.Day;
             ordenCompra.FechaRecep = ""+dateTimePicker2.Value.Year + "-" + dateTimePicker2.Value.Month + "-" + dateTimePicker2.Value.Day;
             ordenCompra.FechaSistema = fechaSistema;
@@ -129,37 +134,11 @@ namespace lebrun.formularios.importaciones
             }
 
 
-            if (Convert.ToDecimal(txtDescuento1.Text) != 0 || Convert.ToDecimal(txtDescuento1.Text) != 0 || Convert.ToDecimal(txtDescuento1.Text) != 0)
-            {
-
-                if (Convert.ToDecimal(txtDescuento1.Text) != 0)
-                {
-                    desc = (Convert.ToDecimal(txtTotal.Text.Replace(".", ",")) * Convert.ToDecimal(txtDescuento1.Text.Replace(".", ","))) / 100;
-                    txtTotal1.Text = ""+(Convert.ToDecimal(txtTotal.Text) - desc);
-                    ordenCompra.Total = txtTotal1.Text.Replace(",", ".");
-
-                }
-                if (Convert.ToDecimal(txtDescuento2.Text) != 0)
-                {
-                    desc = (Convert.ToDecimal(txtTotal.Text.Replace(".", ",")) * Convert.ToDecimal(txtDescuento2.Text.Replace(".", ","))) / 100;
-                    txtTotal1.Text = ""+(Convert.ToDecimal(txtTotal.Text) - desc);
-                    ordenCompra.Total = txtTotal1.Text.Replace(",", ".");
-                }
-
-                if (Convert.ToDecimal(txtDescuento3.Text) != 0)
-                {
-                    desc = (Convert.ToDecimal(txtTotal.Text.Replace(".", ",")) * Convert.ToDecimal(txtDescuento3.Text.Replace(".", ","))) / 100;
-                    txtTotal1.Text = ""+(Convert.ToDecimal(txtTotal.Text) - desc);
-                    ordenCompra.Total = txtTotal1.Text.Replace(",", ".");
-                }
-            }
-            else
-            {
-                ordenCompra.Total = txtTotal.Text.Replace(",", ".");
-            }
-
-            
-
+            ordenCompra.SubTotal = subtotalLineas.ToString(CultureInfo.InvariantCulture);
+            ordenCompra.Total = totalOrden.ToString(CultureInfo.InvariantCulture);
+            ordenCompra.Descuento1 = numero(txtDescuento1.Text);
+            ordenCompra.Descuento2 = numero(txtDescuento2.Text);
+            ordenCompra.Descuento3 = numero(txtDescuento3.Text);
 
             for (int i = 0; i < gridProductos.Rows.Count; i++)
             {
@@ -185,6 +164,19 @@ namespace lebrun.formularios.importaciones
                 this.cargarComboPago();
                 this.ordenCompra = new OrdenDeCompra();
                 this.detalleOrdenCompra = new DetallesOrdenDeCompra();
+                // si cambian los descuentos en pantalla (al elegir un proveedor en la lista) se recalculan los totales
+                foreach (TextBox campo in new[] { txtDescuento1, txtDescuento2, txtDescuento3 })
+                {
+                    campo.TextChanged += delegate { calcularTotales(); };
+                }
+                // en una orden nueva la tasa es la de la fecha de la orden; una orden grabada conserva la suya
+                dateTimePicker1.ValueChanged += delegate
+                {
+                    if (txtOrdenNum.Text == "" && proveedorCargado != null)
+                    {
+                        mostrarTasa(cmbMoneda.Text);
+                    }
+                };
                 lista = true;
                 // la orden se carga despues de llenar las listas: antes se cargaba primero y al abrir la ventana la condicion volvia a la primera
                 if (ordenPorCargar != null)
@@ -312,20 +304,51 @@ namespace lebrun.formularios.importaciones
             cmbCond.DataSource = condicion;
         }
 
-        public void cargarComboMoneda(string vmoneda) {
+        // Deja elegida la moneda. A los proveedores de importacion (codigo menor que 8900000) se les puede cambiar: se les listan todas.
+        private void llenarMonedas(string moneda, bool importado)
+        {
+            cargandoMoneda = true;
+            try
+            {
+                cmbMoneda.DataSource = null;
+                cmbMoneda.ValueMember = "";
+                cmbMoneda.Items.Clear();
+                if (importado)
+                {
+                    DataTable monedas = database.fDataTable("SELECT DISTINCT histo_moneda FROM admhistodivi ORDER BY histo_moneda");
+                    foreach (DataRow r in monedas.Rows)
+                    {
+                        cmbMoneda.Items.Add(Convert.ToString(r[0]));
+                    }
+                }
+                if (!cmbMoneda.Items.Contains(moneda))
+                {
+                    cmbMoneda.Items.Insert(0, moneda);
+                }
+                cmbMoneda.SelectedIndex = cmbMoneda.Items.IndexOf(moneda);
+            }
+            finally
+            {
+                cargandoMoneda = false;
+            }
+        }
 
-            //DataTable moneda = new DataTable();
-            //moneda = database.fDataTable("SELECT MAX(histo_fecha),MAX(histo_hora),histo_moneda,mon_descri,histo_valor,mon_codigo FROM admhistodivi LEFT OUTER JOIN admmoneda ON mon_codigo=histo_moneda  GROUP BY histo_moneda ORDER BY  FIELD(mon_codigo,'"+vmoneda+"')DESC,histo_moneda ;");
-            //cmbMoneda.DisplayMember = "mon_codigo";
-            //cmbMoneda.ValueMember = "histo_valor";
-            //cmbMoneda.DataSource = moneda;
+        // La tasa de la moneda a la fecha de la orden.
+        private void mostrarTasa(string moneda)
+        {
+            decimal? tasa = OrdenDeCompra.TasaDeMoneda(moneda, dateTimePicker1.Value.Date);
+            if (!tasa.HasValue)
+            {
+                MessageBox.Show("No hay tasa de cambio cargada para la moneda " + moneda + " a la fecha de la orden. Cárguela antes de grabar.", "Orden de compra",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            txtValCamb.Text = textoTasa(tasa ?? 0m);
+            calcularTotales();
+        }
 
-
-            DataTable moneda = new DataTable();
-            moneda = database.fDataTable("SELECT * FROM (SELECT * FROM admhistodivi ORDER BY histo_fecha DESC) valorMoneda GROUP BY histo_moneda ORDER BY FIELD(histo_moneda,'" + vmoneda + "')DESC;");
-            cmbMoneda.DisplayMember = "histo_moneda";
-            cmbMoneda.ValueMember = "histo_valor";
-            cmbMoneda.DataSource = moneda;
+        private static string textoTasa(decimal tasa)
+        {
+            return tasa.ToString("0.00######");
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -476,27 +499,27 @@ namespace lebrun.formularios.importaciones
         { 
             bool val2 =false;
 
+            if (proveedorCargado != null && txtCodProvee.Text == proveedorCargado)
+            {
+                return true;
+            }
+
             DataTable dproveedor = new DataTable();
             dproveedor = cproveedores.consultarProveedorUnico(txtCodProvee.Text);
 
             if (dproveedor.Rows.Count != 0)
              {
-               cmbMoneda.DataSource = null;
                lblNombreProvee.Text = dproveedor.Rows[0][1].ToString();
                lblRif.Text = dproveedor.Rows[0][2].ToString();
-               cmbMoneda.Text = dproveedor.Rows[0][3].ToString();
-               cmbMoneda.ValueMember = dproveedor.Rows[0]["histo_valor"].ToString();
-               txtValCamb.Text = cmbMoneda.ValueMember;
-               txtDescuento1.Text = dproveedor.Rows[0]["pro_descuento"].ToString();
-               txtDescuento2.Text = dproveedor.Rows[0]["pro_dcto2"].ToString();
-               txtDescuento3.Text = dproveedor.Rows[0]["pro_dcto3"].ToString();
-                
-                
+               proveedorCargado = txtCodProvee.Text;
+               string moneda = dproveedor.Rows[0][3].ToString();
+               llenarMonedas(moneda, Convert.ToInt32(txtCodProvee.Text) < 8900000);
+               txtDescuento1.Text = numero(dproveedor.Rows[0]["pro_descuento"]).ToString("0.00####");
+               txtDescuento2.Text = numero(dproveedor.Rows[0]["pro_dcto2"]).ToString("0.00####");
+               txtDescuento3.Text = numero(dproveedor.Rows[0]["pro_dcto3"]).ToString("0.00####");
+               mostrarTasa(moneda);
+
                val2 = true;
-               
-                 if ((Convert.ToInt32(txtCodProvee.Text))<8900000) {
-                    cargarComboMoneda(cmbMoneda.Text);
-                 }
 
                  }else {
 
@@ -507,6 +530,7 @@ namespace lebrun.formularios.importaciones
                   txtDescuento1.Text = "0,00";
                   txtDescuento2.Text = "0,00";
                   txtDescuento3.Text = "0,00";
+                  proveedorCargado = null;
                   val2 = false;
                   
                  }
@@ -609,6 +633,7 @@ namespace lebrun.formularios.importaciones
             }
             else
             {
+                proveedorCargado = null;
                 lblRif.Text = "...";
                 lblNombreProvee.Text = "...";
                 txtDescuento1.Text = "0,00";
@@ -717,7 +742,11 @@ namespace lebrun.formularios.importaciones
 
         private void cmbMoneda_SelectedValueChanged(object sender, EventArgs e)
         {
-            txtValCamb.Text = Convert.ToString(cmbMoneda.SelectedValue);
+            // solo cuando la elige el usuario: al cargar el proveedor o una orden la tasa se pone aparte
+            if (!cargandoMoneda && lista && cmbMoneda.SelectedIndex >= 0)
+            {
+                mostrarTasa(cmbMoneda.Text);
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -737,21 +766,32 @@ namespace lebrun.formularios.importaciones
             }
         }
 
-        private void calcularTotales() {
-            txtTotal.Text = "0,00";
-            txtUnidades.Text = "0,00";
-            txtTotal1.Text="0,00";
-            txtTotalCambio.Text = "0,00";
-
-            for (int i = 0; i < gridProductos.Rows.Count; i++)
+        // Los totales de la pantalla: Total (lineas sin ningun descuento), Des Item (descuentos de las lineas), Des Docu (descuentos del proveedor,
+        // en cascada), Total Orden (lo que queda) y Total en Bs (Total Orden por la tasa).
+        private void calcularTotales()
+        {
+            decimal bruto = 0m, neto = 0m, unidades = 0m;
+            foreach (DataGridViewRow fila in gridProductos.Rows)
             {
-                txtTotal.Text = ""+((Convert.ToDecimal(txtTotal.Text.Replace(".",","))) + (Convert.ToDecimal(gridProductos.Rows[i].Cells[18].Value.ToString().Replace(".",","))));
-
-                txtItems.Text = "" + Convert.ToInt32(i+1);
-                txtUnidades.Text = "" + ((Convert.ToDecimal(txtUnidades.Text.Replace(".", ","))) + (Convert.ToDecimal(gridProductos.Rows[i].Cells[4].Value.ToString().Replace(".", ","))));
-                txtTotal1.Text = "" + ((Convert.ToDecimal(txtTotal1.Text.Replace(".", ","))) + (Convert.ToDecimal(gridProductos.Rows[i].Cells[9].Value.ToString().Replace(".", ","))));
-                txtTotalCambio.Text=""+ (Convert.ToDecimal(txtValCamb.Text.Replace(".",","))*(Convert.ToDecimal(txtTotal.Text.Replace(".",","))));
+                if (fila.IsNewRow || fila.Cells[18].Value == null)
+                {
+                    continue;
+                }
+                bruto += numero(fila.Cells[4].Value) * numero(fila.Cells[5].Value);
+                neto += numero(fila.Cells[18].Value);
+                unidades += numero(fila.Cells[4].Value);
             }
+            subtotalLineas = Math.Round(neto, 2, MidpointRounding.AwayFromZero);
+            totalOrden = OrdenDeCompra.TotalConDescuentos(subtotalLineas, numero(txtDescuento1.Text), numero(txtDescuento2.Text), numero(txtDescuento3.Text));
+            decimal brutoRedondeado = Math.Round(bruto, 2, MidpointRounding.AwayFromZero);
+
+            txtItems.Text = gridProductos.Rows.Count.ToString();
+            txtUnidades.Text = unidades.ToString("0.00");
+            txtTotal1.Text = brutoRedondeado.ToString("0.00");
+            txtDesitem.Text = (brutoRedondeado - subtotalLineas).ToString("0.00");
+            txtDesDocum.Text = (subtotalLineas - totalOrden).ToString("0.00");
+            txtTotal.Text = totalOrden.ToString("0.00");
+            txtTotalCambio.Text = Math.Round(totalOrden * numero(txtValCamb.Text), 2, MidpointRounding.AwayFromZero).ToString("0.00");
         }
 
         // Convierte el texto de un campo o una celda en numero, con coma o punto decimal (los numeros no llevan separador de miles).
@@ -820,6 +860,25 @@ namespace lebrun.formularios.importaciones
             detalleOrdenCompra = new DetallesOrdenDeCompra();
             detalleOrdenCompra.Documento = correlativo;
             mostrarDetalleOrden();
+            calcularTotales();
+        }
+
+        // Los descuentos con que se grabo la orden. Las anteriores no tienen los porcentajes: sin descuento van en cero; si el total es menor que la
+        // suma de las lineas, la diferencia se muestra como un solo descuento.
+        private void mostrarDescuentos()
+        {
+            decimal d1 = ordenCompra.Descuento1 ?? 0m;
+            if (!ordenCompra.Descuento1.HasValue)
+            {
+                decimal subtotal = numero(ordenCompra.SubTotal), total = numero(ordenCompra.Total);
+                if (subtotal > 0m && subtotal - total >= 0.005m)
+                {
+                    d1 = Math.Round((subtotal - total) * 100m / subtotal, 6);
+                }
+            }
+            txtDescuento1.Text = d1.ToString("0.00####");
+            txtDescuento2.Text = (ordenCompra.Descuento2 ?? 0m).ToString("0.00####");
+            txtDescuento3.Text = (ordenCompra.Descuento3 ?? 0m).ToString("0.00####");
         }
 
         public void mostrarDatosCabecera()
@@ -828,11 +887,15 @@ namespace lebrun.formularios.importaciones
             txtOrdenNum.Text = ordenCompra.Correlativo;
             txtDocumento.Text = ordenCompra.Documento;
             txtSufijo.Text = ordenCompra.Sufijo;
-            txtValCamb.Text = ordenCompra.Valcamb;
+            // el proveedor de la orden ya esta cargado: al salir del campo no se reemplazan sus descuentos ni su tasa por los de hoy
+            proveedorCargado = ordenCompra.Codigo;
+            int codigoNumerico;
+            llenarMonedas(ordenCompra.Moneda, int.TryParse(ordenCompra.Codigo, out codigoNumerico) && codigoNumerico < 8900000);
+            txtValCamb.Text = textoTasa(numero(ordenCompra.Valcamb));
+            mostrarDescuentos();
             txtConcepto.Text = ordenCompra.Concep;
             seleccionarCondicion(ordenCompra.Condic);
             txtCodProvee.Text = ordenCompra.Codigo;
-            cmbMoneda.Text = ordenCompra.Moneda;
             lblNombreProvee.Text = ordenCompra.ProNombre;
             lblRif.Text = ordenCompra.ProRif;
             txtTotal.Text = ""+ordenCompra.SubTotal;
@@ -963,6 +1026,14 @@ namespace lebrun.formularios.importaciones
         {
             if (gridProductos.Rows.Count > 0)
             {
+                // sin proveedor no hay descuentos ni tasa que aplicar
+                if (proveedorCargado == null || numero(txtValCamb.Text) <= 0m)
+                {
+                    MessageBox.Show("Elija el proveedor y verifique que su moneda tenga tasa de cambio antes de grabar.", "Orden de compra",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    txtCodProvee.Focus();
+                    return;
+                }
                 try
                 {
                     ordenCompra.grabar(txtOrdenNum.Text == "" ? null : txtOrdenNum.Text, asignandoValores, gridProductos);
