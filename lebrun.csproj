@@ -787,6 +787,10 @@
     <Compile Include="formularios\complementos\lbxProductos2.designer.cs">
       <DependentUpon>lbxProductos2.cs</DependentUpon>
     </Compile>
+    <Compile Include="formularios\complementos\SelectorRegistro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formularios\complementos\ImpresionGrilla.cs" />
     <Compile Include="formularios\complementos\lbxProveedores.cs">
       <SubType>Form</SubType>
     </Compile>

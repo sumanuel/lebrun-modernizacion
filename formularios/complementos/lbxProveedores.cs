@@ -31,6 +31,7 @@ namespace lebrun.formularios.complementos
         private frmCruceDeSaldo refCruce;
         private frmServicios refServicios;
         private frmAsignarProveedor refAsignarProvee;
+        private lbxInformePrecios refInformePrecios;
         public string modulo;
         public string Proviene;
         public string Eleccion="0";
@@ -139,6 +140,29 @@ namespace lebrun.formularios.complementos
                 Eleccion = "1";
             }
 
+            if (opcion.Equals("lbxInformePrecios"))
+            {
+                origen = opcion;
+                refInformePrecios = (lbxInformePrecios)referencia;
+                Eleccion = "1";
+            }
+
+        }
+
+        // Devuelve el proveedor elegido al Informe de Precios y cierra la lista.
+        private void ElegirParaInformePrecios()
+        {
+            if (this.dataGridView1.CurrentRow == null)
+            {
+                return;
+            }
+            string codigo = Convert.ToString(this.dataGridView1.CurrentRow.Cells[0].Value);
+            lbxInformePrecios informe = refInformePrecios;
+            this.Close();
+            if (informe != null && !informe.IsDisposed)
+            {
+                informe.SeleccionarProveedor(codigo);
+            }
         }
 
         private void lbxProveedores_Load(object sender, EventArgs e)
@@ -183,6 +207,12 @@ namespace lebrun.formularios.complementos
 
         private void dataGridView1_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (origen == "lbxInformePrecios")
+            {
+                ElegirParaInformePrecios();
+                return;
+            }
+
 
             if (origen.Equals("frmOrdenCompra"))
             {
@@ -289,6 +319,12 @@ namespace lebrun.formularios.complementos
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if (origen == "lbxInformePrecios")
+            {
+                ElegirParaInformePrecios();
+                return;
+            }
+
             if (origen.Equals("frmOrdenCompra"))
             {
                 refOrdenCompra.txtCodProvee.Text = this.dataGridView1.CurrentRow.Cells[0].Value.ToString();

@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using lebrun.clasesData;
+using lebrun.formularios.complementos;
 using static lebrun.formularios.gerencial.EstiloGerencial;
 
 namespace lebrun.formularios.facturacion
@@ -13,7 +15,8 @@ namespace lebrun.formularios.facturacion
     //     Pendiente, de admdoccli.dcli_estatus) y lo que esta en mora (vencido y con saldo).
     //   - Historico de movimientos: las facturas, notas de debito y devoluciones (admdoccli), los recibos de ingreso (admreciboingre, uno por documento
     //     cancelado) y las retenciones de IVA (admdocclirti), aunque ya no esten pendientes.
-    // Sin cliente, la pestana Estado de cuenta lista los documentos por cobrar de todos los clientes. Es solo de consulta: no cambia nada en la base de datos.
+    // Sin cliente, la pestana Estado de cuenta lista los documentos por cobrar de todos los clientes. Imprimir saca el reporte de la pestana que se esta
+    // viendo, con los datos del cliente y los totales. Es solo de consulta: no cambia nada en la base de datos.
     public class lbxEstadoCuentas : Form
     {
         private const int MaximoFilas = 2000;
@@ -34,6 +37,7 @@ namespace lebrun.formularios.facturacion
         private readonly CheckBox chkConSaldo = new CheckBox();
         private readonly Button cmdBuscar = new Button();
         private readonly Button cmdLimpiar = new Button();
+        private readonly Button cmdImprimir = new Button();
         private readonly Button cmdCerrar = new Button();
         private readonly Label lblTotales = new Label();
         private readonly Label lblMora = new Label();
@@ -49,6 +53,12 @@ namespace lebrun.formularios.facturacion
         private string clienteActual;              // codigo del cliente elegido; null = todos los clientes
         private DataTable pendientes;
         private DataTable movimientos;
+        // lo que se uso en la ultima busqueda, para el encabezado de los reportes (los filtros pueden haber cambiado en pantalla sin volver a buscar)
+        private string filtrosPendientes = "";
+        private string filtrosMovimientos = "";
+        private bool pendientesRecortados;
+        private bool soloConSaldo;
+        private bool movimientosRecortados;
 
         protected override void OnLoad(EventArgs e)
         {
@@ -179,6 +189,9 @@ namespace lebrun.formularios.facturacion
             chkConSaldo.AutoSize = true;
             EstiloBoton(cmdBuscar, "Buscar", true);
             EstiloBoton(cmdLimpiar, "Limpiar", false);
+            EstiloBoton(cmdImprimir, "Imprimir", false);
+            cmdImprimir.Enabled = false;
+            cmdImprimir.Click += delegate { Imprimir(); };
             EstiloBoton(cmdCerrar, "Cerrar", false);
             cmdBuscar.Click += delegate { Buscar(); };
             cmdLimpiar.Click += delegate { Limpiar(); };
@@ -198,6 +211,7 @@ namespace lebrun.formularios.facturacion
             f.Controls.Add(chkConSaldo);
             f.Controls.Add(cmdBuscar);
             f.Controls.Add(cmdLimpiar);
+            f.Controls.Add(cmdImprimir);
             f.Controls.Add(cmdCerrar);
             return f;
         }
@@ -429,7 +443,7 @@ namespace lebrun.formularios.facturacion
             {
                 dt.Rows.RemoveAt(dt.Rows.Count - 1);
             }
-            using (SelectorCliente selector = new SelectorCliente(dt, recortado))
+            using (SelectorRegistro selector = new SelectorRegistro(dt, "cliente", "clientes", "cli_codigo", "cli_nombre", "cli_rif", recortado, MaximoClientes))
             {
                 if (selector.ShowDialog(this) == DialogResult.OK)
                 {
@@ -472,6 +486,29 @@ namespace lebrun.formularios.facturacion
             tarjetaCliente.Visible = true;
         }
 
+        private string FiltrosUsados(string otro)
+        {
+            List<string> partes = new List<string>();
+            if (dtpDesde.Checked)
+            {
+                partes.Add("desde " + dtpDesde.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
+            }
+            if (dtpHasta.Checked)
+            {
+                partes.Add("hasta " + dtpHasta.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
+            }
+            if (partes.Count == 0)
+            {
+                partes.Add("todas las fechas");
+            }
+            if (otro != null)
+            {
+                partes.Add(otro);
+            }
+            string texto = string.Join(" · ", partes.ToArray());
+            return char.ToUpper(texto[0]) + texto.Substring(1);
+        }
+
         // ---------------------------------------------------------------- pestana Estado de cuenta
 
         private void CargarPendientes()
@@ -507,6 +544,9 @@ namespace lebrun.formularios.facturacion
             {
                 dt.Rows.RemoveAt(dt.Rows.Count - 1);
             }
+            pendientesRecortados = recortado;
+            soloConSaldo = chkConSaldo.Checked;
+            filtrosPendientes = FiltrosUsados(chkConSaldo.Checked ? "solo documentos con saldo" : "documentos con y sin saldo");
             pendientes = dt;
             grillaPendientes.DataSource = dt;
             EncabezadosPendientes();
@@ -597,6 +637,8 @@ namespace lebrun.formularios.facturacion
                     r["detalle"] = "Retención IVA";   // con tilde aqui y no en la sentencia, para no depender del juego de caracteres de la conexion
                 }
             }
+            movimientosRecortados = recortado;
+            filtrosMovimientos = FiltrosUsados(null);
             movimientos = dt;
             grillaMovimientos.DataSource = dt;
             Col(grillaMovimientos, "fecha", "Fecha", 10, "dd/MM/yyyy");
@@ -659,6 +701,76 @@ namespace lebrun.formularios.facturacion
             paginaPendientes.Text = "Estado de cuenta" + (pendientes != null ? " (" + pendientes.Rows.Count + ")" : "");
             paginaMovimientos.Text = "Histórico de movimientos" + (movimientos != null ? " (" + movimientos.Rows.Count + ")" : "");
             pestanas.Invalidate();
+            ActivarImprimir();
+        }
+
+        // ---------------------------------------------------------------- imprimir
+
+        private void ActivarImprimir()
+        {
+            DataTable datos = pestanas.SelectedTab == paginaMovimientos ? movimientos : pendientes;
+            cmdImprimir.Enabled = datos != null && datos.Rows.Count > 0;
+        }
+
+        // El reporte de la pestana que se esta viendo: los documentos pendientes o el historico de movimientos.
+        private void Imprimir()
+        {
+            bool deMovimientos = pestanas.SelectedTab == paginaMovimientos;
+            DataTable datos = deMovimientos ? movimientos : pendientes;
+            if (datos == null || datos.Rows.Count == 0)
+            {
+                return;
+            }
+            Principal principal = MdiParent as Principal;
+            ImpresionGrilla impresion = new ImpresionGrilla();
+            impresion.Grilla = deMovimientos ? grillaMovimientos : grillaPendientes;
+            impresion.Compania = principal != null ? principal.empresaActual.Nombre : "";
+            if (deMovimientos)
+            {
+                impresion.Titulo = "Histórico de movimientos";
+            }
+            else
+            {
+                impresion.Titulo = soloConSaldo ? "Estado de cuenta - Documentos pendientes" : "Estado de cuenta - Documentos por cobrar";
+            }
+            if (clienteActual != null)
+            {
+                impresion.Destacadas.Add("Cliente: " + clienteActual + " - " + lblNombreCliente.Text);
+                impresion.Detalle.Add("RIF: " + vRif.Text + "     Teléfonos: " + vTelefonos.Text + "     Situación: " + vSituacion.Text);
+                if (vDireccion.Text.Trim().Length > 0)
+                {
+                    impresion.Detalle.Add("Dirección: " + vDireccion.Text.Trim());
+                }
+            }
+            else
+            {
+                impresion.Destacadas.Add("Todos los clientes");
+            }
+            impresion.Detalle.Add(deMovimientos ? filtrosMovimientos : filtrosPendientes);
+            int cantidad = datos.Rows.Count;
+            if (deMovimientos)
+            {
+                if (movimientosRecortados)
+                {
+                    impresion.Detalle.Add("Solo los " + MaximoFilas + " movimientos más recientes.");
+                }
+                impresion.Totales.Add(cantidad + " movimientos");
+                impresion.Totales.Add("Ventas " + SumaTipos(datos, "FAV", "NDE") + "     Devoluciones " + SumaTipos(datos, "DEV"));
+                impresion.Totales.Add("Recibos " + SumaTipos(datos, "REI") + "     Retenciones " + SumaTipos(datos, "RIVA"));
+            }
+            else
+            {
+                if (pendientesRecortados)
+                {
+                    impresion.Detalle.Add("Solo los primeros " + MaximoFilas + " documentos.");
+                }
+                impresion.Totales.Add(cantidad + " documentos");
+                impresion.Totales.Add("Monto " + Suma(datos, "MontoTotal") + "     Cobrado " + Suma(datos, "MontoCob") + "     Saldo " + Suma(datos, "sal_actual"));
+                impresion.Totales.Add("En mora " + EnMora(datos).ToString("n2"));
+            }
+            // con todos los clientes salen ademas el codigo y el nombre de cada uno y se necesita la hoja a lo ancho
+            impresion.Horizontal = !deMovimientos && clienteActual == null;
+            impresion.VistaPrevia(this);
         }
 
         private void MostrarTotales()
@@ -667,17 +779,9 @@ namespace lebrun.formularios.facturacion
             lblMora.Text = "";
             if (clienteActual != null && pendientes != null && pestanas.SelectedTab == paginaPendientes)
             {
-                decimal mora = 0m;
-                foreach (DataRow r in pendientes.Rows)
-                {
-                    if (r["FechaVenc"] != DBNull.Value && r["sal_actual"] != DBNull.Value && Convert.ToDateTime(r["FechaVenc"]).Date < DateTime.Today &&
-                        Convert.ToDecimal(r["sal_actual"]) != 0m && (r["Status"] == DBNull.Value || Convert.ToInt32(r["Status"]) != 1))
-                    {
-                        mora += Convert.ToDecimal(r["sal_actual"]);
-                    }
-                }
-                lblMora.Text = "En mora: " + mora.ToString("n2");
+                lblMora.Text = "En mora: " + EnMora(pendientes).ToString("n2");
             }
+            ActivarImprimir();
 
             if (pestanas.SelectedTab == paginaMovimientos)
             {
@@ -690,6 +794,20 @@ namespace lebrun.formularios.facturacion
                 lblTotales.Text = pendientes == null ? "" :
                     "Monto " + Suma(pendientes, "MontoTotal") + "     Cobrado " + Suma(pendientes, "MontoCob") + "     Saldo " + Suma(pendientes, "sal_actual");
             }
+        }
+
+        private static decimal EnMora(DataTable dt)
+        {
+            decimal mora = 0m;
+            foreach (DataRow r in dt.Rows)
+            {
+                if (r["FechaVenc"] != DBNull.Value && r["sal_actual"] != DBNull.Value && Convert.ToDateTime(r["FechaVenc"]).Date < DateTime.Today &&
+                    Convert.ToDecimal(r["sal_actual"]) != 0m && (r["Status"] == DBNull.Value || Convert.ToInt32(r["Status"]) != 1))
+                {
+                    mora += Convert.ToDecimal(r["sal_actual"]);
+                }
+            }
+            return mora;
         }
 
         private static string Suma(DataTable dt, string columna)
@@ -717,103 +835,6 @@ namespace lebrun.formularios.facturacion
                 }
             }
             return total.ToString("n2");
-        }
-
-        // ---------------------------------------------------------------- lista para elegir cuando hay varios clientes
-
-        private sealed class SelectorCliente : Form
-        {
-            public string Codigo;
-            private readonly DataGridView lista = new DataGridView();
-
-            public SelectorCliente(DataTable clientes, bool recortado)
-            {
-                AutoScaleMode = AutoScaleMode.None;
-                Font = new Font(Fuente, 9F);
-                BackColor = Fondo;
-                Text = "Elegir cliente";
-                FormBorderStyle = FormBorderStyle.FixedDialog;
-                StartPosition = FormStartPosition.CenterParent;
-                MinimizeBox = false;
-                MaximizeBox = false;
-                ShowInTaskbar = false;
-                ClientSize = new Size(640, 420);
-
-                Label aviso = new Label();
-                aviso.Text = recortado ? "Hay más de " + MaximoClientes + " clientes con ese texto: se muestran los primeros. Escriba más del nombre para acotar."
-                                       : "Hay varios clientes con ese texto. Elija uno (doble clic o Enter).";
-                aviso.ForeColor = recortado ? Negativo : TextoSecundario;
-                aviso.SetBounds(14, 10, 612, 34);
-
-                lista.SetBounds(14, 48, 612, 320);
-                lista.AllowUserToAddRows = false;
-                lista.AllowUserToDeleteRows = false;
-                lista.ReadOnly = true;
-                lista.MultiSelect = false;
-                lista.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                lista.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-                EstiloGrilla(lista);
-                // las columnas existen cuando la grilla ya enlazo los datos: se configuran en ese momento
-                lista.DataBindingComplete += delegate
-                {
-                    ConfigurarColumna("cli_codigo", "Código", 22);
-                    ConfigurarColumna("cli_nombre", "Nombre", 56);
-                    ConfigurarColumna("cli_rif", "RIF", 22);
-                };
-                lista.DataSource = clientes;
-                lista.CellDoubleClick += delegate (object s, DataGridViewCellEventArgs ev) { if (ev.RowIndex >= 0) { Elegir(); } };
-                lista.KeyDown += delegate (object s, KeyEventArgs ev)
-                {
-                    if (ev.KeyCode == Keys.Enter)
-                    {
-                        ev.SuppressKeyPress = true;
-                        Elegir();
-                    }
-                };
-
-                Button elegir = new Button();
-                elegir.Text = "Elegir";
-                elegir.SetBounds(432, 378, 94, 30);
-                elegir.FlatStyle = FlatStyle.Flat;
-                elegir.BackColor = Azul;
-                elegir.ForeColor = Color.White;
-                elegir.FlatAppearance.BorderSize = 0;
-                elegir.Font = new Font(Fuente, 9F, FontStyle.Bold);
-                elegir.Click += delegate { Elegir(); };
-
-                Button cancelar = new Button();
-                cancelar.Text = "Cancelar";
-                cancelar.SetBounds(532, 378, 94, 30);
-                cancelar.FlatStyle = FlatStyle.Flat;
-                cancelar.BackColor = Color.White;
-                cancelar.ForeColor = Azul;
-                cancelar.FlatAppearance.BorderColor = Borde;
-                cancelar.DialogResult = DialogResult.Cancel;
-
-                CancelButton = cancelar;
-                Controls.AddRange(new Control[] { aviso, lista, elegir, cancelar });
-                Shown += delegate { lista.Focus(); };
-            }
-
-            private void ConfigurarColumna(string nombre, string encabezado, float peso)
-            {
-                DataGridViewColumn c = lista.Columns[nombre];
-                if (c != null)
-                {
-                    c.HeaderText = encabezado;
-                    c.FillWeight = peso;
-                }
-            }
-
-            private void Elegir()
-            {
-                if (lista.CurrentRow == null)
-                {
-                    return;
-                }
-                Codigo = Convert.ToString(lista.CurrentRow.Cells["cli_codigo"].Value);
-                DialogResult = DialogResult.OK;
-            }
         }
     }
 }
