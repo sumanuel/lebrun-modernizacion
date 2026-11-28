@@ -73,7 +73,7 @@ $zip = [IO.Compression.ZipFile]::Open($zipPath, 'Create')
 try {
     $baseScripts = Join-Path $repo 'scripts_bd'
     # carpetas a incluir, en el orden de ejecucion (las conocidas primero)
-    $ordenCanonico = @('condicion_pago', 'clientes_contacto', 'tasa_cambio', 'informe_precios')
+    $ordenCanonico = @('condicion_pago', 'clientes_contacto', 'tasa_cambio', 'informe_precios', 'orden_compra')
     $existentes = @(Get-ChildItem $baseScripts -Directory | ForEach-Object { $_.Name })
     foreach ($s in $Scripts) { if ($existentes -notcontains $s) { throw "No existe la carpeta scripts_bd\$s (carpetas: $($existentes -join ', '))" } }
     $incluidas = @($ordenCanonico | Where-Object { $existentes -contains $_ }) + @($existentes | Where-Object { $ordenCanonico -notcontains $_ } | Sort-Object)

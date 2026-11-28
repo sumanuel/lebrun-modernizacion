@@ -13,5 +13,4 @@ ORDEN DE EJECUCION
 IMPORTANTE
   - Hacer un respaldo de la base antes de empezar.
   - Ejecutar los scripts ANTES de instalar Lebrun_Setup_{VERSION}_x86.exe.
-  - La opcion de menu nueva aparece al iniciar sesion: al instalar la version nueva se cierra el sistema, asi que basta con abrirlo de nuevo (quien lo tenga abierto sin instalar debe cerrar sesion y volver a entrar).
   - Si es una instalacion nueva (o una base que no tiene los scripts de versiones anteriores) hay que pedir el paquete completo de scripts.
