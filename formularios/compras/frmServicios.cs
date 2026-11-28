@@ -15,6 +15,7 @@ using lebrun.formularios.contabilidad;
 using lebrun.clases.complementos;
 using lebrun.Reportes.retenciones;
 using lebrun.Reportes.MovContab;
+using MySql.Data.MySqlClient;
 
 namespace lebrun.formularios.compras
 {
@@ -81,6 +82,10 @@ namespace lebrun.formularios.compras
         private string compañiaActual;
 
         private decimal islr1 = 0;
+
+        // true cuando el tipo de documento afecta a otro (notas de credito y debito, anticipos): se piden el numero propio y el aplicado
+        private bool aplicaDocumento = true;
+        private string tipoAplicado = "";
 
         public frmServicios()
         {
@@ -176,6 +181,13 @@ namespace lebrun.formularios.compras
         {
             referenciaPrincipal = (Principal)this.MdiParent;
             auxiliar = new lbxAuxiliaresOnly();
+            cmbCodicionPago.SelectionChangeCommitted += cmbCodicionPago_SelectionChangeCommitted;
+
+            // el documento tal como se abrio desde la lista
+            docOrigen = docu;
+            sufOrigen = sufi;
+            tipoOrigen = tipo;
+
             if (opcion.Equals("1"))
             {
 
@@ -183,24 +195,13 @@ namespace lebrun.formularios.compras
                 cmbCodicionPago.ValueMember = "conp_codigo";
                 cmbCodicionPago.DataSource = pago.cargarCondicionPago();
                 diasCondicionPago();
+                calcularVencimiento();
                 consultarAlicuotasIva();
-                compania.obtenerCodigoCompaniaActual(); 
+                compania.obtenerCodigoCompaniaActual();
             }
 
             if (opcion.Equals("2"))
             {
-                if (txtDCOM.Visible == false)
-                {
-                    docOrigen = txtFCOM.Text;
-                    sufOrigen = txtSufFCOM.Text;
-                }
-                else
-                {
-                    docOrigen = txtDCOM.Text;
-                    sufOrigen = txtSufDCOM.Text;
-                }
-
-                tipoOrigen = txtTipoDoc.Text;
                 serv.datosTipoDoc(tipo);
                 cmbCodicionPago.DisplayMember = "conp_descripcion";
                 cmbCodicionPago.ValueMember = "conp_codigo";
@@ -392,6 +393,12 @@ namespace lebrun.formularios.compras
                     porRetenProveedor();
                     txtEX.Text = string.Format("{0:0.00}", Convert.ToDecimal(txtEX.Text));
                     calcularSubTotal();
+
+                    if (mayorProveedor == "" && !crearCuentaProveedor())
+                    {
+                        return;
+                    }
+
                     verificarCuentasContab();
                     agregarFilaPrimaria();
                     consultarCuentaProveedor();
@@ -405,6 +412,7 @@ namespace lebrun.formularios.compras
         {
             dataGridView1.Rows.Clear();
 
+            bool notaCredito = serv.Tdc_correlativo == "43";
             int indice = 0;
             item = 1;
 
@@ -414,13 +422,13 @@ namespace lebrun.formularios.compras
             dataGridView1.Rows[indice].Cells[2].Value = "" + descCuentaPro;
 
 
-            if (serv.Tdc_correlativo == "37" || serv.Tdc_correlativo == "40")
+            if (!notaCredito)
             {
                 dataGridView1.Rows[indice].Cells[3].Value = "CREDITO"; //si es 37 CREDITO Sino DEBITO
                 dataGridView1.Rows[indice].Cells[5].Value = string.Format("{0:0.00}", Convert.ToDecimal(txtMontoTotal.Text));
                 dataGridView1.Rows[indice].Cells[7].Value = "-1"; //Si es Credito -1 Sino 1
             }
-            if (serv.Tdc_correlativo == "43")
+            else
             {
                 dataGridView1.Rows[indice].Cells[3].Value = "DEBITO"; //si es 37 CREDITO Sino DEBITO
                 dataGridView1.Rows[indice].Cells[4].Value = string.Format("{0:0.00}", Convert.ToDecimal(txtMontoTotal.Text));
@@ -442,14 +450,13 @@ namespace lebrun.formularios.compras
                 dataGridView1.Rows[indice + 1].Cells[1].Value = "Iva Reducido";
                 dataGridView1.Rows[indice + 1].Cells[2].Value = "" + descCuentaIva;
 
-                if (serv.Tdc_correlativo == "37" || serv.Tdc_correlativo == "40")
+                if (!notaCredito)
                 {
                     dataGridView1.Rows[indice + 1].Cells[3].Value = "DEBITO"; //si es 37 CREDITO Sino DEBITO
                     dataGridView1.Rows[indice + 1].Cells[4].Value = string.Format("{0:0.00}", Convert.ToDecimal(txtIvaRD.Text));
                     dataGridView1.Rows[indice + 1].Cells[7].Value = "1"; //Si es Credito -1 Sino 1
                 }
-
-                if (serv.Tdc_correlativo == "43")
+                else
                 {
                     dataGridView1.Rows[indice + 1].Cells[3].Value = "CREDITO"; //si es 37 CREDITO Sino DEBITO
                     dataGridView1.Rows[indice + 1].Cells[5].Value = string.Format("{0:0.00}", Convert.ToDecimal(txtIvaRD.Text));
@@ -474,14 +481,13 @@ namespace lebrun.formularios.compras
                 dataGridView1.Rows[indice + 1].Cells[1].Value = "Iva General";
                 dataGridView1.Rows[indice + 1].Cells[2].Value = "" + descCuentaIva;
 
-                if (serv.Tdc_correlativo == "37" || serv.Tdc_correlativo == "40")
+                if (!notaCredito)
                 {
                     dataGridView1.Rows[indice + 1].Cells[3].Value = "DEBITO"; //si es 37 CREDITO Sino DEBITO
                     dataGridView1.Rows[indice + 1].Cells[4].Value = string.Format("{0:0.00}", Convert.ToDecimal(txtIvaGN.Text));
                     dataGridView1.Rows[indice + 1].Cells[7].Value = "1"; //Si es Credito -1 Sino 1
                 }
-
-                if (serv.Tdc_correlativo == "43")
+                else
                 {
                     dataGridView1.Rows[indice + 1].Cells[3].Value = "CREDITO"; //si es 37 CREDITO Sino DEBITO
                     dataGridView1.Rows[indice + 1].Cells[5].Value = string.Format("{0:0.00}", Convert.ToDecimal(txtIvaGN.Text));
@@ -617,13 +623,30 @@ namespace lebrun.formularios.compras
 
         private void consultarAlicuotasIva()
         {
-            tabla = serv.consultarAlicuotas();
+            DataTable tasas = serv.consultarAlicuotas();
 
-            if (tabla.Rows.Count > 0)
+            ivaGn = tasaIva(tasas, "GN");
+            ivaRd = tasaIva(tasas, "RD") ?? "0";
+
+            if (ivaGn == null)
             {
-                ivaGn = tabla.Rows[0][5].ToString();
-                ivaRd = tabla.Rows[1][5].ToString();
+                MessageBox.Show("No está definida la tasa de IVA General (código GN). Revísela antes de cargar documentos.", "Algo no esta bien ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                ivaGn = "0";
             }
+        }
+
+        // tasa de compra del codigo de IVA; el orden de las filas de la tabla no importa
+        private static string tasaIva(DataTable tasas, string codigo)
+        {
+            foreach (DataRow fila in tasas.Rows)
+            {
+                if (string.Equals(Convert.ToString(fila["tip_codigo"]).Trim(), codigo, StringComparison.OrdinalIgnoreCase) && fila["alict_compra"] != DBNull.Value)
+                {
+                    return Convert.ToString(fila["alict_compra"]);
+                }
+            }
+
+            return null;
         }
 
         private void txtTipoDoc_Leave(object sender, EventArgs e)
@@ -632,7 +655,11 @@ namespace lebrun.formularios.compras
             {
                 if (serv.datosTipoDoc(txtTipoDoc.Text))
                 {
-                    cambioEtiquetas();
+                    if (txtTipoDoc.Text != tipoAplicado)
+                    {
+                        cambioEtiquetas();
+                        tipoAplicado = txtTipoDoc.Text;
+                    }
                     lblTipoDoc.Text = serv.Tdc_descri;
 
                     if (serv.Tdc_codigo.Equals("41") || serv.Tdc_codigo.Equals("51") || serv.Tdc_codigo.Equals("42") || serv.Tdc_codigo.Equals("99") || serv.Tdc_cxp.Equals("0"))
@@ -912,20 +939,49 @@ namespace lebrun.formularios.compras
 
         private void verificarCuentasContab()
         {
-            tabla = serv.consultarCuentasContab(mayorProveedor, serv.Tdc_reporte,"01");
+            tabla = serv.consultarCuentasContab(mayorProveedor, serv.Tdc_reporte, compania.BaseDatosActual);
 
-            if (tabla.Rows.Count > 0)
+            descCuentaPro = mayorProveedor + " - " + descripcionCuenta(tabla, mayorProveedor);
+            descCuentaIva = serv.Tdc_reporte + " - " + descripcionCuenta(tabla, serv.Tdc_reporte);
+        }
+
+        private static string descripcionCuenta(DataTable cuentas, string codigo)
+        {
+            foreach (DataRow fila in cuentas.Rows)
             {
-                if (mayorProveedor == tabla.Rows[1][0].ToString())
+                if (Convert.ToString(fila["cc_CodigoCuenta"]) == codigo)
                 {
-                    descCuentaPro = mayorProveedor + " - " + tabla.Rows[1][1].ToString();
-                }
-
-                if (serv.Tdc_reporte == tabla.Rows[0][0].ToString())
-                {
-                    descCuentaIva = serv.Tdc_reporte + " - " + tabla.Rows[0][1].ToString();
+                    return Convert.ToString(fila["cc_Descripcion"]);
                 }
             }
+
+            return "";
+        }
+
+        // El proveedor no tiene cuenta contable para este tipo de documento: se ofrece crearla
+        private bool crearCuentaProveedor()
+        {
+            if (MessageBox.Show("El proveedor " + lblNombrePro.Text + " no tiene cuenta contable para este tipo de documento." +
+                Environment.NewLine + Environment.NewLine + "¿Desea crearla ahora?", "Cuenta contable", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            {
+                return false;
+            }
+
+            try
+            {
+                new ConexionBD().ejecutarTransaccion((conexion, transaccion) => serv.asignarCuentaProveedor(conexion, transaccion,
+                    txtProveedor.Text, lblNombrePro.Text, serv.Tdc_codigo, serv.Tdc_codcta, Servicios.BaseContable(compania.BaseDatosActual), usuario));
+            }
+            catch (Exception ex)
+            {
+                RegistroErrores.Registrar(ex, "Crear la cuenta contable del proveedor");
+                MessageBox.Show("No se pudo crear la cuenta contable. No se guardó nada." + Environment.NewLine + Environment.NewLine + ex.Message,
+                    "Algo no esta bien ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            consultarCuentaProveedor();
+            return mayorProveedor != "";
         }
 
         private void txtTipoDoc_KeyPress(object sender, KeyPressEventArgs e)
@@ -946,73 +1002,23 @@ namespace lebrun.formularios.compras
 
         private void cambioEtiquetas()
         {
-            if (serv.Tdc_correlativo == "37")
-            {
-                txtDCOM.Visible = false;
-                txtControlDCOM.Visible = false;
-                txtSufDCOM.Visible = false;
+            aplicaDocumento = serv.Tdc_correlativo == "43" || serv.Tdc_correlativo == "40";
 
-                txtDCOM.Text = "";
-                txtControlDCOM.Text = "";
-                txtSufDCOM.Text = "0";
+            txtDCOM.Visible = aplicaDocumento;
+            txtControlDCOM.Visible = aplicaDocumento;
+            txtSufDCOM.Visible = aplicaDocumento;
+            label3.Visible = aplicaDocumento;
+            label6.Visible = aplicaDocumento;
 
-                txtFCOM.Text = "";
-                txtControlFCOM.Text = "";
-                txtSufFCOM.Text = "0";
+            txtDCOM.Text = "";
+            txtControlDCOM.Text = "";
+            txtSufDCOM.Text = "0";
+            txtFCOM.Text = "";
+            txtControlFCOM.Text = "";
+            txtSufFCOM.Text = "0";
 
-                label3.Visible = false;
-                label6.Visible = false;
-
-                label7.Text = "Factura";
-                label8.Text = "Control F";
-                   
-            }
-
-            if (serv.Tdc_correlativo == "43")
-            {
-
-                txtDCOM.Visible = true;
-                txtControlDCOM.Visible = true;
-                txtSufDCOM.Visible = true;
-
-                txtDCOM.Text = "";
-                txtControlDCOM.Text = "";
-                txtSufDCOM.Text = "0";
-
-                txtFCOM.Text = "";
-                txtControlFCOM.Text = "";
-                txtSufFCOM.Text = "0";
-
-
-                label3.Visible = true;
-                label6.Visible = true;
-
-                label7.Text = "Fac Aplica";
-                label8.Text = "Control A";
-
-            }
-
-            if (serv.Tdc_correlativo == "40")
-            {
-                txtDCOM.Visible = true;
-                txtControlDCOM.Visible = true;
-                txtSufDCOM.Visible = true;
-
-                txtDCOM.Text = "";
-                txtControlDCOM.Text = "";
-                txtSufDCOM.Text = "0";
-
-                txtFCOM.Text = "";
-                txtControlFCOM.Text = "";
-                txtSufFCOM.Text = "0";
-
-                label3.Visible = true;
-                label6.Visible = true;
-
-                label7.Text = "Fac Aplica";
-                label8.Text = "Control A";
-            }
-
+            label7.Text = aplicaDocumento ? "Fac Aplica" : "Factura";
+            label8.Text = aplicaDocumento ? "Control A" : "Control F";
         }
 
         private void txtDCOM_KeyPress(object sender, KeyPressEventArgs e)
@@ -1133,21 +1139,21 @@ namespace lebrun.formularios.compras
                     return false;
                 }
 
-                if (txtDCOM.Visible == true && txtDCOM.Text == "")
+                if (aplicaDocumento && txtDCOM.Text == "")
                 {
                     MessageBox.Show("El campo # Devolucion no debe quedar vacio", "Algo no esta bien ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     txtDCOM.Focus();
                     return false;
                 }
 
-                if (txtSufDCOM.Visible == true && txtSufDCOM.Text == "")
+                if (aplicaDocumento && txtSufDCOM.Text == "")
                 {
                     MessageBox.Show("El campo  Sufijo Devolucion no debe quedar vacio", "Algo no esta bien ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     txtSufDCOM.Focus();
                     return false;
                 }
 
-                if (txtControlDCOM.Visible == true && txtControlDCOM.Text == "")
+                if (aplicaDocumento && txtControlDCOM.Text == "")
                 {
                     MessageBox.Show("El campo # Control Devolucion no debe quedar vacio", "Algo no esta bien ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     txtControlDCOM.Focus();
@@ -1199,7 +1205,10 @@ namespace lebrun.formularios.compras
                 {
                     porRetenProveedor();
                     asignandoValores(4);
-                    guardarISLR();
+                    if (!grabar((conexion, transaccion) => guardarISLR(conexion, transaccion)))
+                    {
+                        return;
+                    }
 
                     contenidoMovContabISLR2();
                     obtenerComprobanteContable();
@@ -1215,7 +1224,7 @@ namespace lebrun.formularios.compras
                     conteISLR = new frmContenedorRetISLR(retISLR.ImprimirISLR(txtProveedor.Text, serv.NroDocum, serv.SufiDocum, txtTipoDoc.Text));
                     conteISLR.Show();
 
-                    conteMovContab = new frmConteMovContab(movConta.ReimprimirComprobante(comprobante, compania.BaseDatosActual));
+                    conteMovContab = new frmConteMovContab(movConta.ReimprimirComprobante(comprobante, compania.BaseDatosActual, "ISLR"));
                     conteMovContab.Show();
 
                     refLblxServ.refrescar();
@@ -1229,57 +1238,100 @@ namespace lebrun.formularios.compras
             }
             else
             {
-                if (verificarDoc("1"))
+                if (!verificarDoc("1"))
                 {
-                    porRetenProveedor();
-                    asignandoValores(4);
+                    panel1.Visible = false;
+                    return;
+                }
+
+                porRetenProveedor();
+                asignandoValores(4);
+
+                string baseContable = Servicios.BaseContable(compania.BaseDatosActual);
+                bool modificando = opcion.Equals("2");
+
+                bool grabado = grabar((conexion, transaccion) =>
+                {
+                    comprobante = serv.siguienteComprobante(conexion, transaccion, baseContable);
 
                     if (serv.Tdc_libcom.Equals("1"))
                     {
-                        serv.ingresarLibroCompras();
+                        serv.ingresarLibroCompras(conexion, transaccion);
                     }
 
                     if (serv.Tdc_cxp.Equals("1"))
                     {
-                        serv.ingresarSalpro();
+                        serv.ingresarSalpro(conexion, transaccion);
                     }
 
-                    serv.ingresarDocPro(1);
-                    serv.actualizarDocPro2();
-                    obtenerComprobanteContable();
-                    contenidoCabecera();
-                    movConta.cabeceraSyscontab(tablaCabacera, compania.BaseDatosActual);
+                    serv.ingresarDocPro(conexion, transaccion, 1);
+
+                    if (!aplicaDocumento)
+                    {
+                        serv.actualizarUltimaCompra(conexion, transaccion);
+                    }
+
+                    // la cabecera se graba antes de armar las lineas: ambas usan la misma tabla en memoria
+                    serv.insertarCabeceraContable(conexion, transaccion, baseContable, contenidoCabecera());
                     contenidoMovContab();
-                    movConta.ingresarMovContab(tablaMovcontab);
-                    movConta.detallesSyscontab(tablaMovcontab, compania.BaseDatosActual);
+                    serv.insertarMovimientos(conexion, transaccion, tablaMovcontab, false);
+                    serv.insertarDetalleContable(conexion, transaccion, baseContable, compania.BaseDatosActual, tablaMovcontab);
 
-                    movConta.eliminarMovContab(txtProveedor.Text, docOrigen, sufOrigen, tipoOrigen);
-                    movConta.eliminarMovContab(txtProveedor.Text, serv.NroDocum, serv.SufiDocum, serv.IdTipoDoc);
-
-                    serv.eliminarCabeceraDocTemp(docOrigen, sufOrigen, tipoOrigen, txtProveedor.Text);
-                    serv.eliminarCabeceraDocTemp(serv.NroDocum, serv.SufiDocum, serv.IdTipoDoc, txtProveedor.Text);
+                    if (modificando)
+                    {
+                        serv.eliminarTemporal(conexion, transaccion, provee, docu, sufi, tipo);
+                    }
+                    serv.eliminarTemporal(conexion, transaccion, txtProveedor.Text, serv.NroDocum, serv.SufiDocum, serv.IdTipoDoc);
 
                     if (serv.Tdc_rti.Equals("1"))
                     {
-                        guardarISLR();
+                        guardarISLR(conexion, transaccion);
                     }
+                });
 
-                    panel1.Visible = false;
+                panel1.Visible = false;
 
-                    opcionesServicios = new frmOpcionesServicios(serv.IdProveedor,
-                        serv.NroDocum, serv.SufiDocum, serv.IdTipoDoc, serv.Pro_nombreProve, serv.Login);
-
-                    opcionesServicios.Show();
-
-                    opcionesServicios.manejandoLbx(refLblxServ);
-                    refLblxServ.refrescar();
-                    refLblxServ.Visible = false;
-                    this.Close();
-                }
-                else
+                if (!grabado)
                 {
-                    panel1.Visible = false;
+                    return;
                 }
+
+                opcionesServicios = new frmOpcionesServicios(serv.IdProveedor,
+                    serv.NroDocum, serv.SufiDocum, serv.IdTipoDoc, serv.Pro_nombreProve, serv.Login);
+
+                opcionesServicios.manejandoLbx(refLblxServ);
+                refLblxServ.refrescar();
+                refLblxServ.Visible = false;
+                opcionesServicios.Show();
+                this.Close();
+            }
+        }
+
+        // Ejecuta las escrituras en una sola transaccion. Si algo falla se deshace todo, se avisa y la ventana queda abierta.
+        private bool grabar(Action<MySqlConnection, MySqlTransaction> trabajo)
+        {
+            try
+            {
+                new ConexionBD().ejecutarTransaccion(trabajo);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                comprobante = "";
+                RegistroErrores.Registrar(ex, "Grabar un documento de Otras Cuentas x Pagar");
+
+                string motivo = ex.Message;
+                MySqlException errorBase = ex as MySqlException;
+
+                if (errorBase != null && errorBase.Number == 1062)
+                {
+                    motivo = "Ya hay un registro con ese número de documento. Revise el número y el sufijo (puede haber otro documento " +
+                        "en carga con el mismo número, aunque sea de otro proveedor)." + Environment.NewLine + Environment.NewLine + "Detalle: " + ex.Message;
+                }
+
+                MessageBox.Show("No se pudo guardar el documento. No se guardó nada." + Environment.NewLine + Environment.NewLine + motivo,
+                    "Algo no esta bien ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
         }
 
@@ -1288,7 +1340,7 @@ namespace lebrun.formularios.compras
             serv.IdProveedor = txtProveedor.Text;
             serv.IdTipoDoc = txtTipoDoc.Text;
 
-            if(serv.Tdc_correlativo.Equals("37")){
+            if (!aplicaDocumento) {
 
                 serv.NroDocum = txtFCOM.Text;
                 serv.SufiDocum = txtSufFCOM.Text;
@@ -1301,7 +1353,7 @@ namespace lebrun.formularios.compras
                 
             }
 
-            if (serv.Tdc_correlativo.Equals("43") || serv.Tdc_correlativo.Equals("40"))
+            else
             {
                 serv.NroDocum = txtDCOM.Text;
                 serv.SufiDocum = txtSufDCOM.Text;
@@ -1404,7 +1456,7 @@ namespace lebrun.formularios.compras
                 fila[14] = usuario;
                 fila[15] = "SERV";
                 fila[16] = "" + dataGridView1.Rows[i].Cells[11].Value.ToString();                              //AUXILIAR  PROVEEDOR                                 
-                fila[17] = txtProveedor.Text;                    //CODIGO
+                fila[17] = lblRifProveedor.Text;                 //RIF
                 fila[18] = lblNombrePro.Text;               //NOMBRE                      
                 fila[19] = dataGridView1.Rows[i].Cells[3].Value.ToString().Substring(0, 1);
                 fila[20] = "";
@@ -1478,35 +1530,44 @@ namespace lebrun.formularios.compras
             porRetenProveedor();
             asignandoValores(1);
 
+            bool modificando = opcion.Equals("2");
 
-            if (opcion.Equals("2"))
+            if (!modificando && !verificarDoc("2"))
             {
-                
-                movConta.eliminarMovContab(txtProveedor.Text, docOrigen, sufOrigen, tipoOrigen);
-                movConta.eliminarMovContab(txtProveedor.Text, serv.NroDocum, serv.SufiDocum, serv.IdTipoDoc);
-                contenidoMovContab();
-                movConta.ingresarMovContab_temp(tablaMovcontab);
-                serv.actualizarDocPro(docu, sufi, tipo);
                 panel1.Visible = false;
-
-                refLblxServ.refrescar();
-                this.Close();
-                
+                return;
             }
-            else
+
+            bool grabado = grabar((conexion, transaccion) =>
             {
-                if (verificarDoc("2"))
+                if (modificando)
                 {
-                    contenidoMovContab();
-                    movConta.ingresarMovContab_temp(tablaMovcontab);
-                    serv.ingresarDocPro(2);
-                    panel1.Visible = false;
-                    this.Close();
+                    serv.eliminarMovimientosTemporales(conexion, transaccion, provee, docu, sufi, tipo);
+                }
+                serv.eliminarMovimientosTemporales(conexion, transaccion, txtProveedor.Text, serv.NroDocum, serv.SufiDocum, serv.IdTipoDoc);
+
+                contenidoMovContab();
+                serv.insertarMovimientos(conexion, transaccion, tablaMovcontab, true);
+
+                if (modificando)
+                {
+                    serv.actualizarDocProTemporal(conexion, transaccion, provee, docu, sufi, tipo);
                 }
                 else
                 {
-                    panel1.Visible = false;
+                    serv.ingresarDocPro(conexion, transaccion, 2);
                 }
+            });
+
+            panel1.Visible = false;
+
+            if (grabado)
+            {
+                if (refLblxServ != null)
+                {
+                    refLblxServ.refrescar();
+                }
+                this.Close();
             }
         }
 
@@ -1517,11 +1578,63 @@ namespace lebrun.formularios.compras
 
         private void diasCondicionPago()
         {
-            tabla = pago.codCondicionPago(cmbCodicionPago.SelectedValue.ToString());
+            // variable propia: al cargar un documento, "tabla" tiene su cabecera y elegir la condicion pasa por aqui
+            DataTable condicion = pago.codCondicionPago(cmbCodicionPago.SelectedValue.ToString());
 
-            if (tabla.Rows.Count > 0)
+            if (condicion.Rows.Count > 0)
             {
-                serv.DiasCondicionPago = tabla.Rows[0][0].ToString();
+                serv.DiasCondicionPago = condicion.Rows[0][0].ToString();
+            }
+        }
+
+        // el vencimiento se cuenta desde hoy segun los dias de la condicion (como en ModelSoft); se puede cambiar a mano
+        private void cmbCodicionPago_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            diasCondicionPago();
+            calcularVencimiento();
+        }
+
+        private void calcularVencimiento()
+        {
+            decimal dias;
+
+            if (decimal.TryParse(serv.DiasCondicionPago, out dias))
+            {
+                fechaVenc.Value = DateTime.Today.AddDays(Convert.ToDouble(dias));
+            }
+        }
+
+        // Deja elegida la condicion guardada. Los documentos en carga grabados con la version anterior tienen los dias en lugar
+        // del codigo: en ese caso se busca la primera condicion con los mismos dias.
+        private void seleccionarCondicion(string codigo, string plazo)
+        {
+            DataTable condiciones = (DataTable)cmbCodicionPago.DataSource;
+            string elegida = null;
+            decimal dias;
+
+            foreach (DataRow fila in condiciones.Rows)
+            {
+                if (Convert.ToString(fila["conp_codigo"]) == codigo.Trim())
+                {
+                    elegida = codigo.Trim();
+                }
+            }
+
+            if (elegida == null && decimal.TryParse(plazo, out dias))
+            {
+                foreach (DataRow fila in condiciones.Rows)
+                {
+                    if (elegida == null && Convert.ToDecimal(fila["conp_cant_dias"]) == dias)
+                    {
+                        elegida = Convert.ToString(fila["conp_codigo"]);
+                    }
+                }
+            }
+
+            if (elegida != null)
+            {
+                cmbCodicionPago.SelectedValue = elegida;
+                diasCondicionPago();
             }
         }
 
@@ -1538,13 +1651,19 @@ namespace lebrun.formularios.compras
             //}
 
 
-            if (dataGridView1.CurrentRow.Cells[1].Value.ToString() != "Iva General" && dataGridView1.CurrentRow.Cells[1].Value.ToString() != "Monto Total")
+            if (dataGridView1.CurrentRow != null && !esLineaAutomatica(dataGridView1.CurrentRow))
             {
                 dataGridView1.Rows.RemoveAt(dataGridView1.CurrentRow.Index);
             }
 
             actualizarNumeroItems();
             calcularMontos();
+        }
+
+        private static bool esLineaAutomatica(DataGridViewRow fila)
+        {
+            string descripcion = Convert.ToString(fila.Cells[1].Value);
+            return descripcion == "Monto Total" || descripcion == "Iva General" || descripcion == "Iva Reducido";
         }
 
         private void lblNombrePro_TextChanged(object sender, EventArgs e)
@@ -1571,7 +1690,11 @@ namespace lebrun.formularios.compras
 
             if (tabla.Rows.Count > 0)
             {
-                if (serv.Tdc_pagos.Equals("1"))
+                cambioEtiquetas();
+                tipoAplicado = tipo;
+                lblTipoDoc.Text = serv.Tdc_descri;
+
+                if (aplicaDocumento)
                 {
                     txtDCOM.Text = tabla.Rows[0]["doc_numerodoc"].ToString();
                     txtSufDCOM.Text = tabla.Rows[0]["doc_sufijo"].ToString();
@@ -1580,29 +1703,15 @@ namespace lebrun.formularios.compras
                     txtFCOM.Text = tabla.Rows[0]["doc_facafe"].ToString();
                     txtSufFCOM.Text = tabla.Rows[0]["doc_sufijofacafe"].ToString();
                     txtControlFCOM.Text = tabla.Rows[0]["doc_numfis"].ToString();
-
-                    txtDCOM.Visible = true;
-                    txtSufDCOM.Visible = true;
-                    txtControlDCOM.Visible = true;
-
-                    label3.Visible = true;
-                    label6.Visible = true;
                 }
-
-                if (serv.Tdc_pagos.Equals("-1"))
+                else
                 {
                     txtFCOM.Text = tabla.Rows[0]["doc_numerodoc"].ToString();
                     txtSufFCOM.Text = tabla.Rows[0]["doc_sufijo"].ToString();
                     txtControlFCOM.Text = tabla.Rows[0]["doc_numcontrol"].ToString();
-
-                    txtDCOM.Visible= false;
-                    txtSufDCOM.Visible = false;
-                    txtControlDCOM.Visible = false;
-
-                    label3.Visible = false;
-                    label6.Visible = false;
-
                 }
+
+                seleccionarCondicion(tabla.Rows[0]["doc_condic"].ToString(), tabla.Rows[0]["doc_plazo"].ToString());
 
                 txtTipoDoc.Text = tabla.Rows[0]["doc_tipdoc"].ToString();
                 txtProveedor.Text = tabla.Rows[0]["doc_codigo"].ToString();
@@ -1628,7 +1737,7 @@ namespace lebrun.formularios.compras
             tabla.Clear();
             tabla.Reset();
 
-            if (txtDCOM.Visible == true)
+            if (aplicaDocumento)
             {
                 tabla = serv.armarParteContable(txtDCOM.Text, txtSufDCOM.Text, txtProveedor.Text, txtTipoDoc.Text, Convert.ToInt16(opcion), compania.BaseDatosActual, caso);
 
@@ -1803,7 +1912,7 @@ namespace lebrun.formularios.compras
 
         private bool verificarDoc(string opcion)
         {
-            if (txtDCOM.Visible == true)
+            if (aplicaDocumento)
             {
 
                 if (txtDCOM.Text != "" && txtSufDCOM.Text != "")
@@ -1827,7 +1936,7 @@ namespace lebrun.formularios.compras
                 
             }
 
-            if (txtDCOM.Visible == false && txtFCOM.Text != "" && txtSufFCOM.Text != "")
+            if (!aplicaDocumento && txtFCOM.Text != "" && txtSufFCOM.Text != "")
             {
                 if (serv.documentoExiste(txtProveedor.Text, txtFCOM.Text, txtSufFCOM.Text, opcion))
                 {
@@ -1912,7 +2021,7 @@ namespace lebrun.formularios.compras
 
         }
 
-        private void guardarISLR()
+        private void guardarISLR(MySqlConnection conexion, MySqlTransaction transaccion)
         {
             consultarUniTributaria();
 
@@ -1933,7 +2042,7 @@ namespace lebrun.formularios.compras
                             baseRetener = "" + (Convert.ToDecimal(dataGridView1.Rows[i].Cells[6].Value.ToString()) * Convert.ToDecimal(porRetenISLR) / 100);
 
                             retISLR.insertarLibroISLR(retISLR.consultartarifasRet(dataGridView1.Rows[i].Cells[10].Value.ToString()),
-                                serv, baseRetener, unidadTributaria, dataGridView1.Rows[i].Cells[6].Value.ToString());
+                                serv, baseRetener, unidadTributaria, dataGridView1.Rows[i].Cells[6].Value.ToString(), conexion, transaccion);
                               
                         }
                     }
@@ -1966,7 +2075,7 @@ namespace lebrun.formularios.compras
         }
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (dataGridView1.CurrentRow.Cells[1].Value.ToString() != "Iva General" && dataGridView1.CurrentRow.Cells[1].Value.ToString() != "Monto Total")
+            if (dataGridView1.CurrentRow != null && !esLineaAutomatica(dataGridView1.CurrentRow))
             {
                 if (dataGridView1.CurrentRow.Cells[10].Selected)
                 {
@@ -1996,7 +2105,7 @@ namespace lebrun.formularios.compras
         private void dataGridView1_MouseClick(object sender, MouseEventArgs e)
         {
 
-            if (e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right && dataGridView1.CurrentRow != null)
             {
                 dataGridView1.CurrentRow.Cells[10].Value = "";
             }
@@ -2040,7 +2149,7 @@ namespace lebrun.formularios.compras
                     fila[14] = usuario;
                     fila[15] = "SERV";
                     fila[16] = "" + dataGridView1.Rows[i].Cells[11].Value.ToString();                              //AUXILIAR  PROVEEDOR                                 
-                    fila[17] = txtProveedor.Text;                    //CODIGO
+                    fila[17] = lblRifProveedor.Text;                 //RIF
                     fila[18] = lblNombrePro.Text;               //NOMBRE                      
                     fila[19] = dataGridView1.Rows[i].Cells[3].Value.ToString().Substring(0, 1);
                     fila[20] = "";
@@ -2069,8 +2178,8 @@ namespace lebrun.formularios.compras
             fila[0] = comprobante;
             fila[1] = "" + DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "-" + DateTime.Now.Day.ToString();
             fila[2] = compania.BaseDatosActual;
-            fila[3] = Convert.ToString(Math.Abs(Convert.ToDecimal(islr1))).Replace(",", "."); //cambiar 
-            fila[4] = Convert.ToString(Math.Abs(Convert.ToDecimal(islr1))).Replace(",", "."); //cambiar 
+            fila[3] = Convert.ToString(Math.Abs(retISLR.TotalRetenido)).Replace(",", "."); // lo retenido, no la base
+            fila[4] = Convert.ToString(Math.Abs(retISLR.TotalRetenido)).Replace(",", "."); // lo retenido, no la base
             fila[5] = "1";
             fila[6] = usuario;
             fila[7] = usuario;

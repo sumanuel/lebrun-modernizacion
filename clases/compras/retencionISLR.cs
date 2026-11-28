@@ -6,6 +6,7 @@ using lebrun.clasesData;
 using System.Data;
 using lebrun.clases.compras;
 using lebrun.clases.contabilidad;
+using MySql.Data.MySqlClient;
 
 namespace lebrun.clases.compras
 {
@@ -106,6 +107,12 @@ namespace lebrun.clases.compras
             set { descripcion = value; }
         }
 
+        // total retenido en la ultima actualizacion del libro
+        public decimal TotalRetenido
+        {
+            get { return Math.Round(Convert.ToDecimal(totalRetenc), 2); }
+        }
+
         public string Login
         {
             get { return login; }
@@ -126,7 +133,8 @@ namespace lebrun.clases.compras
         }
 
 
-        public void insertarLibroISLR(DataTable tabla, Servicios clase, string montoReten, string unidTributaria, string baseRetener)
+        public void insertarLibroISLR(DataTable tabla, Servicios clase, string montoReten, string unidTributaria, string baseRetener,
+            MySqlConnection conexion, MySqlTransaction transaccion)
         {
 
             StrSql = "";
@@ -143,13 +151,13 @@ namespace lebrun.clases.compras
 
 
             StrSql = StrSql.Replace("$idPro", clase.IdProveedor);
-            StrSql = StrSql.Replace("$docum", clase.NroDocum);
-            StrSql = StrSql.Replace("$sufi", clase.SufiDocum);
-            StrSql = StrSql.Replace("$ctrl", clase.NroControlSeniat);
-            StrSql = StrSql.Replace("$fiscal", clase.NroFiscal);
+            StrSql = StrSql.Replace("$docum", texto(clase.NroDocum));
+            StrSql = StrSql.Replace("$sufi", texto(clase.SufiDocum));
+            StrSql = StrSql.Replace("$ctrl", texto(clase.NroControlSeniat));
+            StrSql = StrSql.Replace("$fiscal", texto(clase.NroFiscal));
             StrSql = StrSql.Replace("$tip", clase.IdTipoDoc);
-            StrSql = StrSql.Replace("$afec", clase.NroDocumAfec);
-            StrSql = StrSql.Replace("$descrip", clase.Descripcion);
+            StrSql = StrSql.Replace("$afec", texto(clase.NroDocumAfec));
+            StrSql = StrSql.Replace("$descrip", texto(clase.Descripcion));
             StrSql = StrSql.Replace("$emision", clase.FechaEmision);
             StrSql = StrSql.Replace("$vencimiento", clase.FechaVenc);
             StrSql = StrSql.Replace("$libro", clase.FechaLibCompras);
@@ -160,7 +168,7 @@ namespace lebrun.clases.compras
             StrSql = StrSql.Replace("$updLogin", clase.LoginUpd);
 
             StrSql = StrSql.Replace("$codConcepto", tabla.Rows[0][0].ToString());
-            StrSql = StrSql.Replace("$pcion", tabla.Rows[0][1].ToString());
+            StrSql = StrSql.Replace("$pcion", texto(tabla.Rows[0][1].ToString()));
             StrSql = StrSql.Replace("$XML", tabla.Rows[0][2].ToString());
             StrSql = StrSql.Replace("$basePorc", tabla.Rows[0][7].ToString().Replace(",", "."));
             StrSql = StrSql.Replace("$porcReten", tabla.Rows[0][8].ToString().Replace(",", "."));
@@ -172,9 +180,17 @@ namespace lebrun.clases.compras
             StrSql = StrSql.Replace("$UniTributaria", unidTributaria.Replace(",", "."));
             StrSql = StrSql.Replace("$periodo","" + DateTime.Now.Year.ToString() + "" + DateTime.Now.Month.ToString().PadLeft(2, '0'));
 
-            database.ejecutarInsert(StrSql);
-            database.cerrarConexion();
+            using (MySqlCommand comando = new MySqlCommand(StrSql, conexion, transaccion))
+            {
+                comando.ExecuteNonQuery();
+            }
 
+        }
+
+        // lo que escribe el usuario no debe cortar la sentencia (un apostrofo, por ejemplo)
+        private static string texto(string valor)
+        {
+            return MySqlHelper.EscapeString(valor ?? "");
         }
 
         public DataTable consultarUTSustraendo()
@@ -310,7 +326,7 @@ namespace lebrun.clases.compras
                     " AND lislr_baseReten='$bRetener'" +
                     " AND lislr_porRetenc='$porcReten'" +
                     " AND lislr_estatus ='0'" +
-                    " AND lislr_correlativo =''";
+                    " AND lislr_correlativo IN ('','0')";   // la columna trae '0' por defecto
 
                 StrSql = StrSql.Replace("$Codigo", IdProveedor);
                 StrSql = StrSql.Replace("$NumDoc", NroDocum);
@@ -335,7 +351,7 @@ namespace lebrun.clases.compras
 
 
             StrSql = "UPDATE admsalpro SET " +
-                    "SaldoDocum=SaldoDocum-('$totalRetenc') ," +
+                    "SaldoDocum=SaldoDocum-(IF(correlativo='43',-1,1)*'$totalRetenc') ," +
                     "FechaRetenc='$fecha', " +
                     "NroRetenc='$correlativo' " +
                     "WHERE " +
@@ -363,7 +379,7 @@ namespace lebrun.clases.compras
             //se creo esta para que actualice el status a 1
 
             StrSql = "UPDATE admsalpro SET " +
-                    "SaldoDocum=SaldoDocum-('$totalRetenc') ," +
+                    "SaldoDocum=SaldoDocum-(IF(correlativo='43',-1,1)*'$totalRetenc') ," +
                     "FechaRetenc='$fecha', " +
                     "NroRetenc='$correlativo', " +
                     "Status='1' " +
@@ -455,7 +471,7 @@ namespace lebrun.clases.compras
                 fila[14] = login;
                 fila[15] = "RTI";
                 fila[16] = "" + auxiliarPro;     //auxiliar                         //AUXILIAR  PROVEEDOR                                 
-                fila[17] = this.idProveedor;                  //CODIGO
+                fila[17] = this.rif ?? "";                    //RIF
                 fila[18] = this.nombre;               //NOMBRE                      
                 fila[19] = letra;//letra D o C
                 fila[20] = "";
@@ -496,7 +512,7 @@ namespace lebrun.clases.compras
                 fila2[14] = login;
                 fila2[15] = "RTI";
                 fila2[16] = "" + auxiliarPro;     //auxiliar                         //AUXILIAR  PROVEEDOR                                 
-                fila2[17] = this.idProveedor;                  //CODIGO
+                fila2[17] = this.rif ?? "";                   //RIF
                 fila2[18] = this.nombre;               //NOMBRE                      
                 fila2[19] = letra;//letra D o C
                 fila2[20] = "";
@@ -552,7 +568,7 @@ namespace lebrun.clases.compras
                 fila[14] = login;
                 fila[15] = "ISLR";
                 fila[16] = "" + auxiliarPro;     //auxiliar                         //AUXILIAR  PROVEEDOR                                 
-                fila[17] = this.idProveedor;                  //CODIGO
+                fila[17] = this.rif ?? "";                    //RIF
                 fila[18] = this.nombre;               //NOMBRE                      
                 fila[19] = letra;//letra D o C
                 fila[20] = "";
@@ -593,7 +609,7 @@ namespace lebrun.clases.compras
                 fila2[14] = login;
                 fila2[15] = "ISLR";
                 fila2[16] = "" + auxiliarPro;     //auxiliar                         //AUXILIAR  PROVEEDOR                                 
-                fila2[17] = this.idProveedor;                  //CODIGO
+                fila2[17] = this.rif ?? "";                   //RIF
                 fila2[18] = this.nombre;               //NOMBRE                      
                 fila2[19] = letra;//letra D o C
                 fila2[20] = "";

@@ -280,7 +280,7 @@ namespace lebrun.clases.compras
                 fila[14] = usuario;
                 fila[15] = "RTI";
                 fila[16] = "" + auxiliarPro;     //auxiliar                         //AUXILIAR  PROVEEDOR                                 
-                fila[17] = this.proveedor;                  //CODIGO
+                fila[17] = this.rif ?? "";                  //RIF
                 fila[18] = this.nombre;               //NOMBRE                      
                 fila[19] = letra;//letra D o C
                 fila[20] = "";
@@ -321,7 +321,7 @@ namespace lebrun.clases.compras
                 fila2[14] = usuario;
                 fila2[15] = "RTI";
                 fila2[16] = "" + auxiliarPro;     //auxiliar                         //AUXILIAR  PROVEEDOR                                 
-                fila2[17] = this.proveedor;                  //CODIGO
+                fila2[17] = this.rif ?? "";                 //RIF
                 fila2[18] = this.nombre;               //NOMBRE                      
                 fila2[19] = letra;//letra D o C
                 fila2[20] = "";
@@ -368,7 +368,7 @@ namespace lebrun.clases.compras
                 fila[14] = usuario;
                 fila[15] = "RTI";
                 fila[16] = "" + auxiliarPro;     //auxiliar                         //AUXILIAR  PROVEEDOR                                 
-                fila[17] = this.proveedor;                  //CODIGO
+                fila[17] = this.rif ?? "";                  //RIF
                 fila[18] = this.nombre;                //NOMBRE                      
                 fila[19] = letra;//letra D o C
                 fila[20] = "";
@@ -409,7 +409,7 @@ namespace lebrun.clases.compras
                 fila2[14] = usuario;
                 fila2[15] = "RTI";
                 fila2[16] = "" + auxiliarPro;     //auxiliar                         //AUXILIAR  PROVEEDOR                                 
-                fila2[17] = this.proveedor;                  //CODIGO
+                fila2[17] = this.rif ?? "";                 //RIF
                 fila2[18] = this.nombre;               //NOMBRE                      
                 fila2[19] = letra;//letra D o C
                 fila2[20] = "";

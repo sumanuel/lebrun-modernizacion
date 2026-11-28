@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using lebrun.clases.compras;
 using lebrun.formularios.compras;
+using MySql.Data.MySqlClient;
 
 namespace lebrun.formularios.compras
 {
@@ -156,17 +157,17 @@ namespace lebrun.formularios.compras
 
             if (radioButton1.Checked)
             {
-                StrSql = StrSql + " And doc_numerodoc like '%" + txtBusqueda.Text + "%' ";
+                StrSql = StrSql + " And doc_numerodoc like '%" + MySqlHelper.EscapeString(txtBusqueda.Text) + "%' ";
             }
 
             if (radioButton2.Checked)
             {
-                StrSql = StrSql + " And doc_codigo like '" + txtBusqueda.Text + "%' ";
+                StrSql = StrSql + " And doc_codigo like '" + MySqlHelper.EscapeString(txtBusqueda.Text) + "%' ";
             }
 
             if (radioButton3.Checked)
             {
-                StrSql = StrSql + " And doc_fechEmis between " + Convert.ToDateTime(dateTimeDesde.Text).ToString("yyyy-MM-dd") + " AND  " + Convert.ToDateTime(dateTimeHasta.Text).ToString("yyyy-MM-dd") + " ";
+                StrSql = StrSql + " And doc_fechEmis between '" + Convert.ToDateTime(dateTimeDesde.Text).ToString("yyyy-MM-dd") + "' AND '" + Convert.ToDateTime(dateTimeHasta.Text).ToString("yyyy-MM-dd") + "' ";
             }
 
 
@@ -305,9 +306,8 @@ namespace lebrun.formularios.compras
 
         private void btnModificar_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.CurrentRow == null)
+            if (!hayDocumentoSeleccionado())
             {
-                MessageBox.Show("Seleccione un documento de la lista ", "Algo no esta bien ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if (Convert.ToString(dataGridView1.CurrentRow.Cells[7].Value).Equals("En Carga"))
@@ -357,8 +357,24 @@ namespace lebrun.formularios.compras
 
         }
 
+        // la lista tiene al final una fila vacia que tambien puede quedar seleccionada
+        private bool hayDocumentoSeleccionado()
+        {
+            if (dataGridView1.CurrentRow == null || dataGridView1.CurrentRow.IsNewRow)
+            {
+                MessageBox.Show("Seleccione un documento de la lista ", "Algo no esta bien ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return false;
+            }
+
+            return true;
+        }
+
         private void btnVer_Click(object sender, EventArgs e)
         {
+            if (!hayDocumentoSeleccionado())
+            {
+                return;
+            }
 
             if (Convert.ToDateTime(dataGridView1.CurrentRow.Cells[5].Value.ToString()).Year == DateTime.Now.Year)
             {
@@ -413,6 +429,11 @@ namespace lebrun.formularios.compras
 
         private void btnOpciones_Click(object sender, EventArgs e)
         {
+            if (!hayDocumentoSeleccionado())
+            {
+                return;
+            }
+
             opcionesServicios = new frmOpcionesServicios(
                 dataGridView1.CurrentRow.Cells[3].Value.ToString(), 
                 dataGridView1.CurrentRow.Cells[0].Value.ToString(), 

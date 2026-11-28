@@ -135,6 +135,7 @@
     <Compile Include="clases\compras\retencionesIva.cs" />
     <Compile Include="clases\compras\retencionISLR.cs" />
     <Compile Include="clases\compras\Servicios.cs" />
+    <Compile Include="clases\compras\ServiciosGrabacion.cs" />
     <Compile Include="clases\contabilidad\AuxiliarContable.cs" />
     <Compile Include="clases\contabilidad\Balance.cs" />
     <Compile Include="clases\contabilidad\ComprobanteCierre.cs" />

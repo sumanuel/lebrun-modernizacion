@@ -51,34 +51,31 @@ namespace lebrun.formularios.compras
             txtTipoDoc.Text = tipo;
             txtNombre.Text = nomb;
             usuario = usu;
- 
+            this.FormClosed += frmOpcionesServicios_FormClosed;
         }
 
+        // Salir ya no anula las retenciones: quedan pendientes y se pueden generar despues con el boton Opciones de la lista.
         private void btnSalir_Click(object sender, EventArgs e)
         {
             if (btnISLR.Visible == true || btnIva.Visible == true)
             {
-                if (MessageBox.Show("¿Esta seguro que desea salir y anular la(s) retencion(es)? ", "Alerta ", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (MessageBox.Show("Este documento tiene retenciones sin generar. Puede generarlas después: selecciónelo en la lista y pulse Opciones." +
+                    Environment.NewLine + Environment.NewLine + "¿Desea salir sin generarlas?", "Retenciones pendientes",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 {
-                    if (btnIva.Visible == true)
-                    {
-                        retIva.anularRetencionIva(txtDocumento.Text, txtSufijo.Text, txtTipoDoc.Text, txtCodigo.Text);
-                    }
-
-                    if (btnISLR.Visible == true)
-                    {
-                        retISLR.anularRetencionISLR(txtDocumento.Text, txtSufijo.Text, txtTipoDoc.Text, txtCodigo.Text);
-                    }
-
-                    reflbxServicios.Visible = true;
-                    this.Close();
+                    return;
                 }
             }
-            else
-            {
 
+            this.Close();
+        }
+
+        // la lista se oculta al abrir esta ventana: se muestra de nuevo al cerrarla de cualquier forma (tambien con la X)
+        private void frmOpcionesServicios_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (reflbxServicios != null && !reflbxServicios.IsDisposed)
+            {
                 reflbxServicios.Visible = true;
-                this.Close();
             }
         }
 
